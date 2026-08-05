@@ -32,6 +32,11 @@ interface HideReasonModalState {
   review: AdminReviewItem;
 }
 
+interface UnhideErrorState {
+  reviewId: number;
+  message: string;
+}
+
 function formatReviewDate(createdAt: string): string {
   const date = new Date(createdAt);
   if (Number.isNaN(date.getTime())) {
@@ -76,6 +81,7 @@ export default function AdminContentsReviewsPage() {
   const [sort, setSort] = useState<AdminReviewSort>("LATEST");
   const [reasonModal, setReasonModal] = useState<HideReasonModalState | null>(null);
   const [reasonInput, setReasonInput] = useState("");
+  const [unhideError, setUnhideError] = useState<UnhideErrorState | null>(null);
 
   const listQuery = useMemo(
     () => ({
@@ -134,7 +140,16 @@ export default function AdminContentsReviewsPage() {
       return;
     }
 
-    await unhideMutation.mutateAsync({ reviewId: review.id });
+    setUnhideError(null);
+
+    try {
+      await unhideMutation.mutateAsync({ reviewId: review.id });
+    } catch (unhideException) {
+      setUnhideError({
+        reviewId: review.id,
+        message: getApiErrorMessage(unhideException, "복구 처리에 실패했습니다."),
+      });
+    }
   };
 
   return (
@@ -264,6 +279,12 @@ export default function AdminContentsReviewsPage() {
                             {review.latestModeration.reason}
                           </p>
                         </div>
+                      ) : null}
+
+                      {unhideError?.reviewId === review.id ? (
+                        <p role="alert" className="mt-1 text-xs text-red-600">
+                          {unhideError.message}
+                        </p>
                       ) : null}
                     </div>
 
