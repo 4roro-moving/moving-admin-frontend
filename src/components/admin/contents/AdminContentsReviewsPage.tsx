@@ -18,6 +18,16 @@ const SORT_OPTIONS: Array<{ value: AdminReviewSort; label: string }> = [
   { value: "REPORT_HIGH", label: "신고 많은순" },
 ];
 
+const HIDE_REASON_MIN_LENGTH = 10;
+
+function getHideReasonCharCount(reason: string): number {
+  return reason.replace(/\s/g, "").length;
+}
+
+function isValidHideReason(reason: string): boolean {
+  return getHideReasonCharCount(reason) >= HIDE_REASON_MIN_LENGTH;
+}
+
 interface HideReasonModalState {
   review: AdminReviewItem;
 }
@@ -111,7 +121,7 @@ export default function AdminContentsReviewsPage() {
     if (!reasonModal) return;
 
     const trimmedReason = reasonInput.trim();
-    if (trimmedReason.length === 0) {
+    if (!isValidHideReason(trimmedReason)) {
       return;
     }
 
@@ -360,7 +370,8 @@ export default function AdminContentsReviewsPage() {
               숨김 사유 입력
             </h2>
             <p className="text-muted mt-3 text-sm">
-              콘텐츠를 숨김 처리합니다. 사유는 기록되어 작성자 알림으로 전달됩니다.
+              콘텐츠를 숨김 처리합니다. 사유는 공백 제외 10자 이상 입력해야 하며, 작성자 알림으로
+              전달됩니다.
             </p>
             <div className="mt-4">
               <label htmlFor="admin-review-reason" className="text-sm font-semibold text-foreground">
@@ -374,6 +385,9 @@ export default function AdminContentsReviewsPage() {
                 className="border-border bg-surface text-foreground placeholder:text-muted mt-2 h-36 w-full resize-none rounded-xl border px-3 py-2 text-sm outline-none focus:border-brand"
                 disabled={hideMutation.isPending}
               />
+              <p className="text-muted mt-2 text-xs">
+                공백 제외 {getHideReasonCharCount(reasonInput)}/{HIDE_REASON_MIN_LENGTH}자
+              </p>
             </div>
             {hideMutation.isError ? (
               <p className="mt-2 text-xs text-red-600">
@@ -392,7 +406,7 @@ export default function AdminContentsReviewsPage() {
               <button
                 type="button"
                 className="bg-accent rounded-lg px-4 py-2 text-sm font-semibold text-white disabled:opacity-40"
-                disabled={hideMutation.isPending || !reasonInput.trim()}
+                disabled={hideMutation.isPending || !isValidHideReason(reasonInput)}
                 onClick={() => {
                   void handleConfirmHide();
                 }}
