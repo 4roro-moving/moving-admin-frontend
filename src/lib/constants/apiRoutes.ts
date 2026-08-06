@@ -6,8 +6,10 @@ export const API_ROUTES = {
   },
   ADMIN: {
     REPORTS: "/admin/reports",
-    REVIEWS: "/admin/reviews",
+    REVIEWS: {
+      ROOT: "/admin/reviews",
+      HIDE: (reviewId: number) => `/admin/reviews/${reviewId}/hide`,
+      UNHIDE: (reviewId: number) => `/admin/reviews/${reviewId}/unhide`,
+    },
   },
 } as const;
-
-// TODO: 백엔드 /api/admin/* 실제 경로와 세부 endpoint 명세를 연결 단계에서 재확인합니다.

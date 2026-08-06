@@ -1,4 +1,5 @@
 import type { ApiErrorResponse } from "@/types/api";
+import type { PaginatedApiSuccessResponse, Pagination } from "@/types/pagination";
 
 interface RequestOptions extends Omit<RequestInit, "body"> {
   body?: BodyInit | object | null;
@@ -85,6 +86,26 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
 export const fetchInstance = {
   get: <T>(path: string, options?: Omit<RequestOptions, "method" | "body">) =>
     request<T>(path, { ...options, method: "GET" }),
+
+  getPaginated: async <TResponse, TPagination = Pagination>(
+    path: string,
+    options?: Omit<RequestOptions, "method" | "body">,
+  ): Promise<{ data: TResponse; pagination: TPagination }> => {
+    const body = await request<PaginatedApiSuccessResponse<TResponse>>(path, {
+      ...options,
+      method: "GET",
+    });
+
+    if (!body || body.pagination === undefined) {
+      throw new ApiClientError({
+        status: 500,
+        message: "페이지네이션 응답이 올바르지 않습니다.",
+      });
+    }
+
+    return { data: body.data, pagination: body.pagination as TPagination };
+  },
+
   post: <T>(path: string, body?: RequestOptions["body"], options?: Omit<RequestOptions, "method" | "body">) =>
     request<T>(path, { ...options, method: "POST", body }),
   patch: <T>(path: string, body?: RequestOptions["body"], options?: Omit<RequestOptions, "method" | "body">) =>
