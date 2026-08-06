@@ -20,8 +20,7 @@ export class ApiClientError extends Error {
 }
 
 function buildUrl(path: string): string {
-  const baseUrl =
-    process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "";
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
   return `${baseUrl}${path}`;
 }
 

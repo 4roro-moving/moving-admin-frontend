@@ -8,7 +8,7 @@ import AdminSidebar from "./AdminSidebar";
 
 export default function AdminShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const isContentsSection = pathname.startsWith("/contents");
+  const isContentsSection = pathname === "/contents" || pathname.startsWith("/contents/");
 
   return (
     <div className={isContentsSection ? "flex min-h-screen" : "min-h-screen xl:flex"}>

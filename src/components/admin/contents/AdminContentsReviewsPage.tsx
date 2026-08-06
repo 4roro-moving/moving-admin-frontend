@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { useHideAdminReview } from "@/hooks/useHideAdminReview";
 import { useAdminReviews } from "@/hooks/useAdminReviews";
@@ -19,13 +19,15 @@ const SORT_OPTIONS: Array<{ value: AdminReviewSort; label: string }> = [
 ];
 
 const HIDE_REASON_MIN_LENGTH = 10;
+const HIDE_REASON_MAX_LENGTH = 500;
 
 function getHideReasonCharCount(reason: string): number {
   return reason.replace(/\s/g, "").length;
 }
 
 function isValidHideReason(reason: string): boolean {
-  return getHideReasonCharCount(reason) >= HIDE_REASON_MIN_LENGTH;
+  const count = getHideReasonCharCount(reason);
+  return count >= HIDE_REASON_MIN_LENGTH && count <= HIDE_REASON_MAX_LENGTH;
 }
 
 interface HideReasonModalState {
@@ -83,13 +85,16 @@ export default function AdminContentsReviewsPage() {
   const [reasonInput, setReasonInput] = useState("");
   const [unhideError, setUnhideError] = useState<UnhideErrorState | null>(null);
 
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const reasonTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const previouslyFocusedElementRef = useRef<HTMLElement | null>(null);
+
   const listQuery = useMemo(
     () => ({
       page,
       limit: ADMIN_REVIEW_LIST_PAGE_LIMIT,
       sort,
       keyword: keyword || undefined,
-      reportedOnly: true,
     }),
     [keyword, page, sort],
   );
@@ -102,6 +107,7 @@ export default function AdminContentsReviewsPage() {
   const pagination = data?.pagination;
   const totalPages = Math.max(1, pagination?.totalPages ?? 1);
   const visiblePages = getVisiblePages(pagination?.page ?? page, totalPages);
+  const reasonCharCount = getHideReasonCharCount(reasonInput);
 
   const handleSubmitSearch = () => {
     setKeyword(keywordInput.trim());
@@ -111,6 +117,8 @@ export default function AdminContentsReviewsPage() {
   const isActionPending = hideMutation.isPending || unhideMutation.isPending;
 
   const openHideReasonModal = (review: AdminReviewItem) => {
+    previouslyFocusedElementRef.current =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null;
     setReasonModal({ review });
     setReasonInput("");
   };
@@ -121,6 +129,8 @@ export default function AdminContentsReviewsPage() {
     }
     setReasonModal(null);
     setReasonInput("");
+    previouslyFocusedElementRef.current?.focus();
+    previouslyFocusedElementRef.current = null;
   };
 
   const handleConfirmHide = async () => {
@@ -132,7 +142,10 @@ export default function AdminContentsReviewsPage() {
     }
 
     await hideMutation.mutateAsync({ reviewId: reasonModal.review.id, reason: trimmedReason });
-    closeReasonModal();
+    setReasonModal(null);
+    setReasonInput("");
+    previouslyFocusedElementRef.current?.focus();
+    previouslyFocusedElementRef.current = null;
   };
 
   const handleUnhide = async (review: AdminReviewItem) => {
@@ -151,6 +164,61 @@ export default function AdminContentsReviewsPage() {
       });
     }
   };
+
+  useEffect(() => {
+    if (!reasonModal) {
+      return;
+    }
+
+    const dialog = dialogRef.current;
+    reasonTextareaRef.current?.focus();
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        if (!hideMutation.isPending) {
+          setReasonModal(null);
+          setReasonInput("");
+          previouslyFocusedElementRef.current?.focus();
+          previouslyFocusedElementRef.current = null;
+        }
+        return;
+      }
+
+      if (event.key !== "Tab" || !dialog) {
+        return;
+      }
+
+      const focusable = Array.from(
+        dialog.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), textarea:not([disabled]), [href], input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ),
+      ).filter((element) => !element.hasAttribute("disabled"));
+
+      if (focusable.length === 0) {
+        return;
+      }
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+        return;
+      }
+
+      if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [hideMutation.isPending, reasonModal]);
 
   return (
     <section className="flex flex-col gap-5">
@@ -381,6 +449,7 @@ export default function AdminContentsReviewsPage() {
           onClick={closeReasonModal}
         >
           <div
+            ref={dialogRef}
             role="dialog"
             aria-modal="true"
             aria-labelledby="admin-review-reason-title"
@@ -391,23 +460,26 @@ export default function AdminContentsReviewsPage() {
               숨김 사유 입력
             </h2>
             <p className="text-muted mt-3 text-sm">
-              콘텐츠를 숨김 처리합니다. 사유는 공백 제외 10자 이상 입력해야 하며, 작성자 알림으로
-              전달됩니다.
+              콘텐츠를 숨김 처리합니다. 사유는 공백 제외 최소 {HIDE_REASON_MIN_LENGTH}자 이상
+              입력해야 하며, 작성자 알림으로 전달됩니다.
             </p>
             <div className="mt-4">
               <label htmlFor="admin-review-reason" className="text-sm font-semibold text-foreground">
-                처리 사유
+                처리 사유 (최소 {HIDE_REASON_MIN_LENGTH}자)
               </label>
               <textarea
+                ref={reasonTextareaRef}
                 id="admin-review-reason"
                 value={reasonInput}
                 onChange={(event) => setReasonInput(event.target.value)}
                 placeholder="예: 신고 누적 / 커뮤니티 가이드라인 위반"
+                maxLength={HIDE_REASON_MAX_LENGTH}
                 className="border-border bg-surface text-foreground placeholder:text-muted mt-2 h-36 w-full resize-none rounded-xl border px-3 py-2 text-sm outline-none focus:border-brand"
                 disabled={hideMutation.isPending}
               />
               <p className="text-muted mt-2 text-xs">
-                공백 제외 {getHideReasonCharCount(reasonInput)}/{HIDE_REASON_MIN_LENGTH}자
+                공백 제외 {reasonCharCount}/{HIDE_REASON_MAX_LENGTH}자 (최소{" "}
+                {HIDE_REASON_MIN_LENGTH}자)
               </p>
             </div>
             {hideMutation.isError ? (
