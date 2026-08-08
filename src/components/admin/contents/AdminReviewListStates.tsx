@@ -1,0 +1,68 @@
+import { getApiErrorMessage } from "@/lib/api/getApiErrorMessage";
+
+interface AdminReviewLoadingStateProps {
+  message?: string;
+}
+
+export function AdminReviewLoadingState({
+  message = "리뷰 목록을 불러오는 중입니다.",
+}: AdminReviewLoadingStateProps) {
+  return (
+    <div className="border-border bg-surface rounded-2xl border px-5 py-6">
+      <p className="text-muted text-sm">{message}</p>
+    </div>
+  );
+}
+
+interface AdminReviewErrorStateProps {
+  error: unknown;
+  onRetry: () => void;
+}
+
+export function AdminReviewErrorState({ error, onRetry }: AdminReviewErrorStateProps) {
+  return (
+    <div className="border-border bg-surface rounded-2xl border px-5 py-4">
+      <p className="text-sm text-red-600">
+        {getApiErrorMessage(error, "리뷰 목록을 불러오지 못했습니다.")}
+      </p>
+      <button
+        type="button"
+        className="border-border mt-3 rounded-lg border px-3 py-2 text-sm"
+        onClick={onRetry}
+      >
+        다시 시도
+      </button>
+    </div>
+  );
+}
+
+export function AdminReviewEmptyState() {
+  return (
+    <div className="border-border bg-surface rounded-2xl border px-5 py-10 text-center">
+      <p className="text-muted text-sm">조건에 맞는 리뷰가 없습니다.</p>
+    </div>
+  );
+}
+
+interface AdminReviewFeedbackToastProps {
+  tone: "error" | "success" | "info";
+  message: string;
+}
+
+export function AdminReviewFeedbackToast({ tone, message }: AdminReviewFeedbackToastProps) {
+  const toneClassName =
+    tone === "error"
+      ? "border-red-200 bg-red-50 text-red-700"
+      : tone === "success"
+        ? "border-accent/30 bg-accent-muted text-accent"
+        : "border-border bg-surface text-muted";
+
+  return (
+    <div
+      role={tone === "error" ? "alert" : "status"}
+      className={`fixed right-5 bottom-5 z-40 rounded-lg border px-3 py-2 text-xs shadow ${toneClassName}`}
+    >
+      {message}
+    </div>
+  );
+}

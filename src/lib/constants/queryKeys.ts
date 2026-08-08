@@ -1,3 +1,5 @@
+import type { AdminReviewSort } from "@/types/adminReview";
+
 export const QUERY_KEYS = {
   AUTH: {
     ADMIN_SESSION: ["auth", "admin-session"] as const,
@@ -11,9 +13,7 @@ export const QUERY_KEYS = {
       page: number;
       limit: number;
       keyword: string;
-      sort: "LATEST" | "OLDEST" | "RATING_HIGH" | "RATING_LOW" | "REPORT_HIGH";
-      isHidden?: boolean;
-      reportedOnly?: boolean;
+      sort: AdminReviewSort;
     }) => ["admin", "reviews", "list", params] as const,
   },
 } as const;

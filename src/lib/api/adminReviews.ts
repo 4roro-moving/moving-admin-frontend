@@ -39,12 +39,6 @@ export async function fetchAdminReviews(
   if (query.keyword) {
     search.set("keyword", query.keyword);
   }
-  if (query.isHidden !== undefined) {
-    search.set("isHidden", String(query.isHidden));
-  }
-  if (query.reportedOnly !== undefined) {
-    search.set("reportedOnly", String(query.reportedOnly));
-  }
 
   const result = await fetchInstance.getPaginated<AdminReviewItem[]>(
     `${API_ROUTES.ADMIN.REVIEWS.ROOT}?${search.toString()}`,
