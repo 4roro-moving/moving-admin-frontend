@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import AdminReviewCard from "@/components/admin/contents/AdminReviewCard";
 import AdminReviewHideReasonModal from "@/components/admin/contents/AdminReviewHideReasonModal";
@@ -75,10 +75,10 @@ export default function AdminContentsReviewsPage() {
     setPage(1);
   };
 
-  const restoreFocus = () => {
+  const restoreFocus = useCallback(() => {
     previouslyFocusedElementRef.current?.focus();
     previouslyFocusedElementRef.current = null;
-  };
+  }, []);
 
   const openHideReasonModal = (review: AdminReviewItem) => {
     previouslyFocusedElementRef.current =
@@ -88,14 +88,14 @@ export default function AdminContentsReviewsPage() {
     setReasonInput("");
   };
 
-  const closeReasonModal = () => {
+  const closeReasonModal = useCallback(() => {
     if (hideMutation.isPending) {
       return;
     }
     setReasonModal(null);
     setReasonInput("");
     restoreFocus();
-  };
+  }, [hideMutation.isPending, restoreFocus]);
 
   const handleConfirmHide = async () => {
     if (!reasonModal) return;
@@ -114,11 +114,8 @@ export default function AdminContentsReviewsPage() {
       setReasonInput("");
       restoreFocus();
       setFeedback({ tone: "success", message: "리뷰를 숨김 처리했습니다." });
-    } catch (hideException) {
-      setFeedback({
-        tone: "error",
-        message: getApiErrorMessage(hideException, "숨김 처리에 실패했습니다."),
-      });
+    } catch {
+      // 실패 시 모달이 열린 채로 hideMutation.error를 표시하므로 토스트는 중복하지 않는다.
     }
   };
 

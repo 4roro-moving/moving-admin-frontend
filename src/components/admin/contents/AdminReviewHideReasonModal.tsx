@@ -34,8 +34,11 @@ export default function AdminReviewHideReasonModal({
   const reasonCharCount = getHideReasonCharCount(reason);
 
   useEffect(() => {
-    const dialog = dialogRef.current;
     reasonTextareaRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {

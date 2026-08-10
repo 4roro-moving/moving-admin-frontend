@@ -16,6 +16,7 @@ export default function AdminReviewSortChips({ value, onChange }: AdminReviewSor
           <button
             key={option.value}
             type="button"
+            aria-pressed={isActive}
             onClick={() => onChange(option.value)}
             className={cn(
               "rounded-full border px-3 py-1.5 text-sm",

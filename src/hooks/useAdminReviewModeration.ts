@@ -30,11 +30,13 @@ export function useAdminReviewModeration() {
   });
 
   const unhideMutation = useMutation({
-    mutationFn: ({ reviewId, reason }: UnhideVariables) =>
-      unhideAdminReview(
+    mutationFn: ({ reviewId, reason }: UnhideVariables) => {
+      const trimmedReason = reason?.trim();
+      return unhideAdminReview(
         reviewId,
-        reason?.trim() ? ({ reason } satisfies AdminReviewActionReasonPayload) : undefined,
-      ),
+        trimmedReason ? ({ reason: trimmedReason } satisfies AdminReviewActionReasonPayload) : undefined,
+      );
+    },
     onSuccess: invalidateReviews,
   });
 
