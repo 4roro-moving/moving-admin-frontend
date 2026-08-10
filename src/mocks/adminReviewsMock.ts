@@ -215,28 +215,18 @@ function sortReviews(items: AdminReviewItem[], sort: AdminReviewSort): AdminRevi
 }
 
 function filterReviews(items: AdminReviewItem[], query: AdminReviewListQuery): AdminReviewItem[] {
-  let filtered = [...items];
-
-  if (query.isHidden !== undefined) {
-    filtered = filtered.filter((item) => item.isHidden === query.isHidden);
-  }
-
-  if (query.reportedOnly) {
-    filtered = filtered.filter((item) => item.reportCount > 0);
-  }
-
   const keyword = query.keyword?.trim().toLowerCase();
-  if (keyword) {
-    filtered = filtered.filter(
-      (item) =>
-        item.content.toLowerCase().includes(keyword) ||
-        item.author.name.toLowerCase().includes(keyword) ||
-        item.author.email.toLowerCase().includes(keyword) ||
-        item.mover.name.toLowerCase().includes(keyword),
-    );
+  if (!keyword) {
+    return [...items];
   }
 
-  return filtered;
+  return items.filter(
+    (item) =>
+      item.content.toLowerCase().includes(keyword) ||
+      item.author.name.toLowerCase().includes(keyword) ||
+      item.author.email.toLowerCase().includes(keyword) ||
+      item.mover.name.toLowerCase().includes(keyword),
+  );
 }
 
 export function listMockAdminReviews(query: AdminReviewListQuery = {}): AdminReviewListResult {

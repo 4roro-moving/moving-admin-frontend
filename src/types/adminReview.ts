@@ -12,8 +12,6 @@ export interface AdminReviewListQuery {
   limit?: number;
   keyword?: string;
   sort?: AdminReviewSort;
-  isHidden?: boolean;
-  reportedOnly?: boolean;
 }
 
 export interface AdminReviewAuthor {
