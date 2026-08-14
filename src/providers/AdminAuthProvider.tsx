@@ -1,8 +1,37 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
+
+import { fetchCurrentAdmin, refreshAdminSession } from "@/lib/api/auth";
+import { useAdminAuthStore } from "@/stores/useAdminAuthStore";
 
 export default function AdminAuthProvider({ children }: { children: ReactNode }) {
-  // TODO: Refresh Cookie 기반 세션 복구와 ADMIN 역할 검증을 여기서 연결합니다.
+  const establishSession = useAdminAuthStore((state) => state.establishSession);
+  const setAccessToken = useAdminAuthStore((state) => state.setAccessToken);
+  const clearSession = useAdminAuthStore((state) => state.clearSession);
+  const setCheckingAuth = useAdminAuthStore((state) => state.setCheckingAuth);
+  const isCheckingAuth = useAdminAuthStore((state) => state.isCheckingAuth);
+
+  useEffect(() => {
+    const restoreSession = async () => {
+      try {
+        const accessToken = await refreshAdminSession();
+        setAccessToken(accessToken);
+        const user = await fetchCurrentAdmin();
+        establishSession({ user, accessToken });
+      } catch {
+        clearSession();
+      } finally {
+        setCheckingAuth(false);
+      }
+    };
+
+    void restoreSession();
+  }, [clearSession, establishSession, setAccessToken, setCheckingAuth]);
+
+  if (isCheckingAuth) {
+    return <div className="bg-background min-h-screen" aria-label="세션 확인 중" />;
+  }
+
   return children;
 }

@@ -1,19 +1,28 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { loginAdmin } from "@/lib/api/auth";
+import { getApiErrorMessage } from "@/lib/api/getApiErrorMessage";
+import { APP_ROUTES } from "@/lib/constants/appRoutes";
+import { useAdminAuthStore } from "@/stores/useAdminAuthStore";
+import { useRouter } from "next/navigation";
+
 const adminLoginSchema = z.object({
   email: z.string().email("이메일 형식이 올바르지 않습니다."),
-  password: z.string().min(8, "비밀번호는 8자 이상이어야 합니다."),
+  password: z.string().min(1, "비밀번호를 입력해 주세요."),
 });
 
 type AdminLoginFormValues = z.infer<typeof adminLoginSchema>;
 
 export default function AdminLoginPage() {
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const router = useRouter();
+  const establishSession = useAdminAuthStore((state) => state.establishSession);
+  const isAuthenticated = useAdminAuthStore((state) => state.isAuthenticated);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const {
     register,
@@ -27,8 +36,19 @@ export default function AdminLoginPage() {
     },
   });
 
-  const onSubmit = async () => {
-    setIsSubmitted(true);
+  useEffect(() => {
+    if (isAuthenticated) router.replace(APP_ROUTES.DASHBOARD);
+  }, [isAuthenticated, router]);
+
+  const onSubmit = async (values: AdminLoginFormValues) => {
+    setErrorMessage(null);
+    try {
+      const session = await loginAdmin(values);
+      establishSession(session);
+      router.replace(APP_ROUTES.DASHBOARD);
+    } catch (error) {
+      setErrorMessage(getApiErrorMessage(error, "로그인에 실패했습니다."));
+    }
   };
 
   return (
@@ -37,7 +57,7 @@ export default function AdminLoginPage() {
         <p className="text-muted text-sm font-medium">ADMIN AUTH</p>
         <h1 className="text-2xl font-semibold">MOVING 관리자 로그인</h1>
         <p className="text-muted text-sm">
-          로그인 API 연결과 세션 복구는 이번 작업 범위에서 제외되어 있습니다.
+          관리자 계정으로 로그인해 회원 및 운영 기능에 접근합니다.
         </p>
       </div>
 
@@ -54,7 +74,9 @@ export default function AdminLoginPage() {
             placeholder="admin@moving.com"
             {...register("email")}
           />
-          {errors.email ? <p className="text-sm text-red-600">{errors.email.message}</p> : null}
+          {errors.email ? (
+            <p className="text-sm text-red-600">{errors.email.message}</p>
+          ) : null}
         </div>
 
         <div className="space-y-2">
@@ -79,13 +101,16 @@ export default function AdminLoginPage() {
           disabled={isSubmitting}
           className="bg-brand text-brand-foreground w-full rounded-xl px-4 py-3 text-sm font-semibold disabled:opacity-60"
         >
-          로그인 준비 중
+          {isSubmitting ? "로그인 중" : "로그인"}
         </button>
       </form>
 
-      {isSubmitted ? (
-        <p className="bg-background text-muted mt-6 rounded-xl px-4 py-3 text-sm">
-          관리자 로그인 API와 세션 복구 로직은 후속 작업에서 연결합니다.
+      {errorMessage ? (
+        <p
+          role="alert"
+          className="bg-[#ffeef0] mt-6 rounded-xl px-4 py-3 text-sm text-red-600"
+        >
+          {errorMessage}
         </p>
       ) : null}
     </section>

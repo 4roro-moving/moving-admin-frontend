@@ -1,8 +1,9 @@
 export const API_ROUTES = {
   AUTH: {
-    LOGIN: "/auth/login",
-    REFRESH: "/auth/refresh",
-    LOGOUT: "/auth/logout",
+    LOGIN: "/admin/auth/login",
+    REFRESH: "/admin/auth/refresh",
+    LOGOUT: "/admin/auth/logout",
+    ME: "/admin/auth/me",
   },
   ADMIN: {
     REPORTS: "/admin/reports",
