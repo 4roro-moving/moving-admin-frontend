@@ -19,6 +19,8 @@ const textVariants = {
     "text-[length:var(--font-size-16)] leading-[var(--line-height-26)] font-medium",
   "lg-semibold":
     "text-[length:var(--font-size-16)] leading-[var(--line-height-26)] font-semibold",
+  "2lg-regular":
+    "text-[length:var(--font-size-18)] leading-[var(--line-height-26)] font-normal",
   "2lg-semibold":
     "text-[length:var(--font-size-18)] leading-[var(--line-height-26)] font-semibold",
   "xl-semibold":
@@ -28,6 +30,10 @@ const textVariants = {
 } as const;
 
 export type TextVariant = keyof typeof textVariants;
+
+export function getTextVariantClass(variant: TextVariant): string {
+  return textVariants[variant];
+}
 
 type TextProps<T extends ElementType> = {
   as?: T;

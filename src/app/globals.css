@@ -16,6 +16,10 @@
   --text-subtle: #999999;
   --border-brand: #f9502e;
   --background-hover: #efefef;
+  --background-muted: #f7f7f7;
+  --text-primary: #111111;
+  --text-placeholder: #999999;
+  --icon-default: #ababab;
   --input-shadow: 0 4px 4px -1px rgb(249 80 46 / 20%);
   --select-shadow: 4px 4px 10px 0 rgb(238 238 238 / 20%);
   --font-size-12: 0.75rem;
@@ -49,10 +53,15 @@
   --color-text-subtle: var(--text-subtle);
   --color-border-brand: var(--border-brand);
   --color-background-hover: var(--background-hover);
+  --color-background-muted: var(--background-muted);
+  --color-text-primary: var(--text-primary);
+  --color-text-placeholder: var(--text-placeholder);
+  --color-icon-default: var(--icon-default);
   --color-rating-fill: var(--color-yellow-100);
   --shadow-input: var(--input-shadow);
   --shadow-select: var(--select-shadow);
   --radius-20: 1.25rem;
+  --radius-16: 1rem;
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
