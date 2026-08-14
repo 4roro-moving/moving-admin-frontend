@@ -1,7 +1,6 @@
 @import "tailwindcss";
 
 :root {
-  /* moving-frontend의 semantic token을 관리자에도 동일하게 적용합니다. */
   --background: #f4f6fb;
   --foreground: #111827;
   --surface: #ffffff;
@@ -34,6 +33,7 @@
 }
 
 @theme inline {
+  --color-yellow-100: #ffc149;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-surface: var(--surface);
@@ -49,6 +49,7 @@
   --color-text-subtle: var(--text-subtle);
   --color-border-brand: var(--border-brand);
   --color-background-hover: var(--background-hover);
+  --color-rating-fill: var(--color-yellow-100);
   --shadow-input: var(--input-shadow);
   --shadow-select: var(--select-shadow);
   --radius-20: 1.25rem;
