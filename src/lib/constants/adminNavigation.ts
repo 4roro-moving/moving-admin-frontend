@@ -8,8 +8,8 @@ export interface AdminNavigationItem {
 
 export const ADMIN_NAVIGATION_ITEMS: AdminNavigationItem[] = [
   { label: "대시보드", href: APP_ROUTES.DASHBOARD, enabled: true },
-  { label: "회원 관리", href: "/members", enabled: false },
-  { label: "기사 관리", href: "/movers", enabled: false },
+  { label: "회원 관리", href: APP_ROUTES.MEMBERS, enabled: true },
+  { label: "기사 관리", href: APP_ROUTES.MOVERS, enabled: true },
   { label: "신고 관리", href: APP_ROUTES.REPORTS, enabled: true },
   { label: "리뷰 관리", href: APP_ROUTES.CONTENTS.REVIEWS, enabled: true },
   { label: "공지 관리", href: "/notices", enabled: false },

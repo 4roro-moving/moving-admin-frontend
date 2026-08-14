@@ -6,6 +6,12 @@ export const API_ROUTES = {
     ME: "/admin/auth/me",
   },
   ADMIN: {
+    MOVERS: {
+      ROOT: "/admin/movers",
+    },
+    USERS: {
+      ROOT: "/admin/users",
+    },
     REPORTS: "/admin/reports",
     REVIEWS: {
       ROOT: "/admin/reviews",
