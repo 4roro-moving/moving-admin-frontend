@@ -15,13 +15,17 @@ export function toggleListSort<TSort extends string>(
   descending: TSort,
   ascending: TSort,
 ): TSort[] {
+  const remainingSorts = sorts.filter(
+    (sort) => sort !== descending && sort !== ascending,
+  );
+
   if (sorts.includes(descending)) {
-    return sorts.map((sort) => (sort === descending ? ascending : sort));
+    return [ascending, ...remainingSorts];
   }
   if (sorts.includes(ascending)) {
-    return sorts.filter((sort) => sort !== ascending);
+    return remainingSorts;
   }
-  return [...sorts, descending];
+  return [descending, ...remainingSorts];
 }
 
 export function toggleRequiredListSort<TSort extends string>(
@@ -29,13 +33,17 @@ export function toggleRequiredListSort<TSort extends string>(
   descending: TSort,
   ascending: TSort,
 ): TSort[] {
+  const remainingSorts = sorts.filter(
+    (sort) => sort !== descending && sort !== ascending,
+  );
+
   if (sorts.includes(ascending)) {
-    return sorts.map((sort) => (sort === ascending ? descending : sort));
+    return [descending, ...remainingSorts];
   }
 
   if (sorts.includes(descending)) {
-    return sorts.map((sort) => (sort === descending ? ascending : sort));
+    return [ascending, ...remainingSorts];
   }
 
-  return [...sorts, ascending];
+  return [ascending, ...remainingSorts];
 }
