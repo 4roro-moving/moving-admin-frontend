@@ -13,9 +13,13 @@ import { useAdminListUrlFilters } from "@/hooks/useAdminListUrlFilters";
 import {
   buildMemberListQueryString,
   type MemberListFilters,
-} from "@/lib/utils/admin/membersSearchParams";
+} from "@/lib/utils/user/membersSearchParams";
 import { getApiErrorMessage } from "@/lib/api/getApiErrorMessage";
-import { nextSortDirection, type SortDirection } from "@/lib/utils/user/sort";
+import {
+  getListSortDirection,
+  toggleListSort,
+  type SortDirection,
+} from "@/lib/utils/user/sort";
 import type {
   AdminMemberAuthProviderFilter,
   AdminMemberOpenFilter,
@@ -45,7 +49,7 @@ export default function AdminMembersPage({
     toDate,
     page,
     limit,
-    sort,
+    sorts,
   } = initialFilters;
   const setStatus = useCallback(
     (value: "ALL" | AdminMemberStatus) =>
@@ -53,7 +57,8 @@ export default function AdminMembersPage({
     [replaceFilters],
   );
   const setProfileFilter = useCallback(
-    (value: AdminProfileFilterValue) => replaceFilters({ profile: value, page: 1 }),
+    (value: AdminProfileFilterValue) =>
+      replaceFilters({ profile: value, page: 1 }),
     [replaceFilters],
   );
   const setAuthProvider = useCallback(
@@ -77,10 +82,16 @@ export default function AdminMembersPage({
     (value: number) => replaceFilters({ limit: value, page: 1 }),
     [replaceFilters],
   );
-  const reportSort: SortDirection =
-    sort === "PENDING_DESC" ? "desc" : sort === "PENDING_ASC" ? "asc" : "none";
-  const joinedSort: SortDirection =
-    sort === "OLDEST" ? "asc" : sort === "LATEST" ? "desc" : "none";
+  const reportSort: SortDirection = getListSortDirection(
+    sorts,
+    "PENDING_DESC",
+    "PENDING_ASC",
+  );
+  const joinedSort: SortDirection = getListSortDirection(
+    sorts,
+    "CREATED_AT_DESC",
+    "CREATED_AT_ASC",
+  );
   const [openFilter, setOpenFilter] = useState<AdminMemberOpenFilter>(null);
 
   const { data, error, isError, isLoading, isPlaceholderData, refetch } =
@@ -94,12 +105,7 @@ export default function AdminMembersPage({
         profileFilter === "ALL" ? undefined : profileFilter === "COMPLETED",
       fromDate: fromDate || undefined,
       toDate: toDate || undefined,
-      sorts:
-        sort === "OLDEST"
-          ? ["CREATED_AT_ASC"]
-          : sort === "PENDING_DESC" || sort === "PENDING_ASC"
-            ? [sort]
-            : ["CREATED_AT_DESC"],
+      sorts: sorts.length > 0 ? sorts : undefined,
     });
 
   const columns = useMemo(
@@ -125,21 +131,14 @@ export default function AdminMembersPage({
           setOpenFilter(null);
         },
         onReportSort: () => {
-          const nextSort = nextSortDirection(reportSort);
           replaceFilters({
-            sort:
-              nextSort === "desc"
-                ? "PENDING_DESC"
-                : nextSort === "asc"
-                  ? "PENDING_ASC"
-                  : "LATEST",
+            sorts: toggleListSort(sorts, "PENDING_DESC", "PENDING_ASC"),
             page: 1,
           });
         },
         onJoinedSort: () => {
-          const nextSort = nextSortDirection(joinedSort);
           replaceFilters({
-            sort: nextSort === "asc" ? "OLDEST" : "LATEST",
+            sorts: toggleListSort(sorts, "CREATED_AT_DESC", "CREATED_AT_ASC"),
             page: 1,
           });
         },
@@ -157,6 +156,7 @@ export default function AdminMembersPage({
       setProfileFilter,
       setStatus,
       setToDate,
+      sorts,
       status,
       toDate,
     ],

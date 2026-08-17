@@ -1,7 +1,6 @@
 import type { Pagination } from "@/types/pagination";
 
 export type AdminAccountStatus = "ACTIVE" | "SUSPENDED" | "WITHDRAWN";
-export type AdminListSort = "LATEST" | "OLDEST";
 export type AdminProfileFilterValue = "ALL" | "COMPLETED" | "INCOMPLETE";
 export type AdminListOpenFilter =
   | "status"
@@ -50,7 +49,6 @@ export interface AdminListQueryBase {
   isProfileCompleted?: boolean;
   fromDate?: string;
   toDate?: string;
-  sort?: AdminListSort;
 }
 
 export interface AdminListApiQuery<

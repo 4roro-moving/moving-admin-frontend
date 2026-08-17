@@ -1,5 +1,25 @@
 export type SortDirection = "none" | "desc" | "asc";
 
-export function nextSortDirection(direction: SortDirection): SortDirection {
-  return direction === "none" ? "desc" : direction === "desc" ? "asc" : "none";
+export function getListSortDirection<TSort extends string>(
+  sorts: readonly TSort[],
+  descending: TSort,
+  ascending: TSort,
+): SortDirection {
+  if (sorts.includes(descending)) return "desc";
+  if (sorts.includes(ascending)) return "asc";
+  return "none";
+}
+
+export function toggleListSort<TSort extends string>(
+  sorts: readonly TSort[],
+  descending: TSort,
+  ascending: TSort,
+): TSort[] {
+  if (sorts.includes(descending)) {
+    return sorts.map((sort) => (sort === descending ? ascending : sort));
+  }
+  if (sorts.includes(ascending)) {
+    return sorts.filter((sort) => sort !== ascending);
+  }
+  return [...sorts, descending];
 }

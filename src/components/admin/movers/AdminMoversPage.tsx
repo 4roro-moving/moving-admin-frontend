@@ -10,13 +10,20 @@ import AdminListTable from "@/components/admin/users/AdminListTable";
 import AdminListToolbar from "@/components/admin/users/AdminListToolbar";
 import { useAdminMovers } from "@/hooks/useAdminMovers";
 import { getApiErrorMessage } from "@/lib/api/getApiErrorMessage";
-import { nextSortDirection, type SortDirection } from "@/lib/utils/user/sort";
+import {
+  getListSortDirection,
+  toggleListSort,
+  type SortDirection,
+} from "@/lib/utils/user/sort";
 import {
   buildMoverListQueryString,
   type MoverListFilters,
-} from "@/lib/utils/admin/moversSearchParams";
+} from "@/lib/utils/user/moversSearchParams";
 import { useAdminListUrlFilters } from "@/hooks/useAdminListUrlFilters";
-import type { AdminMoverOpenFilter, AdminMoverStatus } from "@/types/adminMover";
+import type {
+  AdminMoverOpenFilter,
+  AdminMoverStatus,
+} from "@/types/adminMover";
 import type { AdminProfileFilterValue } from "@/types/adminUser";
 
 export default function AdminMoversPage({
@@ -40,7 +47,7 @@ export default function AdminMoversPage({
     toDate,
     page,
     limit,
-    sort,
+    sorts,
   } = initialFilters;
   const setStatus = useCallback(
     (value: "ALL" | AdminMoverStatus) =>
@@ -48,7 +55,8 @@ export default function AdminMoversPage({
     [replaceFilters],
   );
   const setProfileFilter = useCallback(
-    (value: AdminProfileFilterValue) => replaceFilters({ profile: value, page: 1 }),
+    (value: AdminProfileFilterValue) =>
+      replaceFilters({ profile: value, page: 1 }),
     [replaceFilters],
   );
   const setFromDate = useCallback(
@@ -67,20 +75,31 @@ export default function AdminMoversPage({
     (value: number) => replaceFilters({ limit: value, page: 1 }),
     [replaceFilters],
   );
-  const reportSort: SortDirection =
-    sort === "PENDING_DESC" ? "desc" : sort === "PENDING_ASC" ? "asc" : "none";
-  const confirmedSort: SortDirection =
-    sort === "CONFIRMED_DESC"
-      ? "desc"
-      : sort === "CONFIRMED_ASC"
-        ? "asc"
-        : "none";
-  const ratingSort: SortDirection =
-    sort === "RATING_DESC" ? "desc" : sort === "RATING_ASC" ? "asc" : "none";
-  const careerSort: SortDirection =
-    sort === "CAREER_DESC" ? "desc" : sort === "CAREER_ASC" ? "asc" : "none";
-  const joinedSort: SortDirection =
-    sort === "OLDEST" ? "asc" : sort === "LATEST" ? "desc" : "none";
+  const reportSort: SortDirection = getListSortDirection(
+    sorts,
+    "PENDING_DESC",
+    "PENDING_ASC",
+  );
+  const confirmedSort: SortDirection = getListSortDirection(
+    sorts,
+    "CONFIRMED_DESC",
+    "CONFIRMED_ASC",
+  );
+  const ratingSort: SortDirection = getListSortDirection(
+    sorts,
+    "RATING_DESC",
+    "RATING_ASC",
+  );
+  const careerSort: SortDirection = getListSortDirection(
+    sorts,
+    "CAREER_DESC",
+    "CAREER_ASC",
+  );
+  const joinedSort: SortDirection = getListSortDirection(
+    sorts,
+    "CREATED_AT_DESC",
+    "CREATED_AT_ASC",
+  );
   const [openFilter, setOpenFilter] = useState<AdminMoverOpenFilter>(null);
   const { data, error, isError, isLoading, isPlaceholderData, refetch } =
     useAdminMovers({
@@ -92,12 +111,7 @@ export default function AdminMoversPage({
         profileFilter === "ALL" ? undefined : profileFilter === "COMPLETED",
       fromDate: fromDate || undefined,
       toDate: toDate || undefined,
-      sorts:
-        sort === "OLDEST"
-          ? ["CREATED_AT_ASC"]
-          : sort !== "LATEST"
-            ? [sort]
-            : ["CREATED_AT_DESC"],
+      sorts: sorts.length > 0 ? sorts : undefined,
     });
 
   const columns = useMemo(
@@ -124,57 +138,32 @@ export default function AdminMoversPage({
           setOpenFilter(null);
         },
         onReportSort: () => {
-          const nextSort = nextSortDirection(reportSort);
           replaceFilters({
-            sort:
-              nextSort === "desc"
-                ? "PENDING_DESC"
-                : nextSort === "asc"
-                  ? "PENDING_ASC"
-                  : "LATEST",
+            sorts: toggleListSort(sorts, "PENDING_DESC", "PENDING_ASC"),
             page: 1,
           });
         },
         onConfirmedSort: () => {
-          const nextSort = nextSortDirection(confirmedSort);
           replaceFilters({
-            sort:
-              nextSort === "desc"
-                ? "CONFIRMED_DESC"
-                : nextSort === "asc"
-                  ? "CONFIRMED_ASC"
-                  : "LATEST",
+            sorts: toggleListSort(sorts, "CONFIRMED_DESC", "CONFIRMED_ASC"),
             page: 1,
           });
         },
         onRatingSort: () => {
-          const nextSort = nextSortDirection(ratingSort);
           replaceFilters({
-            sort:
-              nextSort === "desc"
-                ? "RATING_DESC"
-                : nextSort === "asc"
-                  ? "RATING_ASC"
-                  : "LATEST",
+            sorts: toggleListSort(sorts, "RATING_DESC", "RATING_ASC"),
             page: 1,
           });
         },
         onCareerSort: () => {
-          const nextSort = nextSortDirection(careerSort);
           replaceFilters({
-            sort:
-              nextSort === "desc"
-                ? "CAREER_DESC"
-                : nextSort === "asc"
-                  ? "CAREER_ASC"
-                  : "LATEST",
+            sorts: toggleListSort(sorts, "CAREER_DESC", "CAREER_ASC"),
             page: 1,
           });
         },
         onJoinedSort: () => {
-          const nextSort = nextSortDirection(joinedSort);
           replaceFilters({
-            sort: nextSort === "asc" ? "OLDEST" : "LATEST",
+            sorts: toggleListSort(sorts, "CREATED_AT_DESC", "CREATED_AT_ASC"),
             page: 1,
           });
         },
@@ -193,6 +182,7 @@ export default function AdminMoversPage({
       setProfileFilter,
       setStatus,
       setToDate,
+      sorts,
       status,
       toDate,
     ],
