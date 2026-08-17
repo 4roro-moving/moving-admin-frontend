@@ -13,6 +13,7 @@ import { getApiErrorMessage } from "@/lib/api/getApiErrorMessage";
 import {
   getListSortDirection,
   toggleListSort,
+  toggleRequiredListSort,
   type SortDirection,
 } from "@/lib/utils/user/sort";
 import {
@@ -95,11 +96,9 @@ export default function AdminMoversPage({
     "CAREER_DESC",
     "CAREER_ASC",
   );
-  const joinedSort: SortDirection = getListSortDirection(
-    sorts,
-    "CREATED_AT_DESC",
-    "CREATED_AT_ASC",
-  );
+  const joinedSort: SortDirection = sorts.includes("CREATED_AT_ASC")
+    ? "asc"
+    : "desc";
   const [openFilter, setOpenFilter] = useState<AdminListOpenFilter>(null);
   const { data, error, isError, isLoading, isPlaceholderData, refetch } =
     useAdminMovers({
@@ -163,7 +162,11 @@ export default function AdminMoversPage({
         },
         onJoinedSort: () => {
           replaceFilters({
-            sorts: toggleListSort(sorts, "CREATED_AT_DESC", "CREATED_AT_ASC"),
+            sorts: toggleRequiredListSort(
+              sorts,
+              "CREATED_AT_DESC",
+              "CREATED_AT_ASC",
+            ),
             page: 1,
           });
         },

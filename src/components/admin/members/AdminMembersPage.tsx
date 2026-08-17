@@ -18,6 +18,7 @@ import { getApiErrorMessage } from "@/lib/api/getApiErrorMessage";
 import {
   getListSortDirection,
   toggleListSort,
+  toggleRequiredListSort,
   type SortDirection,
 } from "@/lib/utils/user/sort";
 import type { AdminAccountStatus } from "@/types/adminUser";
@@ -87,11 +88,9 @@ export default function AdminMembersPage({
     "PENDING_DESC",
     "PENDING_ASC",
   );
-  const joinedSort: SortDirection = getListSortDirection(
-    sorts,
-    "CREATED_AT_DESC",
-    "CREATED_AT_ASC",
-  );
+  const joinedSort: SortDirection = sorts.includes("CREATED_AT_ASC")
+    ? "asc"
+    : "desc";
   const [openFilter, setOpenFilter] = useState<AdminMemberOpenFilter>(null);
 
   const { data, error, isError, isLoading, isPlaceholderData, refetch } =
@@ -138,7 +137,11 @@ export default function AdminMembersPage({
         },
         onJoinedSort: () => {
           replaceFilters({
-            sorts: toggleListSort(sorts, "CREATED_AT_DESC", "CREATED_AT_ASC"),
+            sorts: toggleRequiredListSort(
+              sorts,
+              "CREATED_AT_DESC",
+              "CREATED_AT_ASC",
+            ),
             page: 1,
           });
         },

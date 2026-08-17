@@ -23,3 +23,19 @@ export function toggleListSort<TSort extends string>(
   }
   return [...sorts, descending];
 }
+
+export function toggleRequiredListSort<TSort extends string>(
+  sorts: readonly TSort[],
+  descending: TSort,
+  ascending: TSort,
+): TSort[] {
+  if (sorts.includes(ascending)) {
+    return sorts.map((sort) => (sort === ascending ? descending : sort));
+  }
+
+  if (sorts.includes(descending)) {
+    return sorts.map((sort) => (sort === descending ? ascending : sort));
+  }
+
+  return [...sorts, ascending];
+}
