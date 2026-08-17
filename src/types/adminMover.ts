@@ -1,14 +1,10 @@
 import type {
-  AdminAccountStatus,
   AdminListApiQuery,
   AdminListApiSort,
   AdminListItemBase,
-  AdminListOpenFilter,
   AdminListResult,
 } from "@/types/adminUser";
 
-export type AdminMoverStatus = AdminAccountStatus;
-export type AdminMoverOpenFilter = AdminListOpenFilter;
 export type AdminMoveType = "SMALL" | "HOME" | "OFFICE";
 export type AdminMoverListSort =
   | AdminListApiSort

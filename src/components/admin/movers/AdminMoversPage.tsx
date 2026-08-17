@@ -21,10 +21,10 @@ import {
 } from "@/lib/utils/user/moversSearchParams";
 import { useAdminListUrlFilters } from "@/hooks/useAdminListUrlFilters";
 import type {
-  AdminMoverOpenFilter,
-  AdminMoverStatus,
-} from "@/types/adminMover";
-import type { AdminProfileFilterValue } from "@/types/adminUser";
+  AdminProfileFilterValue,
+  AdminListOpenFilter,
+  AdminAccountStatus,
+} from "@/types/adminUser";
 
 export default function AdminMoversPage({
   initialFilters,
@@ -50,7 +50,7 @@ export default function AdminMoversPage({
     sorts,
   } = initialFilters;
   const setStatus = useCallback(
-    (value: "ALL" | AdminMoverStatus) =>
+    (value: "ALL" | AdminAccountStatus) =>
       replaceFilters({ status: value, page: 1 }),
     [replaceFilters],
   );
@@ -100,7 +100,7 @@ export default function AdminMoversPage({
     "CREATED_AT_DESC",
     "CREATED_AT_ASC",
   );
-  const [openFilter, setOpenFilter] = useState<AdminMoverOpenFilter>(null);
+  const [openFilter, setOpenFilter] = useState<AdminListOpenFilter>(null);
   const { data, error, isError, isLoading, isPlaceholderData, refetch } =
     useAdminMovers({
       page,

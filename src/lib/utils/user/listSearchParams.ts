@@ -8,11 +8,9 @@ import {
   type SearchParamsInput,
 } from "@/lib/utils/urlSearchParams";
 
-export type AdminListStatusFilter = "ALL" | AdminAccountStatus;
-
 export interface AdminListSearchFilters<TSort extends string> {
   keyword: string;
-  status: AdminListStatusFilter;
+  status: "ALL" | AdminAccountStatus;
   profile: AdminProfileFilterValue;
   fromDate: string;
   toDate: string;
@@ -21,31 +19,18 @@ export interface AdminListSearchFilters<TSort extends string> {
   limit: number;
 }
 
-export function parseAdminListStatus(
-  value: string | undefined,
-): AdminListStatusFilter {
-  if (value === "ACTIVE" || value === "SUSPENDED" || value === "WITHDRAWN") {
-    return value;
-  }
-
-  return "ALL";
+function parseStatus(value: string | undefined): "ALL" | AdminAccountStatus {
+  return value === "ACTIVE" || value === "SUSPENDED" || value === "WITHDRAWN"
+    ? value
+    : "ALL";
 }
 
-export function parseAdminListProfile(
-  value: string | undefined,
-): AdminProfileFilterValue {
-  if (value === "COMPLETED" || value === "INCOMPLETE") {
-    return value;
-  }
-
-  return "ALL";
+function parseProfile(value: string | undefined): AdminProfileFilterValue {
+  return value === "COMPLETED" || value === "INCOMPLETE" ? value : "ALL";
 }
 
-/**
- * 반복 쿼리 파라미터 `sorts`에서 허용된 정렬값만 남기고 중복을 제거합니다.
- * URL에 선언된 순서를 유지하므로 API의 다중 정렬 우선순위도 유지됩니다.
- */
-export function parseAdminListSorts<TSort extends string>(
+/** 반복 sorts 파라미터에서 허용된 값만 남기고 중복을 제거합니다. */
+export function parseListSorts<TSort extends string>(
   params: SearchParamsInput,
   allowedSorts: ReadonlySet<TSort>,
 ): TSort[] {
@@ -58,26 +43,23 @@ export function parseAdminListSorts<TSort extends string>(
   );
 }
 
-export function parseAdminListBaseFilters<TSort extends string>(
+export function parseAdminListSearchFilters<TSort extends string>(
   params: SearchParamsInput,
   allowedSorts: ReadonlySet<TSort>,
 ): AdminListSearchFilters<TSort> {
   return {
     keyword: getSearchParam(params, "keyword")?.trim() ?? "",
-    status: parseAdminListStatus(getSearchParam(params, "status")),
-    profile: parseAdminListProfile(getSearchParam(params, "profile")),
+    status: parseStatus(getSearchParam(params, "status")),
+    profile: parseProfile(getSearchParam(params, "profile")),
     fromDate: getSearchParam(params, "fromDate") ?? "",
     toDate: getSearchParam(params, "toDate") ?? "",
-    sorts: parseAdminListSorts(params, allowedSorts),
+    sorts: parseListSorts(params, allowedSorts),
     page: parsePositiveInteger(getSearchParam(params, "page"), 1),
     limit: parsePositiveInteger(getSearchParam(params, "limit"), 20, 100),
   };
 }
 
-/**
- * 회원/기사 목록 공통 필터를 URLSearchParams로 변환합니다.
- * 목록별 전용 필터(authProvider 등)는 반환받은 params에 추가하면 됩니다.
- */
+/** 회원·기사 목록 공통 URL 쿼리를 생성합니다. */
 export function createAdminListSearchParams<TSort extends string>(
   filters: AdminListSearchFilters<TSort>,
 ): URLSearchParams {
@@ -98,11 +80,7 @@ export function createAdminListSearchParams<TSort extends string>(
   if (filters.toDate) {
     params.set("toDate", filters.toDate);
   }
-
-  filters.sorts.forEach((sort) => {
-    params.append("sorts", sort);
-  });
-
+  filters.sorts.forEach((sort) => params.append("sorts", sort));
   if (filters.page !== 1) {
     params.set("page", String(filters.page));
   }

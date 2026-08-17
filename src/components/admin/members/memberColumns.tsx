@@ -10,18 +10,21 @@ import {
 } from "@/components/admin/users/TableFilter";
 import { formatJoinedDate } from "@/lib/utils/user/date";
 import type { SortDirection } from "@/lib/utils/user/sort";
-import { ADMIN_STATUS_LABEL, type AdminProfileFilterValue } from "@/types/adminUser";
+import {
+  ADMIN_STATUS_LABEL,
+  type AdminAccountStatus,
+  type AdminProfileFilterValue,
+} from "@/types/adminUser";
 import type {
   AdminMemberAuthProviderFilter,
   AdminMemberListItem,
   AdminMemberOpenFilter,
-  AdminMemberStatus,
 } from "@/types/adminMember";
 
 import { ADMIN_AUTH_PROVIDERS } from "@/types/adminMember";
 
 interface Options {
-  status: "ALL" | AdminMemberStatus;
+  status: "ALL" | AdminAccountStatus;
   profile: AdminProfileFilterValue;
   authProvider: AdminMemberAuthProviderFilter;
   fromDate: string;
@@ -30,7 +33,7 @@ interface Options {
   joinedSort: SortDirection;
   openFilter: AdminMemberOpenFilter;
   setOpenFilter: (value: AdminMemberOpenFilter) => void;
-  setStatus: (value: "ALL" | AdminMemberStatus) => void;
+  setStatus: (value: "ALL" | AdminAccountStatus) => void;
   setProfile: (value: AdminProfileFilterValue) => void;
   setAuthProvider: (value: AdminMemberAuthProviderFilter) => void;
   setFromDate: (value: string) => void;
@@ -83,7 +86,7 @@ export function createMemberColumns(
           >
             전체 상태
           </FilterOption>
-          {(Object.keys(ADMIN_STATUS_LABEL) as AdminMemberStatus[]).map((v) => (
+          {(Object.keys(ADMIN_STATUS_LABEL) as AdminAccountStatus[]).map((v) => (
             <FilterOption
               key={v}
               selected={o.status === v}

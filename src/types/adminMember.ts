@@ -1,5 +1,4 @@
 import type {
-  AdminAccountStatus,
   AdminListApiQuery,
   AdminListApiSort,
   AdminListOpenFilter,
@@ -7,11 +6,9 @@ import type {
   AdminListItemBase,
 } from "@/types/adminUser";
 
-export type AdminMemberStatus = AdminAccountStatus;
 export type AdminAuthProvider = "LOCAL" | "GOOGLE" | "NAVER" | "KAKAO";
 export type AdminMemberAuthProviderFilter = "ALL" | AdminAuthProvider;
 export type AdminMemberOpenFilter = AdminListOpenFilter | "provider";
-export type AdminMemberListSort = AdminListApiSort;
 
 export const ADMIN_AUTH_PROVIDERS = [
   "LOCAL",
@@ -24,8 +21,7 @@ export interface AdminMemberListItem extends AdminListItemBase {
   authProvider: AdminAuthProvider;
 }
 
-export interface AdminMemberListQuery
-  extends AdminListApiQuery<AdminMemberListSort> {
+export interface AdminMemberListQuery extends AdminListApiQuery<AdminListApiSort> {
   authProvider?: AdminAuthProvider;
 }
 

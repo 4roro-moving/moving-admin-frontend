@@ -11,16 +11,19 @@ import {
 } from "@/components/admin/users/TableFilter";
 import { formatJoinedDate } from "@/lib/utils/user/date";
 import type { SortDirection } from "@/lib/utils/user/sort";
-import { ADMIN_STATUS_LABEL, type AdminProfileFilterValue } from "@/types/adminUser";
+import {
+  ADMIN_STATUS_LABEL,
+  type AdminAccountStatus,
+  type AdminListOpenFilter,
+  type AdminProfileFilterValue,
+} from "@/types/adminUser";
 import type {
   AdminMoverListItem,
-  AdminMoverOpenFilter,
-  AdminMoverStatus,
 } from "@/types/adminMover";
 import { StarIcon } from "@/icons";
 
 interface Options {
-  status: "ALL" | AdminMoverStatus;
+  status: "ALL" | AdminAccountStatus;
   profile: AdminProfileFilterValue;
   fromDate: string;
   toDate: string;
@@ -29,9 +32,9 @@ interface Options {
   ratingSort: SortDirection;
   careerSort: SortDirection;
   joinedSort: SortDirection;
-  openFilter: AdminMoverOpenFilter;
-  setOpenFilter: (value: AdminMoverOpenFilter) => void;
-  setStatus: (value: "ALL" | AdminMoverStatus) => void;
+  openFilter: AdminListOpenFilter;
+  setOpenFilter: (value: AdminListOpenFilter) => void;
+  setStatus: (value: "ALL" | AdminAccountStatus) => void;
   setProfile: (value: AdminProfileFilterValue) => void;
   setFromDate: (value: string) => void;
   setToDate: (value: string) => void;
@@ -89,7 +92,7 @@ export function createMoverColumns(
           >
             전체 상태
           </FilterOption>
-          {(Object.keys(ADMIN_STATUS_LABEL) as AdminMoverStatus[]).map((v) => (
+          {(Object.keys(ADMIN_STATUS_LABEL) as AdminAccountStatus[]).map((v) => (
             <FilterOption
               key={v}
               selected={o.status === v}

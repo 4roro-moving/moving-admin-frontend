@@ -20,10 +20,10 @@ import {
   toggleListSort,
   type SortDirection,
 } from "@/lib/utils/user/sort";
+import type { AdminAccountStatus } from "@/types/adminUser";
 import type {
   AdminMemberAuthProviderFilter,
   AdminMemberOpenFilter,
-  AdminMemberStatus,
 } from "@/types/adminMember";
 import type { AdminProfileFilterValue } from "@/types/adminUser";
 
@@ -52,7 +52,7 @@ export default function AdminMembersPage({
     sorts,
   } = initialFilters;
   const setStatus = useCallback(
-    (value: "ALL" | AdminMemberStatus) =>
+    (value: "ALL" | AdminAccountStatus) =>
       replaceFilters({ status: value, page: 1 }),
     [replaceFilters],
   );
