@@ -214,7 +214,6 @@ export default function AdminMoversPage({
         }
         onLimitChange={(value) => {
           setLimit(value);
-          setPage(1);
           setOpenFilter(null);
         }}
       />

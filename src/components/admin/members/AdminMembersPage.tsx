@@ -190,7 +190,6 @@ export default function AdminMembersPage({
         }
         onLimitChange={(value) => {
           setLimit(value);
-          setPage(1);
           setOpenFilter(null);
         }}
       />
