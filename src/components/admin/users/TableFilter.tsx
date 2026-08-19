@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 
 import { ChevronDownIcon } from "@/icons";
@@ -33,17 +33,37 @@ export function TableFilter({
     left: number;
   } | null>(null);
 
-  const handleToggle = () => {
+  const updateMenuPosition = useCallback(() => {
     const rect = triggerRef.current?.getBoundingClientRect();
-    if (rect) {
-      setMenuPosition({
-        top: rect.bottom + 8,
-        left:
-          align === "end"
-            ? Math.max(8, rect.right - menuWidth)
-            : Math.max(8, rect.left),
-      });
-    }
+
+    if (!rect) return;
+
+    setMenuPosition({
+      top: rect.bottom + 8,
+      left:
+        align === "end"
+          ? Math.max(8, rect.right - menuWidth)
+          : Math.max(8, rect.left),
+    });
+  }, [align, menuWidth]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    updateMenuPosition();
+    window.addEventListener("resize", updateMenuPosition);
+    // 캡처 단계에서 구독해야 표의 가로 스크롤 컨테이너도 감지할 수 있습니다.
+    window.addEventListener("scroll", updateMenuPosition, true);
+
+    return () => {
+      window.removeEventListener("resize", updateMenuPosition);
+      window.removeEventListener("scroll", updateMenuPosition, true);
+    };
+  }, [isOpen, updateMenuPosition]);
+
+  const handleToggle = () => {
+    if (!isOpen) updateMenuPosition();
+
     onToggle();
   };
 
