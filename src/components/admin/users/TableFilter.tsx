@@ -29,8 +29,11 @@ export function TableFilter({
 }) {
   const triggerRef = useRef<HTMLButtonElement>(null);
   const [menuPosition, setMenuPosition] = useState<{
-    top: number;
+    top?: number;
+    bottom?: number;
     left: number;
+    width: number;
+    maxHeight: number;
   } | null>(null);
 
   const updateMenuPosition = useCallback(() => {
@@ -38,12 +41,25 @@ export function TableFilter({
 
     if (!rect) return;
 
+    const viewportPadding = 8;
+    const menuGap = 8;
+    const width = Math.min(
+      menuWidth,
+      Math.max(0, window.innerWidth - viewportPadding * 2),
+    );
+    const preferredLeft =
+      align === "end" ? rect.right - width : rect.left;
+    const maxLeft = Math.max(viewportPadding, window.innerWidth - width - viewportPadding);
+    const availableBelow = window.innerHeight - rect.bottom - menuGap - viewportPadding;
+    const availableAbove = rect.top - menuGap - viewportPadding;
+    const openAbove = availableBelow < availableAbove;
+
     setMenuPosition({
-      top: rect.bottom + 8,
-      left:
-        align === "end"
-          ? Math.max(8, rect.right - menuWidth)
-          : Math.max(8, rect.left),
+      top: openAbove ? undefined : rect.bottom + menuGap,
+      bottom: openAbove ? window.innerHeight - rect.top + menuGap : undefined,
+      left: Math.min(Math.max(viewportPadding, preferredLeft), maxLeft),
+      width,
+      maxHeight: Math.max(0, openAbove ? availableAbove : availableBelow),
     });
   }, [align, menuWidth]);
 
@@ -92,10 +108,12 @@ export function TableFilter({
               style={{
                 position: "fixed",
                 top: menuPosition.top,
+                bottom: menuPosition.bottom,
                 left: menuPosition.left,
-                width: menuWidth,
+                width: menuPosition.width,
+                maxHeight: menuPosition.maxHeight,
               }}
-              className={`z-50 overflow-hidden rounded-xl border border-border bg-surface py-1 text-left shadow-select ${menuClassName}`}
+              className={`z-50 overflow-x-hidden overflow-y-auto overscroll-contain rounded-xl border border-border bg-surface py-1 text-left shadow-select ${menuClassName}`}
             >
               {children}
             </div>,
