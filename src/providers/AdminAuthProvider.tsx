@@ -7,7 +7,6 @@ import { useAdminAuthStore } from "@/stores/useAdminAuthStore";
 
 export default function AdminAuthProvider({ children }: { children: ReactNode }) {
   const establishSession = useAdminAuthStore((state) => state.establishSession);
-  const setAccessToken = useAdminAuthStore((state) => state.setAccessToken);
   const clearSession = useAdminAuthStore((state) => state.clearSession);
   const setCheckingAuth = useAdminAuthStore((state) => state.setCheckingAuth);
   const isCheckingAuth = useAdminAuthStore((state) => state.isCheckingAuth);
@@ -16,7 +15,6 @@ export default function AdminAuthProvider({ children }: { children: ReactNode })
     const restoreSession = async () => {
       try {
         const accessToken = await refreshAdminSession();
-        setAccessToken(accessToken);
         const user = await fetchCurrentAdmin();
         establishSession({ user, accessToken });
       } catch {
@@ -27,7 +25,7 @@ export default function AdminAuthProvider({ children }: { children: ReactNode })
     };
 
     void restoreSession();
-  }, [clearSession, establishSession, setAccessToken, setCheckingAuth]);
+  }, [clearSession, establishSession, setCheckingAuth]);
 
   if (isCheckingAuth) {
     return <div className="bg-background min-h-screen" aria-label="세션 확인 중" />;
