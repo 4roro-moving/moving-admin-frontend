@@ -182,16 +182,6 @@ export default function AdminDashboardPage() {
         <p className="text-muted text-sm font-normal">{dashboard.pageDescription}</p>
       </header>
 
-      <section className="flex flex-col gap-3 rounded-2xl bg-[#fff7f4] p-[22px] sm:flex-row sm:items-start sm:justify-between">
-        <div className="min-w-0 flex-1">
-          <h2 className="text-[20px] font-bold text-[#262524]">{dashboard.welcome.title}</h2>
-          <p className="mt-1 text-xs font-normal text-muted">{dashboard.welcome.description}</p>
-        </div>
-        <span className="inline-flex shrink-0 items-center rounded-full bg-accent px-[9px] py-[5px] text-[11px] font-normal text-white">
-          {dashboard.welcome.badge}
-        </span>
-      </section>
-
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {dashboard.metrics.map((item) => (
           <DashboardMetricCard key={item.label} item={item} />

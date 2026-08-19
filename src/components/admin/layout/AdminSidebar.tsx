@@ -88,10 +88,6 @@ export default function AdminSidebar({
     setShouldRenderMobileDrawer(true);
   }
 
-  if (isContentsGroupActive && !isContentsGroupOpen) {
-    setIsContentsGroupOpen(true);
-  }
-
   useEffect(() => {
     if (!isOpen || !shouldRenderMobileDrawer) {
       return;
@@ -111,12 +107,22 @@ export default function AdminSidebar({
     };
   }, [isOpen, shouldRenderMobileDrawer]);
 
+  useEffect(() => {
+    const frameId = window.requestAnimationFrame(() => {
+      setIsContentsGroupOpen(isContentsGroupActive);
+    });
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+    };
+  }, [isContentsGroupActive, pathname]);
+
   const renderNavigationList = (isMobileDrawer: boolean) => (
     <ul className="mt-1 space-y-1.5">
       {ADMIN_NAVIGATION_ITEMS.map((item) => {
         if (isNavigationGroup(item)) {
           const isParentActive = isAdminNavigationActive(pathname, item);
-          const isExpanded = isContentsGroupOpen || isParentActive;
+          const isExpanded = isContentsGroupOpen;
           const contentsGroupId = isMobileDrawer
             ? mobileContentsGroupId
             : desktopContentsGroupId;

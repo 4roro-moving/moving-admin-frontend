@@ -3,11 +3,6 @@ import type { AdminDashboardData } from "@/types/adminDashboard";
 export const MOCK_ADMIN_DASHBOARD: AdminDashboardData = {
   pageTitle: "대시보드",
   pageDescription: "MOVING 서비스와 주요 운영 현황을 한눈에 확인합니다.",
-  welcome: {
-    title: "MOVING 운영 현황을 확인해보세요",
-    description: "신고, 문의, 콘텐츠와 서비스 흐름을 한 화면에서 확인할 수 있습니다.",
-    badge: "운영 대시보드",
-  },
   metrics: [
     {
       label: "전체 회원",

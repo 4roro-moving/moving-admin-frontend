@@ -35,11 +35,6 @@ export interface AdminDashboardActivityItem {
 export interface AdminDashboardData {
   pageTitle: string;
   pageDescription: string;
-  welcome: {
-    title: string;
-    description: string;
-    badge: string;
-  };
   metrics: AdminDashboardMetric[];
   recentReports: {
     title: string;

@@ -172,9 +172,8 @@ export default function AdminHeader({
               <div className="flex size-7 items-center justify-center rounded-full bg-[#fdf1ec] text-sm font-normal text-[#bfa49a]">
                 {adminInitial}
               </div>
-              <div className="hidden min-w-0 text-left xl:flex xl:flex-col xl:text-sm xl:leading-[1.2] xl:text-[#262524]">
+              <div className="hidden min-w-0 text-left xl:flex xl:text-sm xl:leading-[1.2] xl:text-[#262524]">
                 <span className="truncate font-normal">{adminName}</span>
-                <span className="font-normal">ADMIN</span>
               </div>
               <span
                 aria-hidden="true"

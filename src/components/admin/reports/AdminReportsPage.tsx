@@ -135,6 +135,11 @@ export default function AdminReportsPage() {
     hasInitializedSelectionRef.current = false;
   };
 
+  const handleChangePage = (nextPage: number) => {
+    hasInitializedSelectionRef.current = false;
+    setPage(nextPage);
+  };
+
   const handleSelectReport = (reportId: number) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("reportId", String(reportId));
@@ -276,7 +281,7 @@ export default function AdminReportsPage() {
                 <AdminReviewPagination
                   pagination={pagination}
                   ariaLabel="신고 목록 페이지"
-                  onChangePage={setPage}
+                  onChangePage={handleChangePage}
                 />
               ) : null}
             </>
