@@ -1,9 +1,15 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+
+import { loginAdmin } from "@/lib/api/auth";
+import { getApiErrorMessage } from "@/lib/api/getApiErrorMessage";
+import { APP_ROUTES } from "@/lib/constants/appRoutes";
+import { useAdminAuthStore } from "@/stores/useAdminAuthStore";
 
 const adminLoginSchema = z.object({
   email: z.string().email("이메일 형식이 올바르지 않습니다."),
@@ -13,7 +19,22 @@ const adminLoginSchema = z.object({
 type AdminLoginFormValues = z.infer<typeof adminLoginSchema>;
 
 export default function AdminLoginPage() {
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const router = useRouter();
+  const establishSession = useAdminAuthStore((state) => state.establishSession);
+  const isCheckingAuth = useAdminAuthStore((state) => state.isCheckingAuth);
+  const isAuthenticated = useAdminAuthStore((state) => state.isAuthenticated);
+  const userRole = useAdminAuthStore((state) => state.user?.role);
+  const [apiError, setApiError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isCheckingAuth) {
+      return;
+    }
+
+    if (isAuthenticated && userRole === "ADMIN") {
+      router.replace(APP_ROUTES.DASHBOARD);
+    }
+  }, [isAuthenticated, isCheckingAuth, router, userRole]);
 
   const {
     register,
@@ -27,9 +48,36 @@ export default function AdminLoginPage() {
     },
   });
 
-  const onSubmit = async () => {
-    setIsSubmitted(true);
+  const onSubmit = async (data: AdminLoginFormValues) => {
+    setApiError(null);
+
+    try {
+      const session = await loginAdmin(data);
+      establishSession({
+        user: session.user,
+        accessToken: session.accessToken,
+      });
+      router.replace(APP_ROUTES.DASHBOARD);
+    } catch (error) {
+      setApiError(getApiErrorMessage(error, "로그인에 실패했습니다."));
+    }
   };
+
+  if (isCheckingAuth) {
+    return (
+      <div className="bg-background text-muted flex min-h-[12rem] items-center justify-center rounded-3xl px-6 py-12">
+        <p className="text-sm font-medium">관리자 세션을 확인하는 중입니다...</p>
+      </div>
+    );
+  }
+
+  if (isAuthenticated && userRole === "ADMIN") {
+    return (
+      <div className="bg-background text-muted flex min-h-[12rem] items-center justify-center rounded-3xl px-6 py-12">
+        <p className="text-sm font-medium">관리자 페이지로 이동하는 중입니다...</p>
+      </div>
+    );
+  }
 
   return (
     <section className="bg-surface border-border rounded-3xl border p-8 shadow-sm">
@@ -79,13 +127,13 @@ export default function AdminLoginPage() {
           disabled={isSubmitting}
           className="bg-brand text-brand-foreground w-full rounded-xl px-4 py-3 text-sm font-semibold disabled:opacity-60"
         >
-          로그인 준비 중
+          {isSubmitting ? "로그인 중..." : "로그인"}
         </button>
       </form>
 
-      {isSubmitted ? (
-        <p className="bg-background text-muted mt-6 rounded-xl px-4 py-3 text-sm">
-          관리자 로그인 API와 세션 복구 로직은 후속 작업에서 연결합니다.
+      {apiError ? (
+        <p role="alert" className="mt-6 rounded-xl bg-background px-4 py-3 text-sm text-red-600">
+          {apiError}
         </p>
       ) : null}
     </section>

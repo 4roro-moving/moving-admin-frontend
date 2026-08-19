@@ -1,5 +1,6 @@
 import type { ApiErrorResponse } from "@/types/api";
 import type { PaginatedApiSuccessResponse, Pagination } from "@/types/pagination";
+import { useAdminAuthStore } from "@/stores/useAdminAuthStore";
 
 interface RequestOptions extends Omit<RequestInit, "body"> {
   body?: BodyInit | object | null;
@@ -32,6 +33,47 @@ function isApiErrorResponse(value: unknown): value is ApiErrorResponse {
   return isPlainObject(value) && typeof value.message === "string";
 }
 
+function toHeaderRecord(headers?: HeadersInit): Record<string, string> {
+  if (!headers) {
+    return {};
+  }
+
+  if (headers instanceof Headers) {
+    return Object.fromEntries(headers.entries());
+  }
+
+  if (Array.isArray(headers)) {
+    return Object.fromEntries(headers);
+  }
+
+  return { ...headers };
+}
+
+function hasAuthorizationHeader(headers: Record<string, string>): boolean {
+  return Object.keys(headers).some((key) => key.toLowerCase() === "authorization");
+}
+
+function buildRequestHeaders(
+  headers: HeadersInit | undefined,
+  isFormData: boolean,
+): Record<string, string> {
+  const callerHeaders = toHeaderRecord(headers);
+  const requestHeaders: Record<string, string> = {
+    ...(isFormData ? {} : { "Content-Type": "application/json" }),
+    ...callerHeaders,
+  };
+
+  if (!hasAuthorizationHeader(requestHeaders)) {
+    const accessToken = useAdminAuthStore.getState().accessToken;
+
+    if (accessToken) {
+      requestHeaders.Authorization = `Bearer ${accessToken}`;
+    }
+  }
+
+  return requestHeaders;
+}
+
 async function parseResponse(response: Response): Promise<unknown> {
   if (response.status === 204) {
     return undefined;
@@ -53,10 +95,7 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
   const response = await fetch(buildUrl(path), {
     credentials: "include",
     ...restOptions,
-    headers: {
-      ...(isFormData ? {} : { "Content-Type": "application/json" }),
-      ...headers,
-    },
+    headers: buildRequestHeaders(headers, isFormData),
     body:
       body === undefined || body === null || typeof body === "string" || isFormData
         ? body
