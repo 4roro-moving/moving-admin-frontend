@@ -8,6 +8,7 @@ import {
   type SearchParamsInput,
 } from "@/lib/utils/urlSearchParams";
 
+/** 회원·기사 목록이 공유하는 URL 필터 상태입니다. */
 export interface AdminListSearchFilters<TSort extends string> {
   keyword: string;
   status: "ALL" | AdminAccountStatus;
@@ -29,7 +30,7 @@ function parseProfile(value: string | undefined): AdminProfileFilterValue {
   return value === "COMPLETED" || value === "INCOMPLETE" ? value : "ALL";
 }
 
-/** 반복 sorts 파라미터에서 허용된 값만 남기고 중복을 제거합니다. */
+/** 허용된 값만 남기고 중복을 제거합니다. 배열 앞 항목이 API의 높은 정렬 우선순위를 가집니다. */
 export function parseListSorts<TSort extends string>(
   params: SearchParamsInput,
   allowedSorts: ReadonlySet<TSort>,
@@ -43,6 +44,7 @@ export function parseListSorts<TSort extends string>(
   );
 }
 
+/** 유효하지 않은 값은 기본값으로 보정합니다. */
 export function parseAdminListSearchFilters<TSort extends string>(
   params: SearchParamsInput,
   allowedSorts: ReadonlySet<TSort>,
@@ -59,7 +61,10 @@ export function parseAdminListSearchFilters<TSort extends string>(
   };
 }
 
-/** 회원·기사 목록 공통 URL 쿼리를 생성합니다. */
+/**
+ * 회원·기사 목록 공통 필터를 URL 쿼리로 변환합니다.
+ * 목록별 전용 필터(예: 기사의 경력)는 반환된 params에 이어서 추가합니다.
+ */
 export function createAdminListSearchParams<TSort extends string>(
   filters: AdminListSearchFilters<TSort>,
 ): URLSearchParams {

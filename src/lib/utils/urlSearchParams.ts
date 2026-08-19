@@ -1,5 +1,10 @@
+/**
+ * Next.js의 `searchParams`를 읽고 기본 타입으로 검증하는 유틸입니다.
+ * 화면별 필터 규칙은 `user/listSearchParams.ts`에서 관리합니다.
+ */
 export type SearchParamsInput = Record<string, string | string[] | undefined>;
 
+/** 반복 전달된 값은 첫 번째만 반환합니다. */
 export function getSearchParam(
   searchParams: SearchParamsInput,
   key: string,
@@ -8,40 +13,16 @@ export function getSearchParam(
   return Array.isArray(value) ? value[0] : value;
 }
 
+/** 양의 정수인지 확인하고, 범위를 벗어나면 기본값을 반환합니다. */
 export function parsePositiveInteger(
   value: string | undefined,
   fallback: number,
   maximum?: number,
 ): number {
   const parsed = Number(value);
-  return Number.isInteger(parsed) && parsed >= 1 && (!maximum || parsed <= maximum)
+  return Number.isInteger(parsed) &&
+    parsed >= 1 &&
+    (!maximum || parsed <= maximum)
     ? parsed
     : fallback;
-}
-
-/**
- * 필터 객체를 쿼리스트링으로 직렬화.
- * defaults와 값이 같은 필드는 생략, serialize로 커스텀 변환 가능.
- */
-export function buildQueryString<T extends object>(
-  filters: T,
-  defaults: T,
-  serialize: Partial<{
-    [K in keyof T]: (value: T[K]) => string | undefined;
-  }> = {},
-): string {
-  const params = new URLSearchParams();
-
-  (Object.keys(defaults) as Array<keyof T>).forEach((key) => {
-    const value = filters[key];
-    if (value === defaults[key] || value === undefined || value === "") return;
-
-    const custom = serialize[key];
-    const stringValue = custom ? custom(value) : String(value);
-    if (stringValue) {
-      params.set(key as string, stringValue);
-    }
-  });
-
-  return params.toString();
 }
