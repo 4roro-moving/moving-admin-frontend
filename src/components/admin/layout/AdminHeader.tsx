@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from "react";
 
 import { logoutAdmin } from "@/lib/api/auth";
 import { getApiErrorMessage } from "@/lib/api/getApiErrorMessage";
@@ -32,12 +32,14 @@ interface AdminHeaderProps {
   isSidebarOpen: boolean;
   sidebarId: string;
   onToggleSidebar: () => void;
+  menuButtonRef: RefObject<HTMLButtonElement | null>;
 }
 
 export default function AdminHeader({
   isSidebarOpen,
   sidebarId,
   onToggleSidebar,
+  menuButtonRef,
 }: AdminHeaderProps) {
   const pathname = usePathname();
   const router = useRouter();
@@ -127,6 +129,7 @@ export default function AdminHeader({
       <div className="flex h-[54px] items-center justify-between gap-3 px-6 md:px-[72px] xl:h-[74px] xl:px-10">
         <div className="flex min-w-0 items-center gap-3 xl:gap-5">
           <button
+            ref={menuButtonRef}
             type="button"
             aria-label="관리자 메뉴"
             aria-expanded={isSidebarOpen}

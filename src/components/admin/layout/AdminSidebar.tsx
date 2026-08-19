@@ -2,7 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useId, useState, type TransitionEvent } from "react";
+import {
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type KeyboardEvent as ReactKeyboardEvent,
+  type TransitionEvent,
+} from "react";
 import { createPortal } from "react-dom";
 
 import { ChevronDownIcon } from "@/icons";
@@ -44,6 +51,20 @@ function isNavigationGroup(item: AdminNavigationItem): item is AdminNavigationGr
   return "children" in item;
 }
 
+function getFocusableElements(container: HTMLElement): HTMLElement[] {
+  const focusableElements = container.querySelectorAll<HTMLElement>(
+    'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
+  );
+
+  return Array.from(focusableElements).filter((element) => {
+    if (element.hasAttribute("disabled")) {
+      return false;
+    }
+
+    return !element.hasAttribute("aria-hidden");
+  });
+}
+
 export default function AdminSidebar({
   isOpen,
   onClose,
@@ -55,7 +76,10 @@ export default function AdminSidebar({
   const currentNavigation = getCurrentAdminNavigation(pathname);
   const isContentsGroupActive = currentNavigation?.parent.label === "콘텐츠 관리";
   const [isContentsGroupOpen, setIsContentsGroupOpen] = useState(isContentsGroupActive);
-  const contentsGroupId = useId();
+  const desktopContentsGroupId = useId();
+  const mobileContentsGroupId = useId();
+  const mobileDrawerRef = useRef<HTMLElement>(null);
+  const mobileCloseButtonRef = useRef<HTMLButtonElement>(null);
 
   const adminName = user?.name?.trim() || "관리자";
   const adminEmail = user?.email?.trim() || "admin@moving.com";
@@ -68,12 +92,34 @@ export default function AdminSidebar({
     setIsContentsGroupOpen(true);
   }
 
+  useEffect(() => {
+    if (!isOpen || !shouldRenderMobileDrawer) {
+      return;
+    }
+
+    const focusTarget = mobileCloseButtonRef.current;
+    if (!focusTarget) {
+      return;
+    }
+
+    const frameId = window.requestAnimationFrame(() => {
+      focusTarget.focus();
+    });
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+    };
+  }, [isOpen, shouldRenderMobileDrawer]);
+
   const renderNavigationList = (isMobileDrawer: boolean) => (
     <ul className="mt-1 space-y-1.5">
       {ADMIN_NAVIGATION_ITEMS.map((item) => {
         if (isNavigationGroup(item)) {
           const isParentActive = isAdminNavigationActive(pathname, item);
           const isExpanded = isContentsGroupOpen || isParentActive;
+          const contentsGroupId = isMobileDrawer
+            ? mobileContentsGroupId
+            : desktopContentsGroupId;
           const baseClassName =
             "flex h-[43px] w-full items-center justify-between rounded-xl px-[14px] py-3 text-[13px] leading-none transition";
 
@@ -82,7 +128,7 @@ export default function AdminSidebar({
               <button
                 type="button"
                 aria-expanded={isExpanded}
-                aria-controls={contentsGroupId}
+                aria-controls={isExpanded ? contentsGroupId : undefined}
                 className={cn(
                   baseClassName,
                   isParentActive
@@ -100,7 +146,11 @@ export default function AdminSidebar({
               </button>
 
               {isExpanded ? (
-                <ul id={contentsGroupId} className="mt-1 space-y-1 pl-3" aria-label={`${item.label} 하위 메뉴`}>
+                <ul
+                  id={contentsGroupId}
+                  className="mt-1 space-y-1 pl-3"
+                  aria-label={`${item.label} 하위 메뉴`}
+                >
                   {item.children.map((child) => {
                     const isChildActive = isAdminNavigationChildActive(pathname, child);
                     const childClassName =
@@ -204,6 +254,41 @@ export default function AdminSidebar({
     setShouldRenderMobileDrawer(false);
   };
 
+  const handleDrawerKeyDown = (event: ReactKeyboardEvent<HTMLElement>) => {
+    if (event.key !== "Tab") {
+      return;
+    }
+
+    const drawerElement = mobileDrawerRef.current;
+    if (!drawerElement) {
+      return;
+    }
+
+    const focusableElements = getFocusableElements(drawerElement);
+    if (focusableElements.length === 0) {
+      event.preventDefault();
+      return;
+    }
+
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+    const activeElement = document.activeElement;
+
+    if (event.shiftKey) {
+      if (activeElement === firstElement || !drawerElement.contains(activeElement)) {
+        event.preventDefault();
+        lastElement.focus();
+      }
+
+      return;
+    }
+
+    if (activeElement === lastElement) {
+      event.preventDefault();
+      firstElement.focus();
+    }
+  };
+
   return (
     <>
       <aside className="bg-surface hidden w-[240px] shrink-0 border-r border-[#d9d9d9] xl:flex xl:flex-col">
@@ -219,6 +304,8 @@ export default function AdminSidebar({
               <button
                 type="button"
                 aria-label="관리자 메뉴 닫기"
+                aria-hidden={!isOpen}
+                tabIndex={isOpen ? 0 : -1}
                 className={cn(
                   "fixed inset-0 z-40 bg-black/40 transition-opacity duration-200 xl:hidden",
                   isOpen ? "opacity-100" : "pointer-events-none opacity-0",
@@ -227,11 +314,14 @@ export default function AdminSidebar({
               />
 
               <aside
+                ref={mobileDrawerRef}
                 id={sidebarId}
                 role="dialog"
                 aria-modal="true"
                 aria-hidden={!isOpen}
                 aria-label="관리자 메뉴"
+                inert={!isOpen ? true : undefined}
+                onKeyDown={handleDrawerKeyDown}
                 onTransitionEnd={handleDrawerTransitionEnd}
                 className={cn(
                   "bg-surface fixed inset-y-0 left-0 z-50 flex w-[240px] flex-col border-r border-[#d9d9d9] transition-transform duration-200 ease-out xl:hidden",
@@ -244,9 +334,11 @@ export default function AdminSidebar({
                     <span className="text-sm font-semibold text-[#262524]">관리 메뉴</span>
                   </div>
                   <button
+                    ref={mobileCloseButtonRef}
                     type="button"
                     aria-label="관리자 메뉴 닫기"
                     onClick={onClose}
+                    tabIndex={isOpen ? 0 : -1}
                     className="border-border text-[#262524] flex size-9 items-center justify-center rounded-xl border bg-surface"
                   >
                     <CloseIcon className="size-[18px]" />

@@ -17,6 +17,8 @@ export default function AdminShell({ children }: { children: ReactNode }) {
   const isAuthenticated = useAdminAuthStore((state) => state.isAuthenticated);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const initialPathnameRef = useRef(pathname);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const wasSidebarOpenRef = useRef(false);
   const closeSidebar = useCallback(() => {
     setIsSidebarOpen(false);
   }, []);
@@ -54,6 +56,37 @@ export default function AdminShell({ children }: { children: ReactNode }) {
       return;
     }
 
+    const desktopMediaQuery = window.matchMedia("(min-width: 1280px)");
+    const handleDesktopChange = (event: MediaQueryListEvent) => {
+      if (event.matches) {
+        closeSidebar();
+      }
+    };
+
+    desktopMediaQuery.addEventListener("change", handleDesktopChange);
+
+    return () => {
+      desktopMediaQuery.removeEventListener("change", handleDesktopChange);
+    };
+  }, [closeSidebar, isSidebarOpen]);
+
+  useEffect(() => {
+    if (
+      wasSidebarOpenRef.current &&
+      !isSidebarOpen &&
+      window.matchMedia("(max-width: 1279px)").matches
+    ) {
+      menuButtonRef.current?.focus();
+    }
+
+    wasSidebarOpenRef.current = isSidebarOpen;
+  }, [isSidebarOpen]);
+
+  useEffect(() => {
+    if (!isSidebarOpen) {
+      return;
+    }
+
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setIsSidebarOpen(false);
@@ -76,6 +109,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
       <AdminHeader
         isSidebarOpen={isSidebarOpen}
         sidebarId={sidebarId}
+        menuButtonRef={menuButtonRef}
         onToggleSidebar={() => {
           setIsSidebarOpen((open) => !open);
         }}

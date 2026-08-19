@@ -19,14 +19,19 @@ export function formatAdminReportDate(value: string): string {
     return "";
   }
 
-  return new Intl.DateTimeFormat("ko-KR", {
+  const dateParts = new Intl.DateTimeFormat("ko-KR", {
     month: "2-digit",
     day: "2-digit",
     timeZone: "Asia/Seoul",
-  })
-    .format(date)
-    .replace(/\./g, "")
-    .replace(/\s/g, "");
+  }).formatToParts(date);
+  const month = dateParts.find((part) => part.type === "month")?.value;
+  const day = dateParts.find((part) => part.type === "day")?.value;
+
+  if (!month || !day) {
+    return "";
+  }
+
+  return `${month}/${day}`;
 }
 
 export function formatAdminReportDateTime(value: string): string {

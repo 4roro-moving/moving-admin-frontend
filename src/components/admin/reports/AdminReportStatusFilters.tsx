@@ -61,7 +61,7 @@ export default function AdminReportStatusFilters({
 }: AdminReportStatusFiltersProps) {
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex flex-wrap gap-2">
+      <div role="group" aria-label="신고 상태 필터" className="flex flex-wrap gap-2">
         {ADMIN_REPORT_STATUS_OPTIONS.map((option) => (
           <FilterChip
             key={option.value}
@@ -71,7 +71,11 @@ export default function AdminReportStatusFilters({
           />
         ))}
       </div>
-      <div className="flex flex-wrap gap-2">
+      <div
+        role="group"
+        aria-label="신고 대상 유형 필터"
+        className="flex flex-wrap gap-2"
+      >
         {ADMIN_REPORT_TARGET_OPTIONS.map((option) => (
           <FilterChip
             key={option.value}
@@ -81,7 +85,7 @@ export default function AdminReportStatusFilters({
           />
         ))}
       </div>
-      <div className="flex flex-wrap gap-2">
+      <div role="group" aria-label="신고 사유 필터" className="flex flex-wrap gap-2">
         {ADMIN_REPORT_REASON_OPTIONS.map((option) => (
           <FilterChip
             key={option.value}
@@ -91,7 +95,7 @@ export default function AdminReportStatusFilters({
           />
         ))}
       </div>
-      <div className="flex flex-wrap gap-2">
+      <div role="group" aria-label="정렬 기준 필터" className="flex flex-wrap gap-2">
         {ADMIN_REPORT_SORT_OPTIONS.map((option) => (
           <FilterChip
             key={option.value}

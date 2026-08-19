@@ -56,7 +56,7 @@ function RecentOperationsCard({
 }: {
   title: string;
   description: string;
-  actionLabel: string;
+  actionLabel?: string;
   actionHref?: string;
   items: AdminDashboardRecentItem[];
 }) {
@@ -67,13 +67,17 @@ function RecentOperationsCard({
           <h2 className="text-[17px] font-semibold text-[#262524]">{title}</h2>
           <p className="mt-1 text-[11px] font-normal text-[#ababab]">{description}</p>
         </div>
-        {actionHref ? (
-          <Link href={actionHref} className="shrink-0 text-xs font-semibold text-accent">
-            {actionLabel}
-          </Link>
-        ) : (
-          <span className="shrink-0 text-xs font-semibold text-accent">{actionLabel}</span>
-        )}
+        {actionLabel ? (
+          actionHref ? (
+            <Link href={actionHref} className="shrink-0 text-xs font-semibold text-accent">
+              {actionLabel}
+            </Link>
+          ) : (
+            <span className="shrink-0 text-xs font-semibold text-accent">
+              {actionLabel}
+            </span>
+          )
+        ) : null}
       </div>
 
       <div className="space-y-1">
@@ -205,7 +209,6 @@ export default function AdminDashboardPage() {
         <RecentOperationsCard
           title={dashboard.recentInquiries.title}
           description={dashboard.recentInquiries.description}
-          actionLabel={dashboard.recentInquiries.actionLabel}
           items={dashboard.recentInquiries.items}
         />
       </section>
