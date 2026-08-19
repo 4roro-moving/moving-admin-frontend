@@ -1,38 +1,14 @@
 import { API_ROUTES } from "@/lib/constants/apiRoutes";
 import type { ApiResponse } from "@/types/api";
-import type { AdminLoginInput, AdminSession, AdminUser } from "@/types/auth";
+import type {
+  AdminLoginInput,
+  AdminLoginResponse,
+  AdminRefreshResponse,
+  AdminSession,
+  AdminUser,
+} from "@/types/auth";
 
 import { ApiClientError, fetchInstance } from "./fetchInstance";
-
-interface AdminLoginResponseData {
-  admin: {
-    id: string;
-    email: string;
-    name: string;
-    role: string;
-    isActive?: boolean;
-  };
-  tokens: {
-    accessToken: string;
-  };
-}
-
-interface AdminRefreshResponseData {
-  tokens: {
-    accessToken: string;
-  };
-}
-
-interface AdminMeResponseData {
-  admin: {
-    id: string;
-    email: string;
-    name: string;
-    role: string;
-    isActive?: boolean;
-    createdAt?: string;
-  };
-}
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -116,7 +92,7 @@ function parseAdminLoginResponse(data: unknown): AdminSession {
 }
 
 export async function loginAdmin(input: AdminLoginInput): Promise<AdminSession> {
-  const body = await fetchInstance.post<ApiResponse<AdminLoginResponseData>>(
+  const body = await fetchInstance.post<ApiResponse<AdminLoginResponse>>(
     API_ROUTES.AUTH.LOGIN,
     input,
   );
@@ -125,7 +101,7 @@ export async function loginAdmin(input: AdminLoginInput): Promise<AdminSession> 
 }
 
 export async function refreshAdminSession(): Promise<string> {
-  const body = await fetchInstance.post<ApiResponse<AdminRefreshResponseData>>(
+  const body = await fetchInstance.post<ApiResponse<AdminRefreshResponse>>(
     API_ROUTES.AUTH.REFRESH,
   );
 
@@ -140,7 +116,7 @@ export async function refreshAdminSession(): Promise<string> {
 }
 
 export async function getCurrentAdmin(accessToken: string): Promise<AdminUser> {
-  const body = await fetchInstance.get<ApiResponse<AdminMeResponseData>>(API_ROUTES.AUTH.ME, {
+  const body = await fetchInstance.get<ApiResponse<{ admin: AdminUser }>>(API_ROUTES.AUTH.ME, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },

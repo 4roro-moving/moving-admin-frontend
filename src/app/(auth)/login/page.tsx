@@ -13,7 +13,7 @@ import { useAdminAuthStore } from "@/stores/useAdminAuthStore";
 
 const adminLoginSchema = z.object({
   email: z.string().email("이메일 형식이 올바르지 않습니다."),
-  password: z.string().min(8, "비밀번호는 8자 이상이어야 합니다."),
+  password: z.string().min(1, "비밀번호를 입력해 주세요."),
 });
 
 type AdminLoginFormValues = z.infer<typeof adminLoginSchema>;
@@ -24,7 +24,7 @@ export default function AdminLoginPage() {
   const isCheckingAuth = useAdminAuthStore((state) => state.isCheckingAuth);
   const isAuthenticated = useAdminAuthStore((state) => state.isAuthenticated);
   const userRole = useAdminAuthStore((state) => state.user?.role);
-  const [apiError, setApiError] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (isCheckingAuth) {
@@ -48,18 +48,18 @@ export default function AdminLoginPage() {
     },
   });
 
-  const onSubmit = async (data: AdminLoginFormValues) => {
-    setApiError(null);
+  const onSubmit = async (values: AdminLoginFormValues) => {
+    setErrorMessage(null);
 
     try {
-      const session = await loginAdmin(data);
+      const session = await loginAdmin(values);
       establishSession({
         user: session.user,
         accessToken: session.accessToken,
       });
       router.replace(APP_ROUTES.DASHBOARD);
     } catch (error) {
-      setApiError(getApiErrorMessage(error, "로그인에 실패했습니다."));
+      setErrorMessage(getApiErrorMessage(error, "로그인에 실패했습니다."));
     }
   };
 
@@ -85,7 +85,7 @@ export default function AdminLoginPage() {
         <p className="text-muted text-sm font-medium">ADMIN AUTH</p>
         <h1 className="text-2xl font-semibold">MOVING 관리자 로그인</h1>
         <p className="text-muted text-sm">
-          로그인 API 연결과 세션 복구는 이번 작업 범위에서 제외되어 있습니다.
+          관리자 계정으로 로그인해 회원 및 운영 기능에 접근합니다.
         </p>
       </div>
 
@@ -102,7 +102,9 @@ export default function AdminLoginPage() {
             placeholder="admin@moving.com"
             {...register("email")}
           />
-          {errors.email ? <p className="text-sm text-red-600">{errors.email.message}</p> : null}
+          {errors.email ? (
+            <p className="text-sm text-red-600">{errors.email.message}</p>
+          ) : null}
         </div>
 
         <div className="space-y-2">
@@ -127,13 +129,16 @@ export default function AdminLoginPage() {
           disabled={isSubmitting}
           className="bg-brand text-brand-foreground w-full rounded-xl px-4 py-3 text-sm font-semibold disabled:opacity-60"
         >
-          {isSubmitting ? "로그인 중..." : "로그인"}
+          {isSubmitting ? "로그인 중" : "로그인"}
         </button>
       </form>
 
-      {apiError ? (
-        <p role="alert" className="mt-6 rounded-xl bg-background px-4 py-3 text-sm text-red-600">
-          {apiError}
+      {errorMessage ? (
+        <p
+          role="alert"
+          className="bg-[#ffeef0] mt-6 rounded-xl px-4 py-3 text-sm text-red-600"
+        >
+          {errorMessage}
         </p>
       ) : null}
     </section>

@@ -1,14 +1,26 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { usePathname } from "next/navigation";
+import { useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
+
+import { APP_ROUTES } from "@/lib/constants/appRoutes";
+import { useAdminAuthStore } from "@/stores/useAdminAuthStore";
 
 import AdminHeader from "./AdminHeader";
 import AdminSidebar from "./AdminSidebar";
 
 export default function AdminShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const isAuthenticated = useAdminAuthStore((state) => state.isAuthenticated);
   const isContentsSection = pathname === "/contents" || pathname.startsWith("/contents/");
+
+  useEffect(() => {
+    if (!isAuthenticated) router.replace(APP_ROUTES.LOGIN);
+  }, [isAuthenticated, router]);
+
+  if (!isAuthenticated) return null;
 
   return (
     <div className={isContentsSection ? "flex min-h-screen" : "min-h-screen xl:flex"}>
@@ -20,4 +32,3 @@ export default function AdminShell({ children }: { children: ReactNode }) {
     </div>
   );
 }
-
