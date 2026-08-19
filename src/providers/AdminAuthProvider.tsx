@@ -1,11 +1,11 @@
 "use client";
 
-import { type ReactNode, useEffect } from "react";
+import { type ReactNode, useLayoutEffect } from "react";
 
 import { recoverAdminSession } from "@/lib/auth/recoverAdminSession";
 
 export default function AdminAuthProvider({ children }: { children: ReactNode }) {
-  useEffect(() => {
+  useLayoutEffect(() => {
     void recoverAdminSession();
   }, []);
 

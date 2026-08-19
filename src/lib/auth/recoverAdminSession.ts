@@ -12,6 +12,7 @@ export async function recoverAdminSession(): Promise<void> {
     const store = useAdminAuthStore.getState();
 
     if (store.isAuthenticated && store.accessToken) {
+      store.setCheckingAuth(false);
       return;
     }
 
