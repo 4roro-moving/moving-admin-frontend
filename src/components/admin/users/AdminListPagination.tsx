@@ -17,7 +17,7 @@ export default function AdminListPagination({
   onNext,
 }: AdminListPaginationProps) {
   return (
-    <div className="flex items-center justify-end gap-3 border-t border-border px-5 py-4 text-sm text-muted">
+    <div className="flex flex-col gap-3 border-t border-border px-5 py-4 text-sm text-muted sm:flex-row sm:items-center sm:justify-end">
       <Text as="span" variant="md-regular" className="whitespace-nowrap text-muted">
         {pagination.page} / {pagination.totalPages} 페이지
       </Text>

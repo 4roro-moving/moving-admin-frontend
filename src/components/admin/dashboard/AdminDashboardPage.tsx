@@ -62,7 +62,7 @@ function RecentOperationsCard({
 }) {
   return (
     <section className="bg-surface border-border flex min-w-0 flex-1 flex-col gap-3 rounded-2xl border p-5">
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <h2 className="text-[17px] font-semibold text-[#262524]">{title}</h2>
           <p className="mt-1 text-[11px] font-normal text-[#ababab]">{description}</p>
@@ -178,7 +178,7 @@ export default function AdminDashboardPage() {
         <p className="text-muted text-sm font-normal">{dashboard.pageDescription}</p>
       </header>
 
-      <section className="flex items-start gap-4 rounded-2xl bg-[#fff7f4] p-[22px]">
+      <section className="flex flex-col gap-3 rounded-2xl bg-[#fff7f4] p-[22px] sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0 flex-1">
           <h2 className="text-[20px] font-bold text-[#262524]">{dashboard.welcome.title}</h2>
           <p className="mt-1 text-xs font-normal text-muted">{dashboard.welcome.description}</p>

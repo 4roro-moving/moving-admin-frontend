@@ -35,7 +35,7 @@ export default function AdminListToolbar({
   onLimitChange,
 }: AdminListToolbarProps) {
   return (
-    <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
+    <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
       <div className="flex items-baseline gap-3">
         <Text as="h2" variant="xl-semibold" className="text-foreground">
           {title}
@@ -45,18 +45,19 @@ export default function AdminListToolbar({
           명
         </Text>
       </div>
-      <div className="flex items-center gap-3">
-        <div className="w-[260px]">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+        <div className="w-full sm:max-w-[420px]">
           <Search
-            size="sm"
+            size="responsive"
             value={searchValue}
             placeholder={searchPlaceholder}
             onChange={onSearchChange}
             onClear={onSearchClear}
             onSubmit={onSearchSubmit}
+            className="w-full"
           />
         </div>
-        <div className="flex shrink-0 items-center gap-2 whitespace-nowrap">
+        <div className="flex shrink-0 items-center justify-end gap-2 whitespace-nowrap">
           <Text as="span" variant="md-medium" className="text-muted">페이지당</Text>
           <TableFilter
             align="end"

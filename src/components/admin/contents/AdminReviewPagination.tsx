@@ -26,7 +26,10 @@ export default function AdminReviewPagination({
   };
 
   return (
-    <nav aria-label={ariaLabel} className="flex items-center justify-center gap-1 pt-2">
+    <nav
+      aria-label={ariaLabel}
+      className="flex flex-wrap items-center justify-center gap-1 pt-2"
+    >
       <button
         type="button"
         className="border-border text-muted rounded-lg border px-3 py-2 text-sm disabled:opacity-40"
