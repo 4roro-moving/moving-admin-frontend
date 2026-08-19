@@ -30,18 +30,27 @@ function parseProfile(value: string | undefined): AdminProfileFilterValue {
   return value === "COMPLETED" || value === "INCOMPLETE" ? value : "ALL";
 }
 
-/** 허용된 값만 남기고 중복을 제거합니다. 배열 앞 항목이 API의 높은 정렬 우선순위를 가집니다. */
+/**
+ * 허용된 값만 남기고, 같은 정렬 필드의 반대 방향을 포함한 중복을 제거합니다.
+ * 배열 앞 항목이 API의 높은 정렬 우선순위를 가지며 같은 필드는 먼저 온 방향을 유지합니다.
+ */
 export function parseListSorts<TSort extends string>(
   params: SearchParamsInput,
   allowedSorts: ReadonlySet<TSort>,
 ): TSort[] {
   const value = params.sorts;
   const rawSorts = Array.isArray(value) ? value : value ? [value] : [];
+  const usedSortFields = new Set<string>();
 
-  return rawSorts.filter(
-    (sort, index): sort is TSort =>
-      allowedSorts.has(sort as TSort) && rawSorts.indexOf(sort) === index,
-  );
+  return rawSorts.filter((sort): sort is TSort => {
+    if (!allowedSorts.has(sort as TSort)) return false;
+
+    const sortField = sort.replace(/_(ASC|DESC)$/, "");
+    if (usedSortFields.has(sortField)) return false;
+
+    usedSortFields.add(sortField);
+    return true;
+  });
 }
 
 /** 유효하지 않은 값은 기본값으로 보정합니다. */
