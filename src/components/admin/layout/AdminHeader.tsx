@@ -25,10 +25,7 @@ export default function AdminHeader() {
       router.replace(APP_ROUTES.LOGIN);
     } catch (error) {
       setLogoutError(
-        getApiErrorMessage(
-          error,
-          "로그아웃에 실패했습니다. 다시 시도해 주세요.",
-        ),
+        getApiErrorMessage(error, "로그아웃에 실패했습니다. 다시 시도해 주세요."),
       );
     } finally {
       setIsLoggingOut(false);
@@ -38,11 +35,7 @@ export default function AdminHeader() {
   return (
     <header className="bg-surface border-border flex items-center justify-between border-b px-6 py-4">
       <div>
-        <Text
-          as="p"
-          variant="xs-medium"
-          className="text-muted tracking-[0.2em]"
-        >
+        <Text as="p" variant="xs-medium" className="text-muted tracking-[0.2em]">
           MOVING ADMIN
         </Text>
         <Text as="h1" variant="lg-semibold" className="text-foreground">
@@ -52,12 +45,7 @@ export default function AdminHeader() {
 
       <div className="flex items-center gap-3">
         {logoutError ? (
-          <Text
-            as="p"
-            variant="md-regular"
-            className="text-red-600"
-            role="alert"
-          >
+          <Text as="p" variant="md-regular" className="text-red-600" role="alert">
             {logoutError}
           </Text>
         ) : null}
