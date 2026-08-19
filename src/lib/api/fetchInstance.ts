@@ -1,6 +1,8 @@
 import type { ApiErrorResponse } from "@/types/api";
 import type { PaginatedApiSuccessResponse, Pagination } from "@/types/pagination";
 
+import { useAdminAuthStore } from "@/stores/useAdminAuthStore";
+
 interface RequestOptions extends Omit<RequestInit, "body"> {
   body?: BodyInit | object | null;
 }
@@ -49,12 +51,14 @@ async function parseResponse(response: Response): Promise<unknown> {
 async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
   const { body, headers, ...restOptions } = options;
   const isFormData = typeof FormData !== "undefined" && body instanceof FormData;
+  const accessToken = useAdminAuthStore.getState().accessToken;
 
   const response = await fetch(buildUrl(path), {
     credentials: "include",
     ...restOptions,
     headers: {
       ...(isFormData ? {} : { "Content-Type": "application/json" }),
+      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
       ...headers,
     },
     body:

@@ -12,9 +12,40 @@
   --accent-muted: #feeeea;
   --sidebar: #111827;
   --sidebar-foreground: #e5eefc;
+  --text-secondary: #474643;
+  --text-subtle: #999999;
+  --border-brand: #f9502e;
+  --background-hover: #efefef;
+  --background-muted: #f7f7f7;
+  --text-primary: #111111;
+  --text-placeholder: #999999;
+  --icon-default: #ababab;
+  --status-active-background: #eef8f1;
+  --status-active-foreground: #277a4c;
+  --status-active-ring: rgb(39 122 76 / 20%);
+  --status-suspended-background: #ffeef0;
+  --status-suspended-foreground: #d7354b;
+  --status-suspended-ring: rgb(215 53 75 / 20%);
+  --report-pending-background: #ffeef0;
+  --report-pending-foreground: #d7354b;
+  --input-shadow: 0 4px 4px -1px rgb(249 80 46 / 20%);
+  --select-shadow: 4px 4px 10px 0 rgb(238 238 238 / 20%);
+  --font-size-12: 0.75rem;
+  --font-size-13: 0.8125rem;
+  --font-size-14: 0.875rem;
+  --font-size-16: 1rem;
+  --font-size-18: 1.125rem;
+  --font-size-20: 1.25rem;
+  --font-size-24: 1.5rem;
+  --line-height-18: 1.125rem;
+  --line-height-22: 1.375rem;
+  --line-height-24: 1.5rem;
+  --line-height-26: 1.625rem;
+  --line-height-32: 2rem;
 }
 
 @theme inline {
+  --color-yellow-100: #ffc149;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-surface: var(--surface);
@@ -26,7 +57,32 @@
   --color-accent-muted: var(--accent-muted);
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
-  --font-sans: "Segoe UI", "Noto Sans KR", Arial, Helvetica, sans-serif;
+  --color-text-secondary: var(--text-secondary);
+  --color-text-subtle: var(--text-subtle);
+  --color-border-brand: var(--border-brand);
+  --color-background-hover: var(--background-hover);
+  --color-background-muted: var(--background-muted);
+  --color-text-primary: var(--text-primary);
+  --color-text-placeholder: var(--text-placeholder);
+  --color-icon-default: var(--icon-default);
+  --color-status-active-background: var(--status-active-background);
+  --color-status-active-foreground: var(--status-active-foreground);
+  --color-status-active-ring: var(--status-active-ring);
+  --color-status-suspended-background: var(--status-suspended-background);
+  --color-status-suspended-foreground: var(--status-suspended-foreground);
+  --color-status-suspended-ring: var(--status-suspended-ring);
+  --color-report-pending-background: var(--report-pending-background);
+  --color-report-pending-foreground: var(--report-pending-foreground);
+  --color-rating-fill: var(--color-yellow-100);
+  --shadow-input: var(--input-shadow);
+  --shadow-select: var(--select-shadow);
+  --radius-20: 1.25rem;
+  --radius-16: 1rem;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-sans: "Pretendard", "Noto Sans KR", Arial, Helvetica, sans-serif;
   --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 }
 
@@ -44,8 +100,10 @@ a {
   text-decoration: none;
 }
 
-button {
+button:not(:disabled) {
   cursor: pointer;
 }
 
-/* TODO: 사용자 프론트의 실제 디자인 토큰이 정리되면 관리자 앱도 동일 토큰으로 맞춥니다. */
+button:disabled {
+  cursor: not-allowed;
+}

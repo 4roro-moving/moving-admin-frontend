@@ -1,10 +1,17 @@
 export const API_ROUTES = {
   AUTH: {
-    LOGIN: "/auth/login",
-    REFRESH: "/auth/refresh",
-    LOGOUT: "/auth/logout",
+    LOGIN: "/admin/auth/login",
+    REFRESH: "/admin/auth/refresh",
+    LOGOUT: "/admin/auth/logout",
+    ME: "/admin/auth/me",
   },
   ADMIN: {
+    MOVERS: {
+      ROOT: "/admin/movers",
+    },
+    USERS: {
+      ROOT: "/admin/users",
+    },
     REPORTS: "/admin/reports",
     REVIEWS: {
       ROOT: "/admin/reviews",
