@@ -1,6 +1,7 @@
 "use client";
 
 import FormField from "@/components/admin/common/FormField";
+import AdminStatusBadge from "@/components/admin/users/AdminStatusBadge";
 import Textarea from "@/components/admin/common/Textarea";
 import Modal, {
   RESPONSIVE_FORM_MODAL_PANEL_CLASSNAME,
@@ -11,8 +12,11 @@ import {
   type RestrictionFormInput,
 } from "@/hooks/useAccountRestrictionForm";
 import { getApiErrorMessage } from "@/lib/api/getApiErrorMessage";
+import { cn } from "@/lib/utils/cn";
+import type { AdminCustomerDetail } from "@/types/adminCustomerDetail";
 
 interface AccountRestrictionModalProps {
+  account: Pick<AdminCustomerDetail["account"], "name" | "email" | "phone" | "status">;
   error?: unknown;
   initialAction: RestrictionFormInput["action"];
   open: boolean;
@@ -25,6 +29,7 @@ const MAX_REASON_LENGTH = 500;
 const MAX_INTERNAL_NOTE_LENGTH = 1_000;
 
 export default function AccountRestrictionModal({
+  account,
   error,
   initialAction,
   open,
@@ -61,7 +66,10 @@ export default function AccountRestrictionModal({
       onClose={isPending ? undefined : handleClose}
       presentation="responsive"
       size="lg"
-      className={RESPONSIVE_FORM_MODAL_PANEL_CLASSNAME}
+      className={cn(
+        RESPONSIVE_FORM_MODAL_PANEL_CLASSNAME,
+        "gap-modal-16 xl:gap-modal-24",
+      )}
       dismissible={false}
     >
       <div className="flex w-full flex-col gap-modal-8">
@@ -75,6 +83,20 @@ export default function AccountRestrictionModal({
             : "제한된 서비스 이용을 다시 허용합니다."}
         </Modal.Desc>
       </div>
+
+      {isSuspending ? (
+        <div
+          role="note"
+          className="flex flex-col gap-modal-4 rounded-modal-12 border border-status-progress-foreground bg-status-progress-background p-modal-14"
+        >
+          <Text as="h3" variant="xs-semibold" className="text-status-progress-foreground">
+            확정 거래 처리 안내
+          </Text>
+          <Text as="p" variant="xs-regular" className="text-text-secondary">
+            계정 정지만으로 확정 거래는 취소되지 않습니다. 취소가 필요한 경우 견적 요청 이력에서 별도로 처리해 주세요.
+          </Text>
+        </div>
+      ) : null}
 
       {error ? (
         <Text
@@ -92,6 +114,21 @@ export default function AccountRestrictionModal({
       ) : null}
 
       <div className="flex min-h-0 w-full flex-1 flex-col gap-modal-20 overflow-y-auto">
+        <div className="flex flex-col gap-modal-4 rounded-modal-12 border border-border bg-background-muted p-modal-14">
+          <Text as="h3" variant="md-semibold" className="text-text-primary">
+            대상 고객
+          </Text>
+          <div className="flex flex-wrap items-center gap-modal-8">
+            <Text as="p" variant="md-medium" className="text-text-primary">
+              {account.name}
+            </Text>
+            <AdminStatusBadge status={account.status} />
+            <Text as="p" variant="xs-regular" className="text-text-secondary">
+              {account.email}
+            </Text>
+          </div>
+        </div>
+
         <FormField
           label="사유"
           labelFor="restriction-reason"
@@ -109,6 +146,7 @@ export default function AccountRestrictionModal({
                 value={reason}
                 maxLength={MAX_REASON_LENGTH}
                 disabled={isPending}
+                className="h-modal-100"
                 error={
                   isReasonTouched && !isReasonValid
                     ? `사유는 1자 이상 ${MAX_REASON_LENGTH}자 이하로 입력해 주세요.`
@@ -144,6 +182,7 @@ export default function AccountRestrictionModal({
                 value={internalNote}
                 maxLength={MAX_INTERNAL_NOTE_LENGTH}
                 disabled={isPending}
+                className="h-modal-100"
                 error={
                   isInternalNoteTouched && !isInternalNoteValid
                     ? `관리자 내부 메모는 ${MAX_INTERNAL_NOTE_LENGTH}자 이하로 입력해 주세요.`

@@ -18,10 +18,17 @@ interface AdminCustomerDetailPageProps {
   customerId: string;
 }
 
-export default function AdminCustomerDetailPage({ customerId }: AdminCustomerDetailPageProps) {
+export default function AdminCustomerDetailPage({
+  customerId,
+}: AdminCustomerDetailPageProps) {
   const router = useRouter();
-  const { data: customer, error, isError, isLoading, refetch } =
-    useAdminCustomerDetail(customerId);
+  const {
+    data: customer,
+    error,
+    isError,
+    isLoading,
+    refetch,
+  } = useAdminCustomerDetail(customerId);
   const customerStatusMutation = useAdminCustomerStatusMutation();
   const [isRestrictionModalOpen, setIsRestrictionModalOpen] = useState(false);
 
@@ -30,14 +37,44 @@ export default function AdminCustomerDetailPage({ customerId }: AdminCustomerDet
   }, [customerId]);
 
   if (isLoading) {
-    return <section className="flex w-full flex-col items-center justify-center py-24"><p className="text-sm text-muted">고객 상세 정보를 불러오는 중입니다.</p></section>;
+    return (
+      <section className="flex w-full flex-col items-center justify-center py-24">
+        <p className="text-sm text-muted">
+          고객 상세 정보를 불러오는 중입니다.
+        </p>
+      </section>
+    );
   }
 
   if (isError || !customer) {
-    return <section className="flex w-full flex-col items-center justify-center py-24"><p className="text-sm text-rose-600">{getApiErrorMessage(error, "고객 상세 정보를 불러오지 못했습니다.")}</p><button type="button" onClick={() => void refetch()} className="mt-4 rounded-lg border border-border px-4 py-2 text-sm font-semibold text-text-secondary hover:bg-background-hover">다시 시도</button></section>;
+    return (
+      <section className="flex w-full flex-col items-center justify-center py-24">
+        <p className="text-sm text-rose-600">
+          {getApiErrorMessage(error, "고객 상세 정보를 불러오지 못했습니다.")}
+        </p>
+        <button
+          type="button"
+          onClick={() => void refetch()}
+          className="mt-4 rounded-lg border border-border px-4 py-2 text-sm font-semibold text-text-secondary hover:bg-background-hover"
+        >
+          다시 시도
+        </button>
+      </section>
+    );
   }
 
   const { account, profile } = customer;
+  const hasCancelableConfirmedEstimate = customer.estimateRequests.items.some(
+    (item) => item.status === "CONFIRMED" && item.confirmedEstimate?.cancelable,
+  );
+  const shouldShowSuspendedEstimateNotice =
+    account.status === "SUSPENDED" && hasCancelableConfirmedEstimate;
+
+  const handleEstimateRequestsScroll = () => {
+    document
+      .getElementById("estimate-requests")
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   const handleRestrictionSubmit = async (input: RestrictionFormInput) => {
     try {
@@ -64,6 +101,24 @@ export default function AdminCustomerDetailPage({ customerId }: AdminCustomerDet
           />
         }
       />
+      {shouldShowSuspendedEstimateNotice ? (
+        <div
+          role="note"
+          className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-status-progress-foreground bg-status-progress-background px-4 py-3"
+        >
+          <p className="text-sm text-text-secondary">
+            이 고객은 정지 상태입니다. 계정 정지만으로 확정 거래는 취소되지
+            않으므로, 필요한 경우 견적 요청 이력에서 별도로 취소해 주세요.
+          </p>
+          <button
+            type="button"
+            onClick={handleEstimateRequestsScroll}
+            className="shrink-0 text-sm font-semibold text-status-progress-foreground underline underline-offset-2"
+          >
+            견적 요청 이력으로 이동
+          </button>
+        </div>
+      ) : null}
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(20rem,0.85fr)]">
         <CustomerAccountInfo account={account} />
         <CustomerProfileInfo account={account} profile={profile} />
@@ -76,8 +131,11 @@ export default function AdminCustomerDetailPage({ customerId }: AdminCustomerDet
       />
       {isRestrictionModalOpen ? (
         <AccountRestrictionModal
+          account={account}
           error={
-            customerStatusMutation.isError ? customerStatusMutation.error : undefined
+            customerStatusMutation.isError
+              ? customerStatusMutation.error
+              : undefined
           }
           initialAction={account.status === "SUSPENDED" ? "RELEASE" : "SUSPEND"}
           isPending={customerStatusMutation.isPending}
