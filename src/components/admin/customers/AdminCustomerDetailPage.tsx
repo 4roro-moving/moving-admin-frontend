@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import CustomerAccountInfo from "@/components/admin/customers/CustomerAccountInfo";
 import CustomerDetailHeader from "@/components/admin/customers/CustomerDetailHeader";
@@ -18,6 +18,10 @@ export default function AdminCustomerDetailPage({ customerId }: { customerId: st
     useAdminCustomerDetail(customerId);
   const [accountStatus, setAccountStatus] =
     useState<AdminAccountStatus | null>(null);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [customerId]);
 
   if (isLoading) {
     return <section className="flex w-full flex-col items-center justify-center py-24"><p className="text-sm text-muted">고객 상세 정보를 불러오는 중입니다.</p></section>;
