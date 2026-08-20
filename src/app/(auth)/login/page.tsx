@@ -18,6 +18,12 @@ const adminLoginSchema = z.object({
 
 type AdminLoginFormValues = z.infer<typeof adminLoginSchema>;
 
+const authCardClassName =
+  "border-border bg-surface w-full rounded-2xl border px-5 py-7 shadow-sm sm:px-8 sm:py-8";
+
+const authInputClassName =
+  "border-border bg-surface text-foreground placeholder:text-text-placeholder h-12 w-full rounded-xl border px-4 text-sm outline-none transition-[border-color,box-shadow] focus:border-border-brand focus:shadow-input";
+
 export default function AdminLoginPage() {
   const router = useRouter();
   const establishSession = useAdminAuthStore((state) => state.establishSession);
@@ -65,40 +71,45 @@ export default function AdminLoginPage() {
 
   if (isCheckingAuth) {
     return (
-      <div className="bg-background text-muted flex min-h-[12rem] items-center justify-center rounded-3xl px-6 py-12">
-        <p className="text-sm font-medium">관리자 세션을 확인하는 중입니다...</p>
-      </div>
+      <section className={`${authCardClassName} text-muted`}>
+        <div className="flex min-h-[260px] items-center justify-center">
+          <p className="text-sm font-medium">관리자 세션을 확인하는 중입니다...</p>
+        </div>
+      </section>
     );
   }
 
   if (isAuthenticated && userRole === "ADMIN") {
     return (
-      <div className="bg-background text-muted flex min-h-[12rem] items-center justify-center rounded-3xl px-6 py-12">
-        <p className="text-sm font-medium">관리자 페이지로 이동하는 중입니다...</p>
-      </div>
+      <section className={`${authCardClassName} text-muted`}>
+        <div className="flex min-h-[260px] items-center justify-center">
+          <p className="text-sm font-medium">관리자 페이지로 이동하는 중입니다...</p>
+        </div>
+      </section>
     );
   }
 
   return (
-    <section className="bg-surface border-border rounded-3xl border p-8 shadow-sm">
-      <div className="mb-8 space-y-2">
-        <p className="text-muted text-sm font-medium">ADMIN AUTH</p>
-        <h1 className="text-2xl font-semibold">MOVING 관리자 로그인</h1>
+    <section className={authCardClassName}>
+      <div className="space-y-2">
+        <h1 className="text-[28px] leading-[1.2] font-semibold text-[#262524] sm:text-[32px]">
+          관리자 로그인
+        </h1>
         <p className="text-muted text-sm">
-          관리자 계정으로 로그인해 회원 및 운영 기능에 접근합니다.
+          관리자 계정으로 로그인해주세요.
         </p>
       </div>
 
-      <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
+      <form className="mt-8 space-y-5 sm:mt-9" onSubmit={handleSubmit(onSubmit)}>
         <div className="space-y-2">
-          <label htmlFor="email" className="text-sm font-medium">
+          <label htmlFor="email" className="text-[13px] font-semibold text-[#262524]">
             이메일
           </label>
           <input
             id="email"
             type="email"
             autoComplete="email"
-            className="border-border bg-background focus:border-brand focus:ring-brand/15 w-full rounded-xl border px-4 py-3 outline-none focus:ring-4"
+            className={authInputClassName}
             placeholder="admin@moving.com"
             {...register("email")}
           />
@@ -108,14 +119,14 @@ export default function AdminLoginPage() {
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="password" className="text-sm font-medium">
+          <label htmlFor="password" className="text-[13px] font-semibold text-[#262524]">
             비밀번호
           </label>
           <input
             id="password"
             type="password"
             autoComplete="current-password"
-            className="border-border bg-background focus:border-brand focus:ring-brand/15 w-full rounded-xl border px-4 py-3 outline-none focus:ring-4"
+            className={authInputClassName}
             placeholder="비밀번호를 입력해 주세요"
             {...register("password")}
           />
@@ -127,7 +138,7 @@ export default function AdminLoginPage() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="bg-brand text-brand-foreground w-full rounded-xl px-4 py-3 text-sm font-semibold disabled:opacity-60"
+          className="bg-accent text-brand-foreground h-12 w-full rounded-xl px-4 text-sm font-semibold transition-opacity disabled:opacity-60"
         >
           {isSubmitting ? "로그인 중" : "로그인"}
         </button>
@@ -136,11 +147,13 @@ export default function AdminLoginPage() {
       {errorMessage ? (
         <p
           role="alert"
-          className="bg-[#ffeef0] mt-6 rounded-xl px-4 py-3 text-sm text-red-600"
+          className="mt-5 rounded-xl bg-[#ffeef0] px-4 py-3 text-sm text-red-600"
         >
           {errorMessage}
         </p>
       ) : null}
+
+      <p className="mt-6 text-xs text-[#8c8c8c]">MOVING 관리자 전용 페이지</p>
     </section>
   );
 }
