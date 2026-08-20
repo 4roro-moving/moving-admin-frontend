@@ -1,15 +1,10 @@
 import AdminMembersPage from "@/components/admin/members/AdminMembersPage";
-import { parseMemberListFilters } from "@/lib/utils/user/membersSearchParams";
-import type { SearchParamsInput } from "@/lib/utils/urlSearchParams";
+import { Suspense } from "react";
 
-export default async function MembersPage({
-  searchParams,
-}: {
-  searchParams: Promise<SearchParamsInput>;
-}) {
+export default function MembersPage() {
   return (
-    <AdminMembersPage
-      initialFilters={parseMemberListFilters(await searchParams)}
-    />
+    <Suspense fallback={null}>
+      <AdminMembersPage />
+    </Suspense>
   );
 }

@@ -1,12 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 export function useAdminListUrlFilters<
   T extends { keyword: string; page: number },
 >(filters: T, buildQuery: (filters: T) => string) {
-  const router = useRouter();
   const pathname = usePathname();
   const latestFiltersRef = useRef(filters);
   const pendingQueryRef = useRef<string | undefined>(undefined);
@@ -27,9 +26,13 @@ export function useAdminListUrlFilters<
       const query = buildQuery(next);
       pendingQueryRef.current = query;
       latestFiltersRef.current = next;
-      router.replace(query ? `${pathname}?${query}` : pathname);
+      window.history.replaceState(
+        null,
+        "",
+        query ? `${pathname}?${query}` : pathname,
+      );
     },
-    [buildQuery, pathname, router],
+    [buildQuery, pathname],
   );
 
   return {

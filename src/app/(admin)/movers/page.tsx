@@ -1,15 +1,10 @@
 import AdminMoversPage from "@/components/admin/movers/AdminMoversPage";
-import { parseMoverListFilters } from "@/lib/utils/user/moversSearchParams";
-import type { SearchParamsInput } from "@/lib/utils/urlSearchParams";
+import { Suspense } from "react";
 
-export default async function MoversPage({
-  searchParams,
-}: {
-  searchParams: Promise<SearchParamsInput>;
-}) {
+export default function MoversPage() {
   return (
-    <AdminMoversPage
-      initialFilters={parseMoverListFilters(await searchParams)}
-    />
+    <Suspense fallback={null}>
+      <AdminMoversPage />
+    </Suspense>
   );
 }

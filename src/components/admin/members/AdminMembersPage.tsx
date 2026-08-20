@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import Text from "@/components/admin/common/Text";
 import { createMemberColumns } from "@/components/admin/members/memberColumns";
@@ -12,6 +12,7 @@ import { useAdminMembers } from "@/hooks/useAdminMembers";
 import { useAdminListUrlFilters } from "@/hooks/useAdminListUrlFilters";
 import {
   buildMemberListQueryString,
+  parseMemberListFilters,
   type MemberListFilters,
 } from "@/lib/utils/user/membersSearchParams";
 import { getApiErrorMessage } from "@/lib/api/getApiErrorMessage";
@@ -28,12 +29,28 @@ import type {
 } from "@/types/adminMember";
 import type { AdminProfileFilterValue } from "@/types/adminUser";
 
-export default function AdminMembersPage({
-  initialFilters,
-}: {
-  initialFilters: MemberListFilters;
-}) {
+function getMemberListFilters(searchParams: URLSearchParams): MemberListFilters {
+  const params: Record<string, string | string[]> = {};
+
+  searchParams.forEach((value, key) => {
+    const currentValue = params[key];
+    params[key] = currentValue
+      ? Array.isArray(currentValue)
+        ? [...currentValue, value]
+        : [currentValue, value]
+      : value;
+  });
+
+  return parseMemberListFilters(params);
+}
+
+export default function AdminMembersPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const initialFilters = useMemo(
+    () => getMemberListFilters(searchParams),
+    [searchParams],
+  );
   const {
     keywordInput,
     setKeywordInput,
