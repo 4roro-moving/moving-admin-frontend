@@ -26,7 +26,8 @@ export const QUERY_KEYS = {
       reason: AdminReportReason | "ALL";
       sort: AdminReportSort;
     }) => ["admin", "reports", "list", params] as const,
-    DETAIL: (reportId: number) => ["admin", "reports", "detail", reportId] as const,
+    DETAIL: (reportId: number) =>
+      ["admin", "reports", "detail", reportId] as const,
   },
   MEMBERS: {
     ALL: ["admin", "members"] as const,
@@ -65,5 +66,19 @@ export const QUERY_KEYS = {
       keyword: string;
       sort: AdminReviewSort;
     }) => ["admin", "reviews", "list", params] as const,
+  },
+  NOTICES: {
+    ALL: ["admin", "notices"] as const,
+
+    LIST: (params: {
+      page: number;
+      limit: number;
+      keyword: string;
+      audience?: string;
+      isVisible?: boolean;
+    }) => ["admin", "notices", "list", params] as const,
+
+    DETAIL: (noticeId: number) =>
+      ["admin", "notices", "detail", noticeId] as const,
   },
 } as const;

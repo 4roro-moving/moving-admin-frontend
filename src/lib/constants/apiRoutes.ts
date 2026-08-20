@@ -18,5 +18,9 @@ export const API_ROUTES = {
       HIDE: (reviewId: number) => `/admin/reviews/${reviewId}/hide`,
       UNHIDE: (reviewId: number) => `/admin/reviews/${reviewId}/unhide`,
     },
+    NOTICES: {
+      ROOT: "/admin/notices",
+      DETAIL: (noticeId: number) => `/admin/notices/${noticeId}`,
+    },
   },
 } as const;
