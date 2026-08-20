@@ -1,36 +1,48 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
-import Text from "@/components/admin/common/Text";
+import CustomerAccountInfo from "@/components/admin/customers/CustomerAccountInfo";
+import CustomerDetailHeader from "@/components/admin/customers/CustomerDetailHeader";
+import CustomerDetailHistories from "@/components/admin/customers/CustomerDetailHistories";
+import CustomerProfileInfo from "@/components/admin/customers/CustomerProfileInfo";
+import CustomerStatusAction from "@/components/admin/customers/CustomerStatusAction";
+import { ADMIN_CUSTOMER_DETAIL_MOCK } from "@/mocks/adminCustomerDetailMock";
 
 export default function AdminCustomerDetailPage() {
   const router = useRouter();
+  const customer = ADMIN_CUSTOMER_DETAIL_MOCK;
+  const { account, profile } = customer;
+  const [accountStatus, setAccountStatus] = useState(account.status);
 
   return (
-    <section className="flex w-full max-w-4xl flex-col gap-6">
-      <div className="flex items-center gap-3">
-        <button
-          type="button"
-          onClick={() => router.push("/customers")}
-          className="rounded-lg border border-border px-3 py-2 text-sm font-medium text-text-secondary hover:bg-background-hover"
-        >
-          목록으로
-        </button>
-        <div>
-          <Text as="p" variant="md-medium" className="text-muted">
-            Customer
-          </Text>
-          <Text as="h1" variant="2xl-semibold" className="text-foreground">
-            고객 상세
-          </Text>
-        </div>
+    <section className="flex w-full flex-col gap-6">
+      <CustomerDetailHeader
+        name={account.name}
+        status={accountStatus}
+        onBack={() => router.push("/customers")}
+        action={
+          <CustomerStatusAction
+            status={accountStatus}
+            onToggle={() =>
+              setAccountStatus((status) =>
+                status === "SUSPENDED" ? "ACTIVE" : "SUSPENDED",
+              )
+            }
+          />
+        }
+      />
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(20rem,0.85fr)]">
+        <CustomerAccountInfo account={account} />
+        <CustomerProfileInfo account={account} profile={profile} />
       </div>
-      <div className="rounded-20 border border-border bg-surface p-6 shadow-select">
-        <Text as="p" variant="md-regular" className="text-muted">
-          고객 상세 조회 API 연동 화면입니다.
-        </Text>
-      </div>
+      <CustomerDetailHistories
+        customer={customer}
+        onReportDetail={(reportId) =>
+          router.push(`/reports?reportId=${reportId}`)
+        }
+      />
     </section>
   );
 }
