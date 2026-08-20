@@ -28,8 +28,8 @@ export const QUERY_KEYS = {
     }) => ["admin", "reports", "list", params] as const,
     DETAIL: (reportId: number) => ["admin", "reports", "detail", reportId] as const,
   },
-  MEMBERS: {
-    ALL: ["admin", "members"] as const,
+  CUSTOMERS: {
+    ALL: ["admin", "customers"] as const,
     LIST: (params: {
       page: number;
       limit: number;
@@ -40,7 +40,7 @@ export const QUERY_KEYS = {
       fromDate?: string;
       toDate?: string;
       sort?: string;
-    }) => ["admin", "members", "list", params] as const,
+    }) => ["admin", "customers", "list", params] as const,
   },
   MOVERS: {
     ALL: ["admin", "movers"] as const,

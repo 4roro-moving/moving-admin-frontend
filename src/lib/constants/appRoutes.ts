@@ -2,7 +2,7 @@ export const APP_ROUTES = {
   HOME: "/",
   LOGIN: "/login",
   DASHBOARD: "/dashboard",
-  MEMBERS: "/members",
+  CUSTOMERS: "/customers",
   MOVERS: "/movers",
   REPORTS: "/reports",
   TERMS: "/terms",

@@ -4,17 +4,17 @@ import { useCallback, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import Text from "@/components/admin/common/Text";
-import { createMemberColumns } from "@/components/admin/members/memberColumns";
+import { createCustomerColumns } from "@/components/admin/customers/customerColumns";
 import AdminListPagination from "@/components/admin/users/AdminListPagination";
 import AdminListTable from "@/components/admin/users/AdminListTable";
 import AdminListToolbar from "@/components/admin/users/AdminListToolbar";
-import { useAdminMembers } from "@/hooks/useAdminMembers";
+import { useAdminCustomers } from "@/hooks/useAdminCustomers";
 import { useAdminListUrlFilters } from "@/hooks/useAdminListUrlFilters";
 import {
-  buildMemberListQueryString,
-  parseMemberListFilters,
-  type MemberListFilters,
-} from "@/lib/utils/user/membersSearchParams";
+  buildCustomerListQueryString,
+  parseCustomerListFilters,
+  type CustomerListFilters,
+} from "@/lib/utils/user/customersSearchParams";
 import { getApiErrorMessage } from "@/lib/api/getApiErrorMessage";
 import {
   getListSortDirection,
@@ -24,12 +24,14 @@ import {
 } from "@/lib/utils/user/sort";
 import type { AdminAccountStatus } from "@/types/adminUser";
 import type {
-  AdminMemberAuthProviderFilter,
-  AdminMemberOpenFilter,
-} from "@/types/adminMember";
+  AdminCustomerAuthProviderFilter,
+  AdminCustomerOpenFilter,
+} from "@/types/adminCustomer";
 import type { AdminProfileFilterValue } from "@/types/adminUser";
 
-function getMemberListFilters(searchParams: URLSearchParams): MemberListFilters {
+function getCustomerListFilters(
+  searchParams: URLSearchParams,
+): CustomerListFilters {
   const params: Record<string, string | string[]> = {};
 
   searchParams.forEach((value, key) => {
@@ -41,14 +43,14 @@ function getMemberListFilters(searchParams: URLSearchParams): MemberListFilters 
       : value;
   });
 
-  return parseMemberListFilters(params);
+  return parseCustomerListFilters(params);
 }
 
-export default function AdminMembersPage() {
+export default function AdminCustomersPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialFilters = useMemo(
-    () => getMemberListFilters(searchParams),
+    () => getCustomerListFilters(searchParams),
     [searchParams],
   );
   const {
@@ -57,7 +59,7 @@ export default function AdminMembersPage() {
     submitKeyword,
     clearKeyword,
     replaceFilters,
-  } = useAdminListUrlFilters(initialFilters, buildMemberListQueryString);
+  } = useAdminListUrlFilters(initialFilters, buildCustomerListQueryString);
   const {
     keyword,
     status,
@@ -80,7 +82,7 @@ export default function AdminMembersPage() {
     [replaceFilters],
   );
   const setAuthProvider = useCallback(
-    (value: AdminMemberAuthProviderFilter) =>
+    (value: AdminCustomerAuthProviderFilter) =>
       replaceFilters({ authProvider: value, page: 1 }),
     [replaceFilters],
   );
@@ -108,10 +110,10 @@ export default function AdminMembersPage() {
   const joinedSort: SortDirection = sorts.includes("CREATED_AT_ASC")
     ? "asc"
     : "desc";
-  const [openFilter, setOpenFilter] = useState<AdminMemberOpenFilter>(null);
+  const [openFilter, setOpenFilter] = useState<AdminCustomerOpenFilter>(null);
 
   const { data, error, isError, isLoading, isPlaceholderData, refetch } =
-    useAdminMembers({
+    useAdminCustomers({
       page,
       limit,
       keyword: keyword || undefined,
@@ -126,7 +128,7 @@ export default function AdminMembersPage() {
 
   const columns = useMemo(
     () =>
-      createMemberColumns({
+      createCustomerColumns({
         status,
         profile: profileFilter,
         authProvider,
@@ -186,17 +188,14 @@ export default function AdminMembersPage() {
   return (
     <section className="flex w-full flex-col gap-3">
       <header>
-        <Text as="p" variant="md-medium" className="text-muted">
-          Members
-        </Text>
-        <h1 className="text-3xl font-semibold text-foreground">회원 관리</h1>
+        <h1 className="text-3xl font-semibold text-foreground">고객 관리</h1>
         <Text as="p" variant="md-regular" className="mt-2 text-muted">
           일반 고객(Customer) 계정의 가입 정보와 이용 상태를 조회하고
           관리합니다.
         </Text>
       </header>
       <AdminListToolbar
-        title="회원 목록"
+        title="고객 목록"
         totalCount={pagination?.totalCount ?? 0}
         searchValue={keywordInput}
         searchPlaceholder="이름 또는 이메일 검색"
@@ -216,13 +215,13 @@ export default function AdminMembersPage() {
       <div className="overflow-hidden rounded-20 border border-border bg-surface shadow-select">
         {isLoading ? (
           <p className="px-5 py-16 text-center text-sm text-muted">
-            회원 목록을 불러오는 중입니다.
+            고객 목록을 불러오는 중입니다.
           </p>
         ) : null}
         {isError ? (
           <div className="px-5 py-16 text-center">
             <p className="text-sm text-rose-600">
-              {getApiErrorMessage(error, "회원 목록을 불러오지 못했습니다.")}
+              {getApiErrorMessage(error, "고객 목록을 불러오지 못했습니다.")}
             </p>
             <button
               type="button"
@@ -240,7 +239,7 @@ export default function AdminMembersPage() {
               items={data?.items ?? []}
               emptyLabel="조건에 맞는 회원이 없습니다."
               minWidth="min-w-[1120px]"
-              onRowClick={(member) => router.push(`/members/${member.id}`)}
+              onRowClick={(member) => router.push(`/customers/${member.id}`)}
             />
             {pagination ? (
               <AdminListPagination

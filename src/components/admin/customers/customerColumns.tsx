@@ -16,26 +16,26 @@ import {
   type AdminProfileFilterValue,
 } from "@/types/adminUser";
 import type {
-  AdminMemberAuthProviderFilter,
-  AdminMemberListItem,
-  AdminMemberOpenFilter,
-} from "@/types/adminMember";
+  AdminCustomerAuthProviderFilter,
+  AdminCustomerListItem,
+  AdminCustomerOpenFilter,
+} from "@/types/adminCustomer";
 
-import { ADMIN_AUTH_PROVIDERS } from "@/types/adminMember";
+import { ADMIN_AUTH_PROVIDERS } from "@/types/adminCustomer";
 
 interface Options {
   status: "ALL" | AdminAccountStatus;
   profile: AdminProfileFilterValue;
-  authProvider: AdminMemberAuthProviderFilter;
+  authProvider: AdminCustomerAuthProviderFilter;
   fromDate: string;
   toDate: string;
   reportSort: SortDirection;
   joinedSort: SortDirection;
-  openFilter: AdminMemberOpenFilter;
-  setOpenFilter: (value: AdminMemberOpenFilter) => void;
+  openFilter: AdminCustomerOpenFilter;
+  setOpenFilter: (value: AdminCustomerOpenFilter) => void;
   setStatus: (value: "ALL" | AdminAccountStatus) => void;
   setProfile: (value: AdminProfileFilterValue) => void;
-  setAuthProvider: (value: AdminMemberAuthProviderFilter) => void;
+  setAuthProvider: (value: AdminCustomerAuthProviderFilter) => void;
   setFromDate: (value: string) => void;
   setToDate: (value: string) => void;
   resetDate: () => void;
@@ -43,9 +43,9 @@ interface Options {
   onJoinedSort: () => void;
 }
 
-export function createMemberColumns(
+export function createCustomerColumns(
   o: Options,
-): Array<AdminListColumn<AdminMemberListItem>> {
+): Array<AdminListColumn<AdminCustomerListItem>> {
   return [
     {
       id: "name",

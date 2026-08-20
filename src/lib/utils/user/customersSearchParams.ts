@@ -1,5 +1,5 @@
 import type { AdminListApiSort } from "@/types/adminUser";
-import type { AdminMemberAuthProviderFilter } from "@/types/adminMember";
+import type { AdminCustomerAuthProviderFilter } from "@/types/adminCustomer";
 import {
   createAdminListSearchParams,
   parseAdminListSearchFilters,
@@ -10,12 +10,12 @@ import {
   type SearchParamsInput,
 } from "@/lib/utils/urlSearchParams";
 
-export interface MemberListFilters
+export interface CustomerListFilters
   extends AdminListSearchFilters<AdminListApiSort> {
-  authProvider: AdminMemberAuthProviderFilter;
+  authProvider: AdminCustomerAuthProviderFilter;
 }
 
-export const MEMBER_LIST_DEFAULTS: MemberListFilters = {
+export const CUSTOMER_LIST_DEFAULTS: CustomerListFilters = {
   keyword: "",
   status: "ALL",
   profile: "ALL",
@@ -27,20 +27,20 @@ export const MEMBER_LIST_DEFAULTS: MemberListFilters = {
   limit: 20,
 };
 
-const MEMBER_LIST_SORTS = new Set<AdminListApiSort>([
+const CUSTOMER_LIST_SORTS = new Set<AdminListApiSort>([
   "PENDING_DESC",
   "PENDING_ASC",
   "CREATED_AT_DESC",
   "CREATED_AT_ASC",
 ]);
 
-export function parseMemberListFilters(
+export function parseCustomerListFilters(
   params: SearchParamsInput,
-): MemberListFilters {
+): CustomerListFilters {
   const authProvider = getSearchParam(params, "authProvider");
 
   return {
-    ...parseAdminListSearchFilters(params, MEMBER_LIST_SORTS),
+    ...parseAdminListSearchFilters(params, CUSTOMER_LIST_SORTS),
     authProvider:
       authProvider === "LOCAL" ||
       authProvider === "GOOGLE" ||
@@ -50,7 +50,7 @@ export function parseMemberListFilters(
         : "ALL",
   };
 }
-export function buildMemberListQueryString(filters: MemberListFilters) {
+export function buildCustomerListQueryString(filters: CustomerListFilters) {
   const params = createAdminListSearchParams(filters);
 
   if (filters.authProvider !== "ALL")

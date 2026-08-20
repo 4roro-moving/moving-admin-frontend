@@ -1,19 +1,19 @@
 import { fetchInstance } from "@/lib/api/fetchInstance";
 import { API_ROUTES } from "@/lib/constants/apiRoutes";
 import type {
-  AdminMemberListItem,
-  AdminMemberListQuery,
-  AdminMemberListResult,
-} from "@/types/adminMember";
+  AdminCustomerListItem,
+  AdminCustomerListQuery,
+  AdminCustomerListResult,
+} from "@/types/adminCustomer";
 
-export const ADMIN_MEMBER_LIST_DEFAULT_LIMIT = 20;
+export const ADMIN_CUSTOMER_LIST_DEFAULT_LIMIT = 20;
 
-export async function fetchAdminMembers(
-  query: AdminMemberListQuery = {},
-): Promise<AdminMemberListResult> {
+export async function fetchAdminCustomers(
+  query: AdminCustomerListQuery = {},
+): Promise<AdminCustomerListResult> {
   const search = new URLSearchParams({
     page: String(query.page ?? 1),
-    limit: String(query.limit ?? ADMIN_MEMBER_LIST_DEFAULT_LIMIT),
+    limit: String(query.limit ?? ADMIN_CUSTOMER_LIST_DEFAULT_LIMIT),
   });
 
   if (query.keyword) search.set("keyword", query.keyword);
@@ -25,7 +25,7 @@ export async function fetchAdminMembers(
   if (query.toDate) search.set("toDate", query.toDate);
   query.sorts?.forEach((sort) => search.append("sorts", sort));
 
-  const result = await fetchInstance.getPaginated<AdminMemberListItem[]>(
+  const result = await fetchInstance.getPaginated<AdminCustomerListItem[]>(
     `${API_ROUTES.ADMIN.USERS.ROOT}?${search.toString()}`,
   );
 
