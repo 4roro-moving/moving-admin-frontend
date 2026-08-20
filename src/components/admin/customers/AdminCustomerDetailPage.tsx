@@ -1,14 +1,17 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import CustomerAccountInfo from "@/components/admin/customers/CustomerAccountInfo";
 import CustomerDetailHeader from "@/components/admin/customers/CustomerDetailHeader";
 import CustomerDetailHistories from "@/components/admin/customers/CustomerDetailHistories";
 import CustomerProfileInfo from "@/components/admin/customers/CustomerProfileInfo";
 import CustomerStatusAction from "@/components/admin/customers/CustomerStatusAction";
+import AccountRestrictionModal from "@/components/admin/users/AccountRestrictionModal";
 import { useAdminCustomerDetail } from "@/hooks/useAdminCustomerDetail";
+import { useAdminCustomerStatusMutation } from "@/hooks/useAdminCustomerStatusMutation";
+import type { RestrictionFormInput } from "@/hooks/useAccountRestrictionForm";
 import { getApiErrorMessage } from "@/lib/api/getApiErrorMessage";
 
 interface AdminCustomerDetailPageProps {
@@ -19,6 +22,8 @@ export default function AdminCustomerDetailPage({ customerId }: AdminCustomerDet
   const router = useRouter();
   const { data: customer, error, isError, isLoading, refetch } =
     useAdminCustomerDetail(customerId);
+  const customerStatusMutation = useAdminCustomerStatusMutation();
+  const [isRestrictionModalOpen, setIsRestrictionModalOpen] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -34,6 +39,18 @@ export default function AdminCustomerDetailPage({ customerId }: AdminCustomerDet
 
   const { account, profile } = customer;
 
+  const handleRestrictionSubmit = async (input: RestrictionFormInput) => {
+    try {
+      await customerStatusMutation.mutateAsync({
+        customerId,
+        payload: input,
+      });
+      setIsRestrictionModalOpen(false);
+    } catch {
+      // 오류는 모달 내부에서 안내한다.
+    }
+  };
+
   return (
     <section className="flex w-full flex-col gap-6">
       <CustomerDetailHeader
@@ -43,6 +60,7 @@ export default function AdminCustomerDetailPage({ customerId }: AdminCustomerDet
         action={
           <CustomerStatusAction
             status={account.status}
+            onClick={() => setIsRestrictionModalOpen(true)}
           />
         }
       />
@@ -56,6 +74,18 @@ export default function AdminCustomerDetailPage({ customerId }: AdminCustomerDet
           router.push(`/reports?reportId=${reportId}`)
         }
       />
+      {isRestrictionModalOpen ? (
+        <AccountRestrictionModal
+          error={
+            customerStatusMutation.isError ? customerStatusMutation.error : undefined
+          }
+          initialAction={account.status === "SUSPENDED" ? "RELEASE" : "SUSPEND"}
+          isPending={customerStatusMutation.isPending}
+          open={isRestrictionModalOpen}
+          onClose={() => setIsRestrictionModalOpen(false)}
+          onSubmit={handleRestrictionSubmit}
+        />
+      ) : null}
     </section>
   );
 }

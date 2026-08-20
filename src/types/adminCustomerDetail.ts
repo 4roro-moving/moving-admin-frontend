@@ -46,6 +46,24 @@ export interface AdminCustomerDetail {
   };
 }
 
+export interface AdminCustomerStatusUpdatePayload {
+  action: "SUSPEND" | "RELEASE";
+  reason: string;
+  internalNote?: string;
+}
+
+export interface AdminCustomerStatusUpdateResult {
+  id: string;
+  status: Exclude<AdminAccountStatus, "WITHDRAWN">;
+  suspension: {
+    id: number;
+    action: AdminCustomerStatusUpdatePayload["action"];
+    reason: string;
+    adminId: string;
+    createdAt: string;
+  };
+}
+
 interface AdminCustomerEstimateRequests {
   totalCount: number;
   items: Array<{
