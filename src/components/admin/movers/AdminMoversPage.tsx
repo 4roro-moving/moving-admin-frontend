@@ -211,12 +211,9 @@ export default function AdminMoversPage() {
   return (
     <section className="flex w-full flex-col gap-3">
       <header>
-        <Text as="p" variant="md-medium" className="text-muted">
-          Movers
-        </Text>
         <h1 className="text-3xl font-semibold text-foreground">기사 관리</h1>
         <Text as="p" variant="md-regular" className="mt-2 text-muted">
-          이사업체 계정의 프로필과 이용 상태를 조회하고 관리합니다.
+          기사(Mover) 계정의 가입 정보와 이용 상태를 조회하고 관리합니다.
         </Text>
       </header>
       <AdminListToolbar

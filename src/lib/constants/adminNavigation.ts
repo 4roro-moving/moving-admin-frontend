@@ -31,7 +31,7 @@ export const ADMIN_CONTENTS_CHILDREN: AdminNavigationChildItem[] = [
 
 export const ADMIN_NAVIGATION_ITEMS: AdminNavigationItem[] = [
   { label: "대시보드", href: APP_ROUTES.DASHBOARD, enabled: true },
-  { label: "회원 관리", href: APP_ROUTES.MEMBERS, enabled: true },
+  { label: "고객 관리", href: APP_ROUTES.CUSTOMERS, enabled: true },
   { label: "기사 관리", href: APP_ROUTES.MOVERS, enabled: true },
   { label: "신고 관리", href: APP_ROUTES.REPORTS, enabled: true },
   { label: "콘텐츠 관리", enabled: true, children: ADMIN_CONTENTS_CHILDREN },

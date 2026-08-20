@@ -29,7 +29,9 @@ import type {
 } from "@/types/adminMember";
 import type { AdminProfileFilterValue } from "@/types/adminUser";
 
-function getMemberListFilters(searchParams: URLSearchParams): MemberListFilters {
+function getMemberListFilters(
+  searchParams: URLSearchParams,
+): MemberListFilters {
   const params: Record<string, string | string[]> = {};
 
   searchParams.forEach((value, key) => {
@@ -186,17 +188,14 @@ export default function AdminMembersPage() {
   return (
     <section className="flex w-full flex-col gap-3">
       <header>
-        <Text as="p" variant="md-medium" className="text-muted">
-          Members
-        </Text>
-        <h1 className="text-3xl font-semibold text-foreground">회원 관리</h1>
+        <h1 className="text-3xl font-semibold text-foreground">고객 관리</h1>
         <Text as="p" variant="md-regular" className="mt-2 text-muted">
           일반 고객(Customer) 계정의 가입 정보와 이용 상태를 조회하고
           관리합니다.
         </Text>
       </header>
       <AdminListToolbar
-        title="회원 목록"
+        title="고객 목록"
         totalCount={pagination?.totalCount ?? 0}
         searchValue={keywordInput}
         searchPlaceholder="이름 또는 이메일 검색"
@@ -216,13 +215,13 @@ export default function AdminMembersPage() {
       <div className="overflow-hidden rounded-20 border border-border bg-surface shadow-select">
         {isLoading ? (
           <p className="px-5 py-16 text-center text-sm text-muted">
-            회원 목록을 불러오는 중입니다.
+            고객 목록을 불러오는 중입니다.
           </p>
         ) : null}
         {isError ? (
           <div className="px-5 py-16 text-center">
             <p className="text-sm text-rose-600">
-              {getApiErrorMessage(error, "회원 목록을 불러오지 못했습니다.")}
+              {getApiErrorMessage(error, "고객 목록을 불러오지 못했습니다.")}
             </p>
             <button
               type="button"
@@ -240,7 +239,7 @@ export default function AdminMembersPage() {
               items={data?.items ?? []}
               emptyLabel="조건에 맞는 회원이 없습니다."
               minWidth="min-w-[1120px]"
-              onRowClick={(member) => router.push(`/members/${member.id}`)}
+              onRowClick={(member) => router.push(`/customers/${member.id}`)}
             />
             {pagination ? (
               <AdminListPagination

@@ -1,6 +1,6 @@
 import AdminMemberDetailPage from "@/components/admin/members/AdminMemberDetailPage";
 
-export default async function MemberDetailPage({
+export default async function CustomerDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
