@@ -1,11 +1,13 @@
 import { cn } from "@/lib/utils/cn";
 import type { AdminAccountStatus } from "@/types/adminUser";
 
+interface CustomerStatusActionProps {
+  status: AdminAccountStatus;
+}
+
 export default function CustomerStatusAction({
   status,
-}: {
-  status: AdminAccountStatus;
-}) {
+}: CustomerStatusActionProps) {
   if (status === "WITHDRAWN") return null;
 
   return (

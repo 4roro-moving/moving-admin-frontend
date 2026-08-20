@@ -35,11 +35,13 @@ const estimateStatusClass = {
 
 const statusBadgeClass = "inline-flex rounded-full px-2.5 py-1 text-xs font-semibold";
 
+interface CustomerEstimateRequestsProps {
+  history: AdminCustomerDetail["estimateRequests"];
+}
+
 export default function CustomerEstimateRequests({
   history,
-}: {
-  history: AdminCustomerDetail["estimateRequests"];
-}) {
+}: CustomerEstimateRequestsProps) {
   return (
     <CustomerHistoryCard title="견적 요청 이력" totalCount={history.totalCount}>
       {history.items.length === 0 ? (

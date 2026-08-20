@@ -8,7 +8,18 @@ const moveTypeLabel = {
   HOME: "가정 이사",
   OFFICE: "사무실 이사",
 } as const;
-function Item({ label, value }: { label: string; value: string }) {
+
+interface ItemProps {
+  label: string;
+  value: string;
+}
+
+interface CustomerProfileInfoProps {
+  account: AdminCustomerDetail["account"];
+  profile: AdminCustomerDetail["profile"];
+}
+
+function Item({ label, value }: ItemProps) {
   return (
     <div className="grid grid-cols-[7rem_1fr] gap-3 border-b border-border py-3 last:border-b-0">
       <Text as="dt" variant="md-medium" className="text-muted">
@@ -21,10 +32,7 @@ function Item({ label, value }: { label: string; value: string }) {
 export default function CustomerProfileInfo({
   account,
   profile,
-}: {
-  account: AdminCustomerDetail["account"];
-  profile: AdminCustomerDetail["profile"];
-}) {
+}: CustomerProfileInfoProps) {
   return (
     <section className="rounded-20 border border-border bg-surface p-5 shadow-select">
       <Text as="h2" variant="lg-semibold" className="text-foreground">

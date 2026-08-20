@@ -2,7 +2,16 @@ import Text from "@/components/admin/common/Text";
 import { formatJoinedDate } from "@/lib/utils/user/date";
 import type { AdminCustomerDetail } from "@/types/adminCustomerDetail";
 
-function Item({ label, value }: { label: string; value: string }) {
+interface ItemProps {
+  label: string;
+  value: string;
+}
+
+interface CustomerAccountInfoProps {
+  account: AdminCustomerDetail["account"];
+}
+
+function Item({ label, value }: ItemProps) {
   return (
     <div className="grid grid-cols-[7rem_1fr] gap-3 border-b border-border py-3 last:border-b-0">
       <Text as="dt" variant="md-medium" className="text-muted">
@@ -15,9 +24,7 @@ function Item({ label, value }: { label: string; value: string }) {
 
 export default function CustomerAccountInfo({
   account,
-}: {
-  account: AdminCustomerDetail["account"];
-}) {
+}: CustomerAccountInfoProps) {
   return (
     <section className="rounded-20 border border-border bg-surface p-5 shadow-select">
       <Text as="h2" variant="lg-semibold" className="text-foreground">

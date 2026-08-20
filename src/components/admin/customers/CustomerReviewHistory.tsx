@@ -12,11 +12,13 @@ const reviewVisibilityClass = {
   visible: "bg-status-active-background text-status-active-foreground",
 } as const;
 
+interface CustomerReviewHistoryProps {
+  history: AdminCustomerDetail["reviewHistory"];
+}
+
 export default function CustomerReviewHistory({
   history,
-}: {
-  history: AdminCustomerDetail["reviewHistory"];
-}) {
+}: CustomerReviewHistoryProps) {
   return (
     <CustomerHistoryCard title="작성 리뷰 이력" totalCount={history.totalCount}>
       {history.items.length ? (

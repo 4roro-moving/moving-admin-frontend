@@ -13,11 +13,13 @@ const suspensionActionClass = {
   RELEASE: "bg-status-active-background text-status-active-foreground",
 } as const;
 
+interface CustomerSuspensionHistoryProps {
+  history: AdminCustomerDetail["suspensionHistory"];
+}
+
 export default function CustomerSuspensionHistory({
   history,
-}: {
-  history: AdminCustomerDetail["suspensionHistory"];
-}) {
+}: CustomerSuspensionHistoryProps) {
   return (
     <CustomerHistoryCard
       title="계정 정지/해제 이력"

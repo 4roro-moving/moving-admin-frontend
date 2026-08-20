@@ -4,17 +4,19 @@ import Text from "@/components/admin/common/Text";
 import AdminStatusBadge from "@/components/admin/users/AdminStatusBadge";
 import type { AdminAccountStatus } from "@/types/adminUser";
 
+interface CustomerDetailHeaderProps {
+  name: string;
+  status: AdminAccountStatus;
+  onBack: () => void;
+  action?: ReactNode;
+}
+
 export default function CustomerDetailHeader({
   name,
   status,
   onBack,
   action,
-}: {
-  name: string;
-  status: AdminAccountStatus;
-  onBack: () => void;
-  action?: ReactNode;
-}) {
+}: CustomerDetailHeaderProps) {
   return (
     <header className="flex items-start justify-between gap-4">
       <div className="flex items-center gap-3">

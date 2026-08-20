@@ -4,13 +4,15 @@ import CustomerReviewHistory from "@/components/admin/customers/CustomerReviewHi
 import CustomerSuspensionHistory from "@/components/admin/customers/CustomerSuspensionHistory";
 import type { AdminCustomerDetail } from "@/types/adminCustomerDetail";
 
+interface CustomerDetailHistoriesProps {
+  customer: AdminCustomerDetail;
+  onReportDetail: (id: number) => void;
+}
+
 export default function CustomerDetailHistories({
   customer,
   onReportDetail,
-}: {
-  customer: AdminCustomerDetail;
-  onReportDetail: (id: number) => void;
-}) {
+}: CustomerDetailHistoriesProps) {
   return (
     <>
       <CustomerEstimateRequests history={customer.estimateRequests} />

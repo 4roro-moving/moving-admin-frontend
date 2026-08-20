@@ -36,13 +36,20 @@ const reportStatusClass = {
 
 type Items = AdminCustomerDetail["reportHistory"]["filed"]["items"];
 
+interface CustomerReportHistoryTableProps {
+  items: Items;
+  onDetail: (id: number) => void;
+}
+
+interface CustomerReportHistoryProps {
+  history: AdminCustomerDetail["reportHistory"];
+  onDetail: (id: number) => void;
+}
+
 function Table({
   items,
   onDetail,
-}: {
-  items: Items;
-  onDetail: (id: number) => void;
-}) {
+}: CustomerReportHistoryTableProps) {
   return items.length ? (
     <div className="overflow-x-auto">
       <div className="min-w-[680px]">
@@ -96,10 +103,7 @@ function Table({
 export default function CustomerReportHistory({
   history,
   onDetail,
-}: {
-  history: AdminCustomerDetail["reportHistory"];
-  onDetail: (id: number) => void;
-}) {
+}: CustomerReportHistoryProps) {
   return (
     <div className="grid gap-6 xl:grid-cols-2">
       <CustomerHistoryCard

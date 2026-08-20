@@ -2,6 +2,12 @@ import type { ReactNode } from "react";
 
 import Text from "@/components/admin/common/Text";
 
+interface CustomerHistoryCardProps {
+  title: string;
+  totalCount: number;
+  children: ReactNode;
+}
+
 export function CustomerHistoryEmpty() {
   return (
     <p className="px-5 py-10 text-center text-sm text-muted">
@@ -14,11 +20,7 @@ export default function CustomerHistoryCard({
   title,
   totalCount,
   children,
-}: {
-  title: string;
-  totalCount: number;
-  children: ReactNode;
-}) {
+}: CustomerHistoryCardProps) {
   return (
     <section className="overflow-hidden rounded-20 border border-border bg-surface shadow-select">
       <header className="flex items-center justify-between border-b border-border px-5 py-4">

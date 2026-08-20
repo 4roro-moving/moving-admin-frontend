@@ -11,7 +11,11 @@ import CustomerStatusAction from "@/components/admin/customers/CustomerStatusAct
 import { useAdminCustomerDetail } from "@/hooks/useAdminCustomerDetail";
 import { getApiErrorMessage } from "@/lib/api/getApiErrorMessage";
 
-export default function AdminCustomerDetailPage({ customerId }: { customerId: string }) {
+interface AdminCustomerDetailPageProps {
+  customerId: string;
+}
+
+export default function AdminCustomerDetailPage({ customerId }: AdminCustomerDetailPageProps) {
   const router = useRouter();
   const { data: customer, error, isError, isLoading, refetch } =
     useAdminCustomerDetail(customerId);
