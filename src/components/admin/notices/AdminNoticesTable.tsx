@@ -140,7 +140,7 @@ export default function AdminNoticesTable({
                 {getNoticeStatusLabel(notice.isVisible)}
               </span>
             </span>
-            <span className="px-3 py-4 text-sm leading-6 text-muted">
+            <span className="px-3 py-4 text-right text-sm leading-6 text-muted">
               {formatNoticeDate(notice.createdAt)}
             </span>
           </button>

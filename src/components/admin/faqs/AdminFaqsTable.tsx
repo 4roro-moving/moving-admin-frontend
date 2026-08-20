@@ -113,7 +113,7 @@ export default function AdminFaqsTable({ items, onEditFaq }: AdminFaqsTableProps
                 {getFaqStatusLabel(faq.isVisible)}
               </span>
             </span>
-            <span className="px-3 py-4 text-sm leading-6 text-muted">
+            <span className="px-3 py-4 text-right text-sm leading-6 text-muted">
               {formatFaqDate(faq.createdAt)}
             </span>
           </button>
