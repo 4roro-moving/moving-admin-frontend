@@ -139,7 +139,11 @@ reviews:
           `<div onClick>` 은 키보드 접근이 불가하므로 지적해 주세요.
         - 페이지 이동은 `next/link` 의 `Link` 를 사용합니다.
         - 아이콘만 있는 버튼에는 `aria-label` 이 필요합니다.
-        - 장식용 SVG 에는 `aria-hidden="true"` 를 붙입니다.
+        - 장식용 SVG 에는 `aria-hidden="true"` 가 필요합니다.
+          단, `src/icons/index.ts`에서 import하는 SVGR 아이콘은 `svgr.options.ts`에서
+          기본으로 `aria-hidden="true"`와 `focusable="false"`를 설정하므로, 사용처에
+          속성을 다시 작성하지 않아도 됩니다.
+        - 컴포넌트에 인라인으로 작성한 SVG는 장식용이라면 `aria-hidden="true"`를 직접 지정해야 합니다.
         - input 에는 label 또는 `aria-label` 이 연결되어야 합니다.
         - 모달은 `role="dialog"`, `aria-modal`, 포커스 트랩, ESC 닫기,
           배경 스크롤 잠금이 필요합니다. `Modal.tsx` 가 참고 사례입니다.
