@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 import CustomerAccountInfo from "@/components/admin/customers/CustomerAccountInfo";
 import CustomerDetailHeader from "@/components/admin/customers/CustomerDetailHeader";
@@ -10,14 +10,11 @@ import CustomerProfileInfo from "@/components/admin/customers/CustomerProfileInf
 import CustomerStatusAction from "@/components/admin/customers/CustomerStatusAction";
 import { useAdminCustomerDetail } from "@/hooks/useAdminCustomerDetail";
 import { getApiErrorMessage } from "@/lib/api/getApiErrorMessage";
-import type { AdminAccountStatus } from "@/types/adminUser";
 
 export default function AdminCustomerDetailPage({ customerId }: { customerId: string }) {
   const router = useRouter();
   const { data: customer, error, isError, isLoading, refetch } =
     useAdminCustomerDetail(customerId);
-  const [accountStatus, setAccountStatus] =
-    useState<AdminAccountStatus | null>(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -32,22 +29,16 @@ export default function AdminCustomerDetailPage({ customerId }: { customerId: st
   }
 
   const { account, profile } = customer;
-  const displayedAccountStatus = accountStatus ?? account.status;
 
   return (
     <section className="flex w-full flex-col gap-6">
       <CustomerDetailHeader
         name={account.name}
-        status={displayedAccountStatus}
+        status={account.status}
         onBack={() => router.back()}
         action={
           <CustomerStatusAction
-            status={displayedAccountStatus}
-            onToggle={() =>
-              setAccountStatus(
-                displayedAccountStatus === "SUSPENDED" ? "ACTIVE" : "SUSPENDED",
-              )
-            }
+            status={account.status}
           />
         }
       />
