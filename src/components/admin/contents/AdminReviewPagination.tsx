@@ -5,6 +5,7 @@ import type { Pagination } from "@/types/pagination";
 interface AdminReviewPaginationProps {
   pagination: Pagination;
   onChangePage: (page: number) => void;
+  ariaLabel?: string;
 }
 
 function scrollToTop() {
@@ -14,6 +15,7 @@ function scrollToTop() {
 export default function AdminReviewPagination({
   pagination,
   onChangePage,
+  ariaLabel = "리뷰 목록 페이지",
 }: AdminReviewPaginationProps) {
   const totalPages = Math.max(1, pagination.totalPages);
   const visiblePages = getVisiblePages(pagination.page, totalPages);
@@ -24,7 +26,10 @@ export default function AdminReviewPagination({
   };
 
   return (
-    <nav aria-label="리뷰 목록 페이지" className="flex items-center justify-center gap-1 pt-2">
+    <nav
+      aria-label={ariaLabel}
+      className="flex flex-wrap items-center justify-center gap-1 pt-2"
+    >
       <button
         type="button"
         className="border-border text-muted rounded-lg border px-3 py-2 text-sm disabled:opacity-40"

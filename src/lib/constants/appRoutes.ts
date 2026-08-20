@@ -5,6 +5,7 @@ export const APP_ROUTES = {
   MEMBERS: "/members",
   MOVERS: "/movers",
   REPORTS: "/reports",
+  TERMS: "/terms",
   CONTENTS: {
     REVIEWS: "/contents/reviews",
   },

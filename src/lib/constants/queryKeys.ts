@@ -1,11 +1,32 @@
+import type {
+  AdminReportReason,
+  AdminReportSort,
+  AdminReportStatus,
+  AdminReportTargetType,
+} from "@/types/adminReport";
 import type { AdminReviewSort } from "@/types/adminReview";
 
 export const QUERY_KEYS = {
   AUTH: {
     ADMIN_SESSION: ["auth", "admin-session"] as const,
   },
+  DASHBOARD: {
+    SUMMARY: ["admin", "dashboard", "summary"] as const,
+  },
   REPORTS: {
     ALL: ["admin", "reports"] as const,
+    SUMMARY: ["admin", "reports", "summary"] as const,
+    DETAIL_PLACEHOLDER: ["admin", "reports", "detail"] as const,
+    LIST: (params: {
+      page: number;
+      limit: number;
+      keyword: string;
+      status: AdminReportStatus | "ALL";
+      targetType: AdminReportTargetType | "ALL";
+      reason: AdminReportReason | "ALL";
+      sort: AdminReportSort;
+    }) => ["admin", "reports", "list", params] as const,
+    DETAIL: (reportId: number) => ["admin", "reports", "detail", reportId] as const,
   },
   MEMBERS: {
     ALL: ["admin", "members"] as const,
