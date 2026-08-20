@@ -101,7 +101,7 @@ export default function AccountRestrictionModal({
         >
           <div className="flex flex-col gap-modal-10">
             <Text as="p" variant="md-regular" className="text-text-subtle">
-              처리 사유를 입력해 주세요.
+              운영팀 내부 참고용 메모입니다. 고객과 기사에게 공개되지 않습니다.
             </Text>
             <div className="flex flex-col gap-modal-4">
               <Textarea
@@ -136,7 +136,7 @@ export default function AccountRestrictionModal({
         >
           <div className="flex flex-col gap-modal-10">
             <Text as="p" variant="md-regular" className="text-text-subtle">
-              고객에게 노출되지 않는 관리자용 메모입니다.
+              운영팀 내부 참고용 메모입니다. 고객과 기사에게 공개되지 않습니다.
             </Text>
             <div className="flex flex-col gap-modal-4">
               <Textarea
