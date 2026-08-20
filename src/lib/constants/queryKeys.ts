@@ -67,6 +67,18 @@ export const QUERY_KEYS = {
       sort: AdminReviewSort;
     }) => ["admin", "reviews", "list", params] as const,
   },
+  FAQS: {
+    ALL: ["admin", "faqs"] as const,
+
+    LIST: (params: {
+      page: number;
+      limit: number;
+      keyword: string;
+      isVisible?: boolean;
+    }) => ["admin", "faqs", "list", params] as const,
+
+    DETAIL: (faqId: number) => ["admin", "faqs", "detail", faqId] as const,
+  },
   NOTICES: {
     ALL: ["admin", "notices"] as const,
 
