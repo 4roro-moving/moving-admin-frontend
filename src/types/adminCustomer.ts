@@ -7,8 +7,8 @@ import type {
 } from "@/types/adminUser";
 
 export type AdminAuthProvider = "LOCAL" | "GOOGLE" | "NAVER" | "KAKAO";
-export type AdminMemberAuthProviderFilter = "ALL" | AdminAuthProvider;
-export type AdminMemberOpenFilter = AdminListOpenFilter | "provider";
+export type AdminCustomerAuthProviderFilter = "ALL" | AdminAuthProvider;
+export type AdminCustomerOpenFilter = AdminListOpenFilter | "provider";
 
 export const ADMIN_AUTH_PROVIDERS = [
   "LOCAL",
@@ -17,12 +17,12 @@ export const ADMIN_AUTH_PROVIDERS = [
   "KAKAO",
 ] as const satisfies readonly AdminAuthProvider[];
 
-export interface AdminMemberListItem extends AdminListItemBase {
+export interface AdminCustomerListItem extends AdminListItemBase {
   authProvider: AdminAuthProvider;
 }
 
-export interface AdminMemberListQuery extends AdminListApiQuery<AdminListApiSort> {
+export interface AdminCustomerListQuery extends AdminListApiQuery<AdminListApiSort> {
   authProvider?: AdminAuthProvider;
 }
 
-export type AdminMemberListResult = AdminListResult<AdminMemberListItem>;
+export type AdminCustomerListResult = AdminListResult<AdminCustomerListItem>;

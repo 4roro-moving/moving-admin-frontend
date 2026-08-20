@@ -4,17 +4,17 @@ import { useCallback, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import Text from "@/components/admin/common/Text";
-import { createMemberColumns } from "@/components/admin/members/memberColumns";
+import { createCustomerColumns } from "@/components/admin/customers/customerColumns";
 import AdminListPagination from "@/components/admin/users/AdminListPagination";
 import AdminListTable from "@/components/admin/users/AdminListTable";
 import AdminListToolbar from "@/components/admin/users/AdminListToolbar";
-import { useAdminMembers } from "@/hooks/useAdminMembers";
+import { useAdminCustomers } from "@/hooks/useAdminCustomers";
 import { useAdminListUrlFilters } from "@/hooks/useAdminListUrlFilters";
 import {
-  buildMemberListQueryString,
-  parseMemberListFilters,
-  type MemberListFilters,
-} from "@/lib/utils/user/membersSearchParams";
+  buildCustomerListQueryString,
+  parseCustomerListFilters,
+  type CustomerListFilters,
+} from "@/lib/utils/user/customersSearchParams";
 import { getApiErrorMessage } from "@/lib/api/getApiErrorMessage";
 import {
   getListSortDirection,
@@ -24,14 +24,14 @@ import {
 } from "@/lib/utils/user/sort";
 import type { AdminAccountStatus } from "@/types/adminUser";
 import type {
-  AdminMemberAuthProviderFilter,
-  AdminMemberOpenFilter,
-} from "@/types/adminMember";
+  AdminCustomerAuthProviderFilter,
+  AdminCustomerOpenFilter,
+} from "@/types/adminCustomer";
 import type { AdminProfileFilterValue } from "@/types/adminUser";
 
-function getMemberListFilters(
+function getCustomerListFilters(
   searchParams: URLSearchParams,
-): MemberListFilters {
+): CustomerListFilters {
   const params: Record<string, string | string[]> = {};
 
   searchParams.forEach((value, key) => {
@@ -43,14 +43,14 @@ function getMemberListFilters(
       : value;
   });
 
-  return parseMemberListFilters(params);
+  return parseCustomerListFilters(params);
 }
 
-export default function AdminMembersPage() {
+export default function AdminCustomersPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialFilters = useMemo(
-    () => getMemberListFilters(searchParams),
+    () => getCustomerListFilters(searchParams),
     [searchParams],
   );
   const {
@@ -59,7 +59,7 @@ export default function AdminMembersPage() {
     submitKeyword,
     clearKeyword,
     replaceFilters,
-  } = useAdminListUrlFilters(initialFilters, buildMemberListQueryString);
+  } = useAdminListUrlFilters(initialFilters, buildCustomerListQueryString);
   const {
     keyword,
     status,
@@ -82,7 +82,7 @@ export default function AdminMembersPage() {
     [replaceFilters],
   );
   const setAuthProvider = useCallback(
-    (value: AdminMemberAuthProviderFilter) =>
+    (value: AdminCustomerAuthProviderFilter) =>
       replaceFilters({ authProvider: value, page: 1 }),
     [replaceFilters],
   );
@@ -110,10 +110,10 @@ export default function AdminMembersPage() {
   const joinedSort: SortDirection = sorts.includes("CREATED_AT_ASC")
     ? "asc"
     : "desc";
-  const [openFilter, setOpenFilter] = useState<AdminMemberOpenFilter>(null);
+  const [openFilter, setOpenFilter] = useState<AdminCustomerOpenFilter>(null);
 
   const { data, error, isError, isLoading, isPlaceholderData, refetch } =
-    useAdminMembers({
+    useAdminCustomers({
       page,
       limit,
       keyword: keyword || undefined,
@@ -128,7 +128,7 @@ export default function AdminMembersPage() {
 
   const columns = useMemo(
     () =>
-      createMemberColumns({
+      createCustomerColumns({
         status,
         profile: profileFilter,
         authProvider,

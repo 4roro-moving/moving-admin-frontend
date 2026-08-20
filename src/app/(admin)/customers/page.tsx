@@ -1,10 +1,10 @@
-import AdminMembersPage from "@/components/admin/members/AdminMembersPage";
+import AdminCustomersPage from "@/components/admin/customers/AdminCustomersPage";
 import { Suspense } from "react";
 
 export default function CustomersPage() {
   return (
     <Suspense fallback={null}>
-      <AdminMembersPage />
+      <AdminCustomersPage />
     </Suspense>
   );
 }

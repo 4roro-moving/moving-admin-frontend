@@ -1,4 +1,4 @@
-import AdminMemberDetailPage from "@/components/admin/members/AdminMemberDetailPage";
+import AdminCustomerDetailPage from "@/components/admin/customers/AdminCustomerDetailPage";
 
 export default async function CustomerDetailPage({
   params,
@@ -6,5 +6,5 @@ export default async function CustomerDetailPage({
   params: Promise<{ id: string }>;
 }) {
   await params;
-  return <AdminMemberDetailPage />;
+  return <AdminCustomerDetailPage />;
 }

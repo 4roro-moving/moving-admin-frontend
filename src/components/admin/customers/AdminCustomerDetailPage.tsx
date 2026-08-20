@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 
 import Text from "@/components/admin/common/Text";
 
-export default function AdminMemberDetailPage() {
+export default function AdminCustomerDetailPage() {
   const router = useRouter();
 
   return (
