@@ -22,6 +22,12 @@ export const API_ROUTES = {
       ROOT: "/admin/faqs",
       DETAIL: (faqId: number) => `/admin/faqs/${faqId}`,
     },
+    INQUIRIES: {
+      ROOT: "/admin/inquiries",
+      DETAIL: (inquiryId: number) => `/admin/inquiries/${inquiryId}`,
+      ANSWER: (inquiryId: number) => `/admin/inquiries/${inquiryId}/answer`,
+      CLOSE: (inquiryId: number) => `/admin/inquiries/${inquiryId}/close`,
+    },
     NOTICES: {
       ROOT: "/admin/notices",
       DETAIL: (noticeId: number) => `/admin/notices/${noticeId}`,

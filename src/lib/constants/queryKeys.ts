@@ -4,6 +4,7 @@ import type {
   AdminReportStatus,
   AdminReportTargetType,
 } from "@/types/adminReport";
+import type { AdminInquiryStatus } from "@/types/adminInquiry";
 import type { AdminReviewSort } from "@/types/adminReview";
 
 export const QUERY_KEYS = {
@@ -78,6 +79,20 @@ export const QUERY_KEYS = {
     }) => ["admin", "faqs", "list", params] as const,
 
     DETAIL: (faqId: number) => ["admin", "faqs", "detail", faqId] as const,
+  },
+  INQUIRIES: {
+    ALL: ["admin", "inquiries"] as const,
+
+    LIST: (params: {
+      page: number;
+      limit: number;
+      keyword: string;
+      status?: AdminInquiryStatus;
+      openOnly?: boolean;
+    }) => ["admin", "inquiries", "list", params] as const,
+
+    DETAIL: (inquiryId: number) =>
+      ["admin", "inquiries", "detail", inquiryId] as const,
   },
   NOTICES: {
     ALL: ["admin", "notices"] as const,
