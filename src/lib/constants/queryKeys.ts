@@ -30,6 +30,8 @@ export const QUERY_KEYS = {
   },
   CUSTOMERS: {
     ALL: ["admin", "customers"] as const,
+    DETAIL_PLACEHOLDER: ["admin", "customers", "detail"] as const,
+    DETAIL: (customerId: string) => ["admin", "customers", "detail", customerId] as const,
     LIST: (params: {
       page: number;
       limit: number;

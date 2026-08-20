@@ -5,6 +5,6 @@ export default async function CustomerDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  await params;
-  return <AdminCustomerDetailPage />;
+  const { id } = await params;
+  return <AdminCustomerDetailPage customerId={id} />;
 }

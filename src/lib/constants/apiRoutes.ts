@@ -11,6 +11,7 @@ export const API_ROUTES = {
     },
     USERS: {
       ROOT: "/admin/users",
+      DETAIL: (userId: string) => `/admin/users/${userId}`,
     },
     REPORTS: "/admin/reports",
     REVIEWS: {

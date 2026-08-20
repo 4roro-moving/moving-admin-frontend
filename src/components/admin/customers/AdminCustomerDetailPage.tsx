@@ -8,26 +8,40 @@ import CustomerDetailHeader from "@/components/admin/customers/CustomerDetailHea
 import CustomerDetailHistories from "@/components/admin/customers/CustomerDetailHistories";
 import CustomerProfileInfo from "@/components/admin/customers/CustomerProfileInfo";
 import CustomerStatusAction from "@/components/admin/customers/CustomerStatusAction";
-import { ADMIN_CUSTOMER_DETAIL_MOCK } from "@/mocks/adminCustomerDetailMock";
+import { useAdminCustomerDetail } from "@/hooks/useAdminCustomerDetail";
+import { getApiErrorMessage } from "@/lib/api/getApiErrorMessage";
+import type { AdminAccountStatus } from "@/types/adminUser";
 
-export default function AdminCustomerDetailPage() {
+export default function AdminCustomerDetailPage({ customerId }: { customerId: string }) {
   const router = useRouter();
-  const customer = ADMIN_CUSTOMER_DETAIL_MOCK;
+  const { data: customer, error, isError, isLoading, refetch } =
+    useAdminCustomerDetail(customerId);
+  const [accountStatus, setAccountStatus] =
+    useState<AdminAccountStatus | null>(null);
+
+  if (isLoading) {
+    return <section className="flex w-full flex-col items-center justify-center py-24"><p className="text-sm text-muted">고객 상세 정보를 불러오는 중입니다.</p></section>;
+  }
+
+  if (isError || !customer) {
+    return <section className="flex w-full flex-col items-center justify-center py-24"><p className="text-sm text-rose-600">{getApiErrorMessage(error, "고객 상세 정보를 불러오지 못했습니다.")}</p><button type="button" onClick={() => void refetch()} className="mt-4 rounded-lg border border-border px-4 py-2 text-sm font-semibold text-text-secondary hover:bg-background-hover">다시 시도</button></section>;
+  }
+
   const { account, profile } = customer;
-  const [accountStatus, setAccountStatus] = useState(account.status);
+  const displayedAccountStatus = accountStatus ?? account.status;
 
   return (
     <section className="flex w-full flex-col gap-6">
       <CustomerDetailHeader
         name={account.name}
-        status={accountStatus}
+        status={displayedAccountStatus}
         onBack={() => router.push("/customers")}
         action={
           <CustomerStatusAction
-            status={accountStatus}
+            status={displayedAccountStatus}
             onToggle={() =>
-              setAccountStatus((status) =>
-                status === "SUSPENDED" ? "ACTIVE" : "SUSPENDED",
+              setAccountStatus(
+                displayedAccountStatus === "SUSPENDED" ? "ACTIVE" : "SUSPENDED",
               )
             }
           />

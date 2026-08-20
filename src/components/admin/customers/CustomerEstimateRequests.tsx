@@ -16,7 +16,7 @@ const moveTypeLabel = {
 
 const estimateStatusLabel = {
   PENDING: "작성 중",
-  OPEN: "견적 받는 중",
+  OPEN: "견적 요청 진행 중",
   CONFIRMED: "거래 확정",
   CANCELED: "요청 취소",
   EXPIRED: "요청 만료",

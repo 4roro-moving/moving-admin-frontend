@@ -36,6 +36,7 @@ export interface AdminCustomerDetail {
       id: number;
       action: "SUSPEND" | "RELEASE";
       reason: string;
+      internalNote: string | null;
       createdAt: string;
       admin: {
         id: string;
