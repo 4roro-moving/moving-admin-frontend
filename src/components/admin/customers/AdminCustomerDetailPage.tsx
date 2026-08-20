@@ -8,11 +8,17 @@ import CustomerDetailHeader from "@/components/admin/customers/CustomerDetailHea
 import CustomerDetailHistories from "@/components/admin/customers/CustomerDetailHistories";
 import CustomerProfileInfo from "@/components/admin/customers/CustomerProfileInfo";
 import CustomerStatusAction from "@/components/admin/customers/CustomerStatusAction";
+import EstimateCancellationModal from "@/components/admin/estimates/EstimateCancellationModal";
 import AccountRestrictionModal from "@/components/admin/users/AccountRestrictionModal";
 import { useAdminCustomerDetail } from "@/hooks/useAdminCustomerDetail";
+import { useAdminEstimateCancellationMutation } from "@/hooks/useAdminEstimateCancellationMutation";
 import { useAdminCustomerStatusMutation } from "@/hooks/useAdminCustomerStatusMutation";
 import type { RestrictionFormInput } from "@/hooks/useAccountRestrictionForm";
 import { getApiErrorMessage } from "@/lib/api/getApiErrorMessage";
+import type {
+  AdminEstimateCancellationPayload,
+  AdminEstimateCancellationTarget,
+} from "@/types/adminEstimate";
 
 interface AdminCustomerDetailPageProps {
   customerId: string;
@@ -30,7 +36,10 @@ export default function AdminCustomerDetailPage({
     refetch,
   } = useAdminCustomerDetail(customerId);
   const customerStatusMutation = useAdminCustomerStatusMutation();
+  const estimateCancellationMutation = useAdminEstimateCancellationMutation();
   const [isRestrictionModalOpen, setIsRestrictionModalOpen] = useState(false);
+  const [selectedEstimate, setSelectedEstimate] =
+    useState<AdminEstimateCancellationTarget | null>(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -65,16 +74,11 @@ export default function AdminCustomerDetailPage({
 
   const { account, profile } = customer;
   const hasCancelableConfirmedEstimate = customer.estimateRequests.items.some(
-    (item) => item.status === "CONFIRMED" && item.confirmedEstimate?.cancelable,
+    (item) =>
+      item.status === "CONFIRMED" && item.confirmedEstimate?.cancelable,
   );
   const shouldShowSuspendedEstimateNotice =
     account.status === "SUSPENDED" && hasCancelableConfirmedEstimate;
-
-  const handleEstimateRequestsScroll = () => {
-    document
-      .getElementById("estimate-requests")
-      ?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
 
   const handleRestrictionSubmit = async (input: RestrictionFormInput) => {
     try {
@@ -83,6 +87,23 @@ export default function AdminCustomerDetailPage({
         payload: input,
       });
       setIsRestrictionModalOpen(false);
+    } catch {
+      // 오류는 모달 내부에서 안내한다.
+    }
+  };
+
+  const handleEstimateCancellationSubmit = async (
+    payload: AdminEstimateCancellationPayload,
+  ) => {
+    if (selectedEstimate === null) return;
+
+    try {
+      await estimateCancellationMutation.mutateAsync({
+        customerId,
+        estimateId: selectedEstimate.estimateId,
+        payload,
+      });
+      setSelectedEstimate(null);
     } catch {
       // 오류는 모달 내부에서 안내한다.
     }
@@ -107,16 +128,14 @@ export default function AdminCustomerDetailPage({
           className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-status-progress-foreground bg-status-progress-background px-4 py-3"
         >
           <p className="text-sm text-text-secondary">
-            이 고객은 정지 상태입니다. 계정 정지만으로 확정 거래는 취소되지
-            않으므로, 필요한 경우 견적 요청 이력에서 별도로 취소해 주세요.
+            이 고객은 정지 상태입니다. 계정 정지만으로 확정 거래는 취소되지 않으므로, 필요한 경우 견적 요청 이력에서 별도로 취소해 주세요.
           </p>
-          <button
-            type="button"
-            onClick={handleEstimateRequestsScroll}
+          <a
+            href="#estimate-requests"
             className="shrink-0 text-sm font-semibold text-status-progress-foreground underline underline-offset-2"
           >
             견적 요청 이력으로 이동
-          </button>
+          </a>
         </div>
       ) : null}
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(20rem,0.85fr)]">
@@ -125,6 +144,7 @@ export default function AdminCustomerDetailPage({
       </div>
       <CustomerDetailHistories
         customer={customer}
+        onCancelConfirmedEstimate={setSelectedEstimate}
         onReportDetail={(reportId) =>
           router.push(`/reports?reportId=${reportId}`)
         }
@@ -142,6 +162,23 @@ export default function AdminCustomerDetailPage({
           open={isRestrictionModalOpen}
           onClose={() => setIsRestrictionModalOpen(false)}
           onSubmit={handleRestrictionSubmit}
+        />
+      ) : null}
+      {selectedEstimate !== null ? (
+        <EstimateCancellationModal
+          error={
+            estimateCancellationMutation.isError
+              ? estimateCancellationMutation.error
+              : undefined
+          }
+          isPending={estimateCancellationMutation.isPending}
+          open
+          target={selectedEstimate}
+          onClose={() => {
+            setSelectedEstimate(null);
+            estimateCancellationMutation.reset();
+          }}
+          onSubmit={handleEstimateCancellationSubmit}
         />
       ) : null}
     </section>

@@ -14,6 +14,9 @@ export const API_ROUTES = {
       DETAIL: (userId: string) => `/admin/users/${userId}`,
       STATUS: (userId: string) => `/admin/users/${userId}/status`,
     },
+    ESTIMATES: {
+      CANCEL: (estimateId: number) => `/admin/estimates/${estimateId}/cancel`,
+    },
     REPORTS: "/admin/reports",
     REVIEWS: {
       ROOT: "/admin/reviews",
