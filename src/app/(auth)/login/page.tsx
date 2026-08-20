@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -9,7 +10,6 @@ import { loginAdmin } from "@/lib/api/auth";
 import { getApiErrorMessage } from "@/lib/api/getApiErrorMessage";
 import { APP_ROUTES } from "@/lib/constants/appRoutes";
 import { useAdminAuthStore } from "@/stores/useAdminAuthStore";
-import { useRouter } from "next/navigation";
 
 const adminLoginSchema = z.object({
   email: z.string().email("이메일 형식이 올바르지 않습니다."),
@@ -21,8 +21,20 @@ type AdminLoginFormValues = z.infer<typeof adminLoginSchema>;
 export default function AdminLoginPage() {
   const router = useRouter();
   const establishSession = useAdminAuthStore((state) => state.establishSession);
+  const isCheckingAuth = useAdminAuthStore((state) => state.isCheckingAuth);
   const isAuthenticated = useAdminAuthStore((state) => state.isAuthenticated);
+  const userRole = useAdminAuthStore((state) => state.user?.role);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isCheckingAuth) {
+      return;
+    }
+
+    if (isAuthenticated && userRole === "ADMIN") {
+      router.replace(APP_ROUTES.DASHBOARD);
+    }
+  }, [isAuthenticated, isCheckingAuth, router, userRole]);
 
   const {
     register,
@@ -36,20 +48,36 @@ export default function AdminLoginPage() {
     },
   });
 
-  useEffect(() => {
-    if (isAuthenticated) router.replace(APP_ROUTES.DASHBOARD);
-  }, [isAuthenticated, router]);
-
   const onSubmit = async (values: AdminLoginFormValues) => {
     setErrorMessage(null);
+
     try {
       const session = await loginAdmin(values);
-      establishSession(session);
+      establishSession({
+        user: session.user,
+        accessToken: session.accessToken,
+      });
       router.replace(APP_ROUTES.DASHBOARD);
     } catch (error) {
       setErrorMessage(getApiErrorMessage(error, "로그인에 실패했습니다."));
     }
   };
+
+  if (isCheckingAuth) {
+    return (
+      <div className="bg-background text-muted flex min-h-[12rem] items-center justify-center rounded-3xl px-6 py-12">
+        <p className="text-sm font-medium">관리자 세션을 확인하는 중입니다...</p>
+      </div>
+    );
+  }
+
+  if (isAuthenticated && userRole === "ADMIN") {
+    return (
+      <div className="bg-background text-muted flex min-h-[12rem] items-center justify-center rounded-3xl px-6 py-12">
+        <p className="text-sm font-medium">관리자 페이지로 이동하는 중입니다...</p>
+      </div>
+    );
+  }
 
   return (
     <section className="bg-surface border-border rounded-3xl border p-8 shadow-sm">
