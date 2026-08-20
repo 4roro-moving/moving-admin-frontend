@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import Text from "@/components/admin/common/Text";
 import { createMoverColumns } from "@/components/admin/movers/moverColumns";
@@ -18,6 +18,7 @@ import {
 } from "@/lib/utils/user/sort";
 import {
   buildMoverListQueryString,
+  parseMoverListFilters,
   type MoverListFilters,
 } from "@/lib/utils/user/moversSearchParams";
 import { useAdminListUrlFilters } from "@/hooks/useAdminListUrlFilters";
@@ -27,12 +28,28 @@ import type {
   AdminAccountStatus,
 } from "@/types/adminUser";
 
-export default function AdminMoversPage({
-  initialFilters,
-}: {
-  initialFilters: MoverListFilters;
-}) {
+function getMoverListFilters(searchParams: URLSearchParams): MoverListFilters {
+  const params: Record<string, string | string[]> = {};
+
+  searchParams.forEach((value, key) => {
+    const currentValue = params[key];
+    params[key] = currentValue
+      ? Array.isArray(currentValue)
+        ? [...currentValue, value]
+        : [currentValue, value]
+      : value;
+  });
+
+  return parseMoverListFilters(params);
+}
+
+export default function AdminMoversPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const initialFilters = useMemo(
+    () => getMoverListFilters(searchParams),
+    [searchParams],
+  );
   const {
     keywordInput,
     setKeywordInput,
