@@ -3,9 +3,15 @@ import CustomerHistoryCard, {
   CustomerHistoryEmpty,
 } from "@/components/admin/customers/CustomerHistoryCard";
 import { formatCustomerDetailDateTime } from "@/lib/utils/adminCustomerDetail";
+import { cn } from "@/lib/utils/cn";
 import type { AdminCustomerDetail } from "@/types/adminCustomerDetail";
 
 const actionLabel = { SUSPEND: "계정 정지", RELEASE: "정지 해제" } as const;
+
+const suspensionActionClass = {
+  SUSPEND: "bg-status-suspended-background text-status-suspended-foreground",
+  RELEASE: "bg-status-active-background text-status-active-foreground",
+} as const;
 
 export default function CustomerSuspensionHistory({
   history,
@@ -34,11 +40,10 @@ export default function CustomerSuspensionHistory({
                   className="grid grid-cols-[8rem_minmax(16rem,1fr)_minmax(16rem,1fr)_10rem_8rem] items-center gap-4 px-5 py-4"
                 >
                   <span
-                    className={
-                      item.action === "SUSPEND"
-                        ? "inline-flex w-fit rounded-full bg-rose-50 px-2.5 py-1 text-xs font-semibold text-rose-700"
-                        : "inline-flex w-fit rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700"
-                    }
+                    className={cn(
+                      "inline-flex w-fit rounded-full px-2.5 py-1 text-xs font-semibold",
+                      suspensionActionClass[item.action],
+                    )}
                   >
                     {actionLabel[item.action]}
                   </span>

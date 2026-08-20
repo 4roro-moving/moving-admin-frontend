@@ -3,6 +3,7 @@ import CustomerHistoryCard, {
   CustomerHistoryEmpty,
 } from "@/components/admin/customers/CustomerHistoryCard";
 import { formatCustomerDetailDate } from "@/lib/utils/adminCustomerDetail";
+import { cn } from "@/lib/utils/cn";
 import type { AdminCustomerDetail } from "@/types/adminCustomerDetail";
 
 const target = {
@@ -25,6 +26,12 @@ const status = {
   PENDING: "처리 대기",
   RESOLVED: "처리 완료",
   REJECTED: "처리 반려",
+} as const;
+
+const reportStatusClass = {
+  PENDING: "bg-report-pending-background text-report-pending-foreground",
+  RESOLVED: "bg-status-active-background text-status-active-foreground",
+  REJECTED: "bg-status-neutral-background text-status-neutral-foreground",
 } as const;
 
 type Items = AdminCustomerDetail["reportHistory"]["filed"]["items"];
@@ -59,7 +66,10 @@ function Table({
                 {reason[item.reason]}
               </Text>
               <span
-                className={`inline-flex w-fit rounded-full px-2.5 py-1 text-xs font-semibold ${item.status === "PENDING" ? "bg-orange-50 text-orange-700" : item.status === "RESOLVED" ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-600"}`}
+                className={cn(
+                  "inline-flex w-fit rounded-full px-2.5 py-1 text-xs font-semibold",
+                  reportStatusClass[item.status],
+                )}
               >
                 {status[item.status]}
               </span>

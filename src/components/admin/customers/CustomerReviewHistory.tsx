@@ -4,7 +4,13 @@ import CustomerHistoryCard, {
 } from "@/components/admin/customers/CustomerHistoryCard";
 import { StarIcon } from "@/icons";
 import { formatCustomerDetailDate } from "@/lib/utils/adminCustomerDetail";
+import { cn } from "@/lib/utils/cn";
 import type { AdminCustomerDetail } from "@/types/adminCustomerDetail";
+
+const reviewVisibilityClass = {
+  hidden: "bg-status-suspended-background text-status-suspended-foreground",
+  visible: "bg-status-active-background text-status-active-foreground",
+} as const;
 
 export default function CustomerReviewHistory({
   history,
@@ -31,11 +37,12 @@ export default function CustomerReviewHistory({
                     {item.rating}점
                   </span>
                   <span
-                    className={
+                    className={cn(
+                      "rounded-full px-2 py-0.5 text-xs font-semibold",
                       item.isHidden
-                        ? "rounded-full bg-rose-50 px-2 py-0.5 text-xs font-semibold text-rose-700"
-                        : "rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700"
-                    }
+                        ? reviewVisibilityClass.hidden
+                        : reviewVisibilityClass.visible,
+                    )}
                   >
                     {item.isHidden ? "숨김" : "공개"}
                   </span>

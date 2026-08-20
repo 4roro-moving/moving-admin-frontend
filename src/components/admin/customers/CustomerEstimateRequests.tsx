@@ -6,6 +6,7 @@ import {
   formatCustomerDetailDate,
   formatCustomerDetailDateTime,
 } from "@/lib/utils/adminCustomerDetail";
+import { cn } from "@/lib/utils/cn";
 import type { AdminCustomerDetail } from "@/types/adminCustomerDetail";
 
 const moveTypeLabel = {
@@ -24,13 +25,15 @@ const estimateStatusLabel = {
 } as const;
 
 const estimateStatusClass = {
-  PENDING: "bg-slate-100 text-slate-600",
-  OPEN: "bg-orange-50 text-orange-700",
-  CONFIRMED: "bg-violet-50 text-violet-700",
-  CANCELED: "bg-rose-50 text-rose-700",
-  EXPIRED: "bg-slate-100 text-slate-600",
-  COMPLETED: "bg-emerald-50 text-emerald-700",
+  PENDING: "bg-status-neutral-background text-status-neutral-foreground",
+  OPEN: "bg-status-progress-background text-status-progress-foreground",
+  CONFIRMED: "bg-status-confirmed-background text-status-confirmed-foreground",
+  CANCELED: "bg-status-suspended-background text-status-suspended-foreground",
+  EXPIRED: "bg-status-neutral-background text-status-neutral-foreground",
+  COMPLETED: "bg-status-active-background text-status-active-foreground",
 } as const;
+
+const statusBadgeClass = "inline-flex rounded-full px-2.5 py-1 text-xs font-semibold";
 
 export default function CustomerEstimateRequests({
   history,
@@ -112,7 +115,7 @@ export default function CustomerEstimateRequests({
                     </Text>
                     <div>
                       <span
-                        className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${estimateStatusClass[item.status]}`}
+                        className={cn(statusBadgeClass, estimateStatusClass[item.status])}
                       >
                         {estimateStatusLabel[item.status]}
                       </span>
