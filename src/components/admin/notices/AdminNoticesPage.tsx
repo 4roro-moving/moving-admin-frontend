@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 import Search from "@/components/admin/common/Search";
@@ -9,7 +10,7 @@ import {
   AdminReviewFeedbackToast,
   AdminReviewLoadingState,
 } from "@/components/admin/contents/AdminReviewListStates";
-import AdminListPagination from "@/components/admin/users/AdminListPagination";
+import AdminReviewPagination from "@/components/admin/contents/AdminReviewPagination";
 import { FilterOption, TableFilter } from "@/components/admin/users/TableFilter";
 import { useAdminNoticeDetail } from "@/hooks/useAdminNoticeDetail";
 import { useAdminNotices } from "@/hooks/useAdminNotices";
@@ -20,6 +21,12 @@ import {
 } from "@/hooks/useAdminNoticeMutations";
 import { getApiErrorMessage } from "@/lib/api/getApiErrorMessage";
 import { ADMIN_NOTICE_LIST_PAGE_LIMIT } from "@/lib/api/adminNotices";
+import {
+  buildUpdatedSearchParams,
+  parseBooleanSearchParam,
+  parseKeywordSearchParam,
+  parsePositivePageParam,
+} from "@/lib/utils/adminListSearchParams";
 import { cn } from "@/lib/utils/cn";
 import type {
   AdminNotice,
@@ -77,16 +84,27 @@ function getAudienceLabel(value: AudienceFilter) {
 }
 
 export default function AdminNoticesPage() {
-  const [page, setPage] = useState(1);
-  const [keywordInput, setKeywordInput] = useState("");
-  const [keyword, setKeyword] = useState("");
-  const [audience, setAudience] = useState<AudienceFilter>("ALL");
-  const [visibility, setVisibility] = useState<VisibilityFilter>("ALL");
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const page = parsePositivePageParam(searchParams.get("page"));
+  const keyword = parseKeywordSearchParam(searchParams.get("keyword"));
+  const audienceParam = searchParams.get("audience");
+  const visibilityParam = parseBooleanSearchParam(searchParams.get("visibility"));
+  const audience: AudienceFilter =
+    audienceParam === "CUSTOMER" || audienceParam === "MOVER" ? audienceParam : "ALL";
+  const visibility: VisibilityFilter =
+    visibilityParam === undefined ? "ALL" : visibilityParam ? "VISIBLE" : "HIDDEN";
+  const listStateKey = JSON.stringify({ page, keyword, audience, visibility });
+
+  const [keywordDraft, setKeywordDraft] = useState({ key: "", value: "" });
   const [isAudienceFilterOpen, setIsAudienceFilterOpen] = useState(false);
   const [editorMode, setEditorMode] = useState<"create" | "edit" | null>(null);
   const [editingNoticeId, setEditingNoticeId] = useState<number | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<AdminNotice | null>(null);
   const [feedback, setFeedback] = useState<NoticeFeedback | null>(null);
+  const keywordInput = keywordDraft.key === listStateKey ? keywordDraft.value : keyword;
 
   const listQuery = useMemo(
     () => ({
@@ -130,19 +148,34 @@ export default function AdminNoticesPage() {
     setEditingNoticeId(null);
   };
 
+  const navigateWithParams = (updates: Record<string, string | null | undefined>) => {
+    const nextParams = buildUpdatedSearchParams(searchParams, updates);
+    const nextUrl = nextParams.size > 0 ? `${pathname}?${nextParams.toString()}` : pathname;
+
+    router.push(nextUrl, { scroll: false });
+  };
+
   const handleSearchSubmit = () => {
-    setKeyword(keywordInput.trim());
-    setPage(1);
+    const trimmedKeyword = keywordInput.trim();
+    navigateWithParams({
+      page: null,
+      keyword: trimmedKeyword || null,
+    });
   };
 
   const handleVisibilityChange = (nextVisibility: VisibilityFilter) => {
-    setVisibility(nextVisibility);
-    setPage(1);
+    navigateWithParams({
+      page: null,
+      visibility:
+        nextVisibility === "ALL" ? null : String(nextVisibility === "VISIBLE"),
+    });
   };
 
   const handleAudienceChange = (nextAudience: AudienceFilter) => {
-    setAudience(nextAudience);
-    setPage(1);
+    navigateWithParams({
+      page: null,
+      audience: nextAudience === "ALL" ? null : nextAudience,
+    });
     setIsAudienceFilterOpen(false);
   };
 
@@ -271,11 +304,21 @@ export default function AdminNoticesPage() {
               size="responsive"
               value={keywordInput}
               placeholder="제목 또는 내용을 검색해 주세요."
-              onChange={setKeywordInput}
+              onChange={(nextKeyword) => {
+                setKeywordDraft({
+                  key: listStateKey,
+                  value: nextKeyword,
+                });
+              }}
               onClear={() => {
-                setKeywordInput("");
-                setKeyword("");
-                setPage(1);
+                setKeywordDraft({
+                  key: listStateKey,
+                  value: "",
+                });
+                navigateWithParams({
+                  page: null,
+                  keyword: null,
+                });
               }}
               onSubmit={handleSearchSubmit}
               className="w-full md:max-w-none"
@@ -319,17 +362,17 @@ export default function AdminNoticesPage() {
         </div>
 
         {pagination && !noticesQuery.isLoading && !noticesQuery.isError ? (
-          <AdminListPagination
-            pagination={pagination}
-            isPreviousDisabled={pagination.page <= 1}
-            isNextDisabled={!pagination.hasNext}
-            onPrevious={() => {
-              setPage((current) => Math.max(1, current - 1));
-            }}
-            onNext={() => {
-              setPage((current) => current + 1);
-            }}
-          />
+          <div className="border-t border-border px-5 py-4">
+            <AdminReviewPagination
+              pagination={pagination}
+              ariaLabel="공지사항 목록 페이지"
+              onChangePage={(nextPage) => {
+                navigateWithParams({
+                  page: nextPage <= 1 ? null : String(nextPage),
+                });
+              }}
+            />
+          </div>
         ) : null}
       </div>
 

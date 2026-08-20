@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 import Search from "@/components/admin/common/Search";
@@ -9,7 +10,7 @@ import {
   AdminReviewFeedbackToast,
   AdminReviewLoadingState,
 } from "@/components/admin/contents/AdminReviewListStates";
-import AdminListPagination from "@/components/admin/users/AdminListPagination";
+import AdminReviewPagination from "@/components/admin/contents/AdminReviewPagination";
 import { useAdminFaqDetail } from "@/hooks/useAdminFaqDetail";
 import { useAdminFaqs } from "@/hooks/useAdminFaqs";
 import {
@@ -19,6 +20,12 @@ import {
 } from "@/hooks/useAdminFaqMutations";
 import { ADMIN_FAQ_LIST_PAGE_LIMIT } from "@/lib/api/adminFaqs";
 import { getApiErrorMessage } from "@/lib/api/getApiErrorMessage";
+import {
+  buildUpdatedSearchParams,
+  parseBooleanSearchParam,
+  parseKeywordSearchParam,
+  parsePositivePageParam,
+} from "@/lib/utils/adminListSearchParams";
 import { cn } from "@/lib/utils/cn";
 import type {
   AdminFaq,
@@ -63,14 +70,23 @@ function FaqFilterChip({
 }
 
 export default function AdminFaqsPage() {
-  const [page, setPage] = useState(1);
-  const [keywordInput, setKeywordInput] = useState("");
-  const [keyword, setKeyword] = useState("");
-  const [visibility, setVisibility] = useState<VisibilityFilter>("ALL");
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const page = parsePositivePageParam(searchParams.get("page"));
+  const keyword = parseKeywordSearchParam(searchParams.get("keyword"));
+  const isVisibleParam = parseBooleanSearchParam(searchParams.get("isVisible"));
+  const visibility: VisibilityFilter =
+    isVisibleParam === undefined ? "ALL" : isVisibleParam ? "VISIBLE" : "HIDDEN";
+  const listStateKey = JSON.stringify({ page, keyword, visibility });
+
+  const [keywordDraft, setKeywordDraft] = useState({ key: "", value: "" });
   const [editorMode, setEditorMode] = useState<"create" | "edit" | null>(null);
   const [editingFaqId, setEditingFaqId] = useState<number | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<AdminFaq | null>(null);
   const [feedback, setFeedback] = useState<FaqFeedback | null>(null);
+  const keywordInput = keywordDraft.key === listStateKey ? keywordDraft.value : keyword;
 
   const listQuery = useMemo(
     () => ({
@@ -110,14 +126,27 @@ export default function AdminFaqsPage() {
     setEditingFaqId(null);
   };
 
+  const navigateWithParams = (updates: Record<string, string | null | undefined>) => {
+    const nextParams = buildUpdatedSearchParams(searchParams, updates);
+    const nextUrl = nextParams.size > 0 ? `${pathname}?${nextParams.toString()}` : pathname;
+
+    router.push(nextUrl, { scroll: false });
+  };
+
   const handleSearchSubmit = () => {
-    setKeyword(keywordInput.trim());
-    setPage(1);
+    const trimmedKeyword = keywordInput.trim();
+    navigateWithParams({
+      page: null,
+      keyword: trimmedKeyword || null,
+    });
   };
 
   const handleVisibilityChange = (nextVisibility: VisibilityFilter) => {
-    setVisibility(nextVisibility);
-    setPage(1);
+    navigateWithParams({
+      page: null,
+      isVisible:
+        nextVisibility === "ALL" ? null : String(nextVisibility === "VISIBLE"),
+    });
   };
 
   const handleCreate = async (payload: CreateAdminFaqPayload) => {
@@ -220,11 +249,21 @@ export default function AdminFaqsPage() {
               size="responsive"
               value={keywordInput}
               placeholder="질문 또는 답변 내용을 검색해 주세요."
-              onChange={setKeywordInput}
+              onChange={(nextKeyword) => {
+                setKeywordDraft({
+                  key: listStateKey,
+                  value: nextKeyword,
+                });
+              }}
               onClear={() => {
-                setKeywordInput("");
-                setKeyword("");
-                setPage(1);
+                setKeywordDraft({
+                  key: listStateKey,
+                  value: "",
+                });
+                navigateWithParams({
+                  page: null,
+                  keyword: null,
+                });
               }}
               onSubmit={handleSearchSubmit}
               className="w-full md:max-w-none"
@@ -266,17 +305,17 @@ export default function AdminFaqsPage() {
         </div>
 
         {pagination && !faqsQuery.isLoading && !faqsQuery.isError ? (
-          <AdminListPagination
-            pagination={pagination}
-            isPreviousDisabled={pagination.page <= 1}
-            isNextDisabled={!pagination.hasNext}
-            onPrevious={() => {
-              setPage((current) => Math.max(1, current - 1));
-            }}
-            onNext={() => {
-              setPage((current) => current + 1);
-            }}
-          />
+          <div className="border-t border-border px-5 py-4">
+            <AdminReviewPagination
+              pagination={pagination}
+              ariaLabel="FAQ 목록 페이지"
+              onChangePage={(nextPage) => {
+                navigateWithParams({
+                  page: nextPage <= 1 ? null : String(nextPage),
+                });
+              }}
+            />
+          </div>
         ) : null}
       </div>
 
@@ -344,7 +383,9 @@ export default function AdminFaqsPage() {
         />
       ) : null}
 
-      {feedback ? <AdminReviewFeedbackToast tone={feedback.tone} message={feedback.message} /> : null}
+      {feedback ? (
+        <AdminReviewFeedbackToast tone={feedback.tone} message={feedback.message} />
+      ) : null}
     </section>
   );
 }

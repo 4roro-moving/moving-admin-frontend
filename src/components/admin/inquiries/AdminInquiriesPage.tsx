@@ -19,6 +19,12 @@ import {
 } from "@/hooks/useAdminInquiryMutations";
 import { ADMIN_INQUIRY_LIST_PAGE_LIMIT } from "@/lib/api/adminInquiries";
 import { getApiErrorMessage } from "@/lib/api/getApiErrorMessage";
+import {
+  buildUpdatedSearchParams,
+  parseBooleanSearchParam,
+  parseKeywordSearchParam,
+  parsePositivePageParam,
+} from "@/lib/utils/adminListSearchParams";
 import { cn } from "@/lib/utils/cn";
 import type { AdminInquiryStatus } from "@/types/adminInquiry";
 
@@ -70,15 +76,22 @@ export default function AdminInquiriesPage() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const page = parsePositivePageParam(searchParams.get("page"));
+  const keyword = parseKeywordSearchParam(searchParams.get("keyword"));
+  const statusParam = searchParams.get("status");
+  const openOnly = parseBooleanSearchParam(searchParams.get("openOnly"));
   const selectedInquiryId = parseSelectedInquiryId(searchParams.get("inquiryId"));
+  const status: InquiryStatusFilter =
+    statusParam === "OPEN" || statusParam === "ANSWERED" || statusParam === "CLOSED"
+      ? statusParam
+      : "ALL";
+  const listStateKey = JSON.stringify({ page, keyword, status, openOnly });
 
   const [isSheetLayout, setIsSheetLayout] = useState(false);
-  const [page, setPage] = useState(1);
-  const [keywordInput, setKeywordInput] = useState("");
-  const [keyword, setKeyword] = useState("");
-  const [status, setStatus] = useState<InquiryStatusFilter>("ALL");
+  const [keywordDraft, setKeywordDraft] = useState({ key: "", value: "" });
   const [feedback, setFeedback] = useState<InquiryFeedback | null>(null);
   const hasInitializedSelectionRef = useRef(false);
+  const keywordInput = keywordDraft.key === listStateKey ? keywordDraft.value : keyword;
 
   const listQuery = useMemo(
     () => ({
@@ -86,8 +99,9 @@ export default function AdminInquiriesPage() {
       limit: ADMIN_INQUIRY_LIST_PAGE_LIMIT,
       keyword: keyword || undefined,
       status: status === "ALL" ? undefined : status,
+      openOnly,
     }),
-    [keyword, page, status],
+    [keyword, openOnly, page, status],
   );
 
   const inquiriesQuery = useAdminInquiries(listQuery);
@@ -201,14 +215,23 @@ export default function AdminInquiriesPage() {
   ]);
 
   const handleSearchSubmit = () => {
-    setKeyword(keywordInput.trim());
-    setPage(1);
+    const trimmedKeyword = keywordInput.trim();
     hasInitializedSelectionRef.current = false;
+    const nextParams = buildUpdatedSearchParams(searchParams, {
+      page: null,
+      keyword: trimmedKeyword || null,
+    });
+    const nextUrl = nextParams.size > 0 ? `${pathname}?${nextParams.toString()}` : pathname;
+    router.push(nextUrl, { scroll: false });
   };
 
   const handleChangePage = (nextPage: number) => {
     hasInitializedSelectionRef.current = false;
-    setPage(nextPage);
+    const nextParams = buildUpdatedSearchParams(searchParams, {
+      page: nextPage <= 1 ? null : String(nextPage),
+    });
+    const nextUrl = nextParams.size > 0 ? `${pathname}?${nextParams.toString()}` : pathname;
+    router.push(nextUrl, { scroll: false });
   };
 
   const handleSelectInquiry = (inquiryId: number) => {
@@ -312,36 +335,56 @@ export default function AdminInquiriesPage() {
                 label="전체"
                 active={status === "ALL"}
                 onClick={() => {
-                  setStatus("ALL");
-                  setPage(1);
                   hasInitializedSelectionRef.current = false;
+                  const nextParams = buildUpdatedSearchParams(searchParams, {
+                    page: null,
+                    status: null,
+                  });
+                  const nextUrl =
+                    nextParams.size > 0 ? `${pathname}?${nextParams.toString()}` : pathname;
+                  router.push(nextUrl, { scroll: false });
                 }}
               />
               <InquiryFilterChip
                 label="답변 대기"
                 active={status === "OPEN"}
                 onClick={() => {
-                  setStatus("OPEN");
-                  setPage(1);
                   hasInitializedSelectionRef.current = false;
+                  const nextParams = buildUpdatedSearchParams(searchParams, {
+                    page: null,
+                    status: "OPEN",
+                  });
+                  const nextUrl =
+                    nextParams.size > 0 ? `${pathname}?${nextParams.toString()}` : pathname;
+                  router.push(nextUrl, { scroll: false });
                 }}
               />
               <InquiryFilterChip
                 label="답변 완료"
                 active={status === "ANSWERED"}
                 onClick={() => {
-                  setStatus("ANSWERED");
-                  setPage(1);
                   hasInitializedSelectionRef.current = false;
+                  const nextParams = buildUpdatedSearchParams(searchParams, {
+                    page: null,
+                    status: "ANSWERED",
+                  });
+                  const nextUrl =
+                    nextParams.size > 0 ? `${pathname}?${nextParams.toString()}` : pathname;
+                  router.push(nextUrl, { scroll: false });
                 }}
               />
               <InquiryFilterChip
                 label="종료"
                 active={status === "CLOSED"}
                 onClick={() => {
-                  setStatus("CLOSED");
-                  setPage(1);
                   hasInitializedSelectionRef.current = false;
+                  const nextParams = buildUpdatedSearchParams(searchParams, {
+                    page: null,
+                    status: "CLOSED",
+                  });
+                  const nextUrl =
+                    nextParams.size > 0 ? `${pathname}?${nextParams.toString()}` : pathname;
+                  router.push(nextUrl, { scroll: false });
                 }}
               />
             </div>
@@ -351,12 +394,25 @@ export default function AdminInquiriesPage() {
                 size="responsive"
                 value={keywordInput}
                 placeholder="문의 제목을 검색해 주세요."
-                onChange={setKeywordInput}
+                onChange={(nextKeyword) => {
+                  setKeywordDraft({
+                    key: listStateKey,
+                    value: nextKeyword,
+                  });
+                }}
                 onClear={() => {
-                  setKeywordInput("");
-                  setKeyword("");
-                  setPage(1);
                   hasInitializedSelectionRef.current = false;
+                  setKeywordDraft({
+                    key: listStateKey,
+                    value: "",
+                  });
+                  const nextParams = buildUpdatedSearchParams(searchParams, {
+                    page: null,
+                    keyword: null,
+                  });
+                  const nextUrl =
+                    nextParams.size > 0 ? `${pathname}?${nextParams.toString()}` : pathname;
+                  router.push(nextUrl, { scroll: false });
                 }}
                 onSubmit={handleSearchSubmit}
                 className="w-full md:max-w-none"
