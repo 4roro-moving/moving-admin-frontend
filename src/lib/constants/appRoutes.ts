@@ -7,6 +7,7 @@ export const APP_ROUTES = {
   REPORTS: "/reports",
   NOTICES: "/notices",
   FAQS: "/faqs",
+  INQUIRIES: "/inquiries",
   TERMS: "/terms",
   CONTENTS: {
     REVIEWS: "/contents/reviews",
