@@ -35,7 +35,7 @@ export default function AdminCustomerDetailPage({ customerId }: { customerId: st
       <CustomerDetailHeader
         name={account.name}
         status={displayedAccountStatus}
-        onBack={() => router.push("/customers")}
+        onBack={() => router.back()}
         action={
           <CustomerStatusAction
             status={displayedAccountStatus}
