@@ -152,18 +152,26 @@ export default function CustomerEstimateRequests({
                         <span className="text-sm text-text-subtle">-</span>
                       )}
                     </div>
-                    <div>
-                      {item.confirmedEstimate?.cancelable ? (
+                    {item.confirmedEstimate?.cancelable ? (
+                      <div className="flex flex-col items-start gap-1">
                         <button
                           type="button"
-                          className="rounded-lg border border-border px-2.5 py-1.5 text-xs font-semibold text-text-secondary hover:bg-background-hover"
+                          disabled
+                          aria-describedby={`estimate-cancel-pending-${item.id}`}
+                          className="cursor-not-allowed rounded-lg border border-border px-2.5 py-1.5 text-xs font-semibold text-text-subtle opacity-60"
                         >
                           확정 견적 취소
                         </button>
-                      ) : (
-                        <span className="text-sm text-text-subtle">-</span>
-                      )}
-                    </div>
+                        <span
+                          id={`estimate-cancel-pending-${item.id}`}
+                          className="text-xs text-text-subtle"
+                        >
+                          준비 중
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="text-sm text-text-subtle">-</span>
+                    )}
                   </div>
                 );
               })}
