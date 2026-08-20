@@ -14,7 +14,7 @@ import { type TextVariantProp } from "@/components/admin/common/Text";
 import { cn } from "@/lib/utils/cn";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-4 transition-colors disabled:cursor-not-allowed aria-disabled:cursor-not-allowed",
+  "inline-flex items-center justify-center gap-modal-4 transition-colors disabled:cursor-not-allowed aria-disabled:cursor-not-allowed",
   {
     variants: {
       variant: {
@@ -24,14 +24,14 @@ const buttonVariants = cva(
           "border border-1 border-border-brand bg-background-surface text-text-brand hover:bg-background-brand-muted disabled:border-border-disabled disabled:text-text-disabled disabled:hover:bg-background-surface aria-disabled:border-border-disabled aria-disabled:text-text-disabled aria-disabled:hover:bg-background-surface",
       },
       size: {
-        sm: "h-57 min-w-[300px] rounded-16 p-16",
-        md: "h-57 min-w-[600px] rounded-16 p-16",
+        sm: "h-modal-57 min-w-[300px] rounded-16 p-modal-16",
+        md: "h-modal-57 min-w-[600px] rounded-16 p-modal-16",
         // Figma: Button/solid|outlined/CTA (대기 견적 카드)
-        cta: "h-54 min-w-0 rounded-12 p-16",
+        cta: "h-modal-54 min-w-0 rounded-modal-12 p-modal-16",
         // Figma: 대기 견적 상세 Desktop sidebar CTA (320×64, r16, 18 semibold)
-        detail: "h-64 min-w-0 w-full rounded-16 p-16",
+        detail: "h-modal-64 min-w-0 w-full rounded-16 p-modal-16",
         // Figma: Auth login CTA (Mobile h54 r12 / Tablet·Desktop h60 r16)
-        auth: "h-54 min-w-0 w-full rounded-12 p-16 md:h-60 md:rounded-16",
+        auth: "h-modal-54 min-w-0 w-full rounded-modal-12 p-modal-16 md:h-modal-60 md:rounded-16",
       },
       fullWidth: {
         true: "w-full",
@@ -43,7 +43,7 @@ const buttonVariants = cva(
       {
         variant: "outline",
         size: "cta",
-        class: "px-24 py-16 shadow-cta",
+        class: "px-modal-24 py-modal-16 shadow-cta",
       },
     ],
     defaultVariants: {

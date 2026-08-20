@@ -22,11 +22,11 @@ const ModalClose = ({
     <button
       type="button"
       className={cn(
-        "text-icon-default rounded-8 flex shrink-0 items-center justify-center transition-colors",
+        "text-icon-default rounded-modal-8 flex shrink-0 items-center justify-center transition-colors",
         disabled ? "cursor-not-allowed opacity-40" : "cursor-pointer",
-        size === "sm" && "size-24",
-        size === "md" && "size-36",
-        size === "responsive" && "size-24 xl:size-36",
+        size === "sm" && "size-modal-24",
+        size === "md" && "size-modal-36",
+        size === "responsive" && "size-modal-24 xl:size-modal-36",
         "hover:bg-background-hover hover:text-icon-default",
         "active:bg-background-hover",
         "focus-visible:ring-border-brand focus-visible:ring-2 focus-visible:outline-none",
@@ -38,9 +38,9 @@ const ModalClose = ({
     >
       <CloseIcon
         className={cn(
-          size === "sm" && "size-24",
-          size === "md" && "size-36",
-          size === "responsive" && "size-24 xl:size-36",
+          size === "sm" && "size-modal-24",
+          size === "md" && "size-modal-36",
+          size === "responsive" && "size-modal-24 xl:size-modal-36",
           iconClassName,
         )}
       />

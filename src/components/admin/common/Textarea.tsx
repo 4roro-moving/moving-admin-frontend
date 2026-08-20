@@ -21,13 +21,13 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         .join(" ") || undefined;
 
     return (
-      <div className="flex w-full flex-col gap-4">
+      <div className="flex w-full flex-col gap-modal-4">
         <textarea
           ref={ref}
           aria-invalid={!!error}
           aria-describedby={describedBy}
           className={cn(
-            "rounded-16 h-[180px] w-full border px-16 py-14",
+            "rounded-16 h-[180px] w-full border px-modal-16 py-modal-14",
             "border-border-default bg-background-surface text-text-primary transition-colors",
             "placeholder:text-text-placeholder disabled:bg-background-disabled disabled:text-text-disabled focus:outline-none",
             "hover:bg-background-hover",

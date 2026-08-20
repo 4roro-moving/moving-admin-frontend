@@ -1,125 +1,12 @@
 @import "tailwindcss";
-
-:root {
-  --background: #f4f6fb;
-  --foreground: #111827;
-  --surface: #ffffff;
-  --muted: #6b7280;
-  --border: #d9e0ea;
-  --brand: #0f172a;
-  --brand-foreground: #f8fafc;
-  --accent: #f9502e;
-  --accent-muted: #feeeea;
-  --sidebar: #111827;
-  --sidebar-foreground: #e5eefc;
-  --text-secondary: #474643;
-  --text-subtle: #999999;
-  --border-brand: #f9502e;
-  --background-hover: #efefef;
-  --background-muted: #f7f7f7;
-  --text-primary: #111111;
-  --text-placeholder: #999999;
-  --icon-default: #ababab;
-  --status-active-background: #eef8f1;
-  --status-active-foreground: #277a4c;
-  --status-active-ring: rgb(39 122 76 / 20%);
-  --status-suspended-background: #ffeef0;
-  --status-suspended-foreground: #d7354b;
-  --status-suspended-ring: rgb(215 53 75 / 20%);
-  --status-neutral-background: #f1f5f9;
-  --status-neutral-foreground: #475569;
-  --status-progress-background: #feeeea;
-  --status-progress-foreground: #f9502e;
-  --status-confirmed-background: #f3f0ff;
-  --status-confirmed-foreground: #6d28d9;
-  --report-pending-background: #ffeef0;
-  --report-pending-foreground: #d7354b;
-  --input-shadow: 0 4px 4px -1px rgb(249 80 46 / 20%);
-  --select-shadow: 4px 4px 10px 0 rgb(238 238 238 / 20%);
-  --font-size-12: 0.75rem;
-  --font-size-13: 0.8125rem;
-  --font-size-14: 0.875rem;
-  --font-size-16: 1rem;
-  --font-size-18: 1.125rem;
-  --font-size-20: 1.25rem;
-  --font-size-24: 1.5rem;
-  --line-height-18: 1.125rem;
-  --line-height-22: 1.375rem;
-  --line-height-24: 1.5rem;
-  --line-height-26: 1.625rem;
-  --line-height-32: 2rem;
-}
-
-@theme inline {
-  --color-yellow-100: #ffc149;
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-surface: var(--surface);
-  --color-muted: var(--muted);
-  --color-border: var(--border);
-  --color-brand: var(--brand);
-  --color-brand-foreground: var(--brand-foreground);
-  --color-accent: var(--accent);
-  --color-accent-muted: var(--accent-muted);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-text-secondary: var(--text-secondary);
-  --color-text-subtle: var(--text-subtle);
-  --color-border-brand: var(--border-brand);
-  --color-background-hover: var(--background-hover);
-  --color-background-muted: var(--background-muted);
-  --color-text-primary: var(--text-primary);
-  --color-text-placeholder: var(--text-placeholder);
-  --color-icon-default: var(--icon-default);
-  --color-status-active-background: var(--status-active-background);
-  --color-status-active-foreground: var(--status-active-foreground);
-  --color-status-active-ring: var(--status-active-ring);
-  --color-status-suspended-background: var(--status-suspended-background);
-  --color-status-suspended-foreground: var(--status-suspended-foreground);
-  --color-status-suspended-ring: var(--status-suspended-ring);
-  --color-status-neutral-background: var(--status-neutral-background);
-  --color-status-neutral-foreground: var(--status-neutral-foreground);
-  --color-status-progress-background: var(--status-progress-background);
-  --color-status-progress-foreground: var(--status-progress-foreground);
-  --color-status-confirmed-background: var(--status-confirmed-background);
-  --color-status-confirmed-foreground: var(--status-confirmed-foreground);
-  --color-report-pending-background: var(--report-pending-background);
-  --color-report-pending-foreground: var(--report-pending-foreground);
-  --color-rating-fill: var(--color-yellow-100);
-  --shadow-input: var(--input-shadow);
-  --shadow-select: var(--select-shadow);
-  --radius-20: 1.25rem;
-  --radius-16: 1rem;
-  --font-weight-regular: 400;
-  --font-weight-medium: 500;
-  --font-weight-semibold: 600;
-  --font-weight-bold: 700;
-  --font-sans: "Pretendard", "Noto Sans KR", Arial, Helvetica, sans-serif;
-  --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-
-  --animate-modal-overlay-in: modal-overlay-in 180ms ease-out both;
-  --animate-modal-content-in: modal-content-in 220ms
-    cubic-bezier(0.16, 1, 0.3, 1) both;
-  --animate-modal-sheet-in: modal-sheet-in 240ms cubic-bezier(0.16, 1, 0.3, 1)
-    both;
-  /* exit — Modal presence 언마운트 지연과 맞춤 (180ms) */
-  --animate-modal-overlay-out: modal-overlay-out 160ms ease-in both;
-  --animate-modal-content-out: modal-content-out 180ms
-    cubic-bezier(0.4, 0, 1, 1) both;
-  --animate-modal-sheet-out: modal-sheet-out 180ms cubic-bezier(0.4, 0, 1, 1)
-    both;
-  --animate-dropdown-in: dropdown-in 180ms cubic-bezier(0.16, 1, 0.3, 1) both;
-  --animate-dropdown-out: dropdown-out 160ms cubic-bezier(0.4, 0, 1, 1) both;
-}
+@import "../styles/tokens.theme.css";
 
 * {
   box-sizing: border-box;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans);
+  @apply bg-background text-foreground font-sans;
 }
 
 a {

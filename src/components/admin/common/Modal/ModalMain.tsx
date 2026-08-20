@@ -141,12 +141,12 @@ const ModalMain = ({
     >
       <div
         className={cn(
-          "bg-overlay-scrim fixed inset-0 z-9999 flex items-center justify-center",
+          "bg-overlay-scrim fixed inset-0 z-modal flex items-center justify-center",
           overlayMotionClassName,
           !isVisible && "pointer-events-none",
           presentation === "bottom-sheet" && "items-end px-0",
           presentation === "responsive" &&
-            "items-end px-0 md:items-center md:px-24",
+            "items-end px-0 md:items-center md:px-modal-24",
           overlayClassName,
         )}
         onClick={handleOverlayClick}
@@ -161,21 +161,21 @@ const ModalMain = ({
           aria-describedby={hasDescription ? descriptionId : undefined}
           tabIndex={-1}
           className={cn(
-            "rounded-24 bg-background-surface relative flex flex-col items-center gap-40 p-40 shadow-lg focus:outline-none",
+            "rounded-modal-24 bg-background-surface relative flex flex-col items-center gap-modal-40 p-modal-40 shadow-lg focus:outline-none",
             panelMotionClassName,
             presentation === "bottom-sheet" &&
-              "rounded-t-32 w-full max-w-none rounded-b-none",
+              "rounded-t-modal-32 w-full max-w-none rounded-b-none",
             presentation === "responsive" &&
-              "rounded-t-32 md:rounded-32 w-full max-w-none rounded-b-none",
-            size === "sm" && "w-full max-w-73.25",
+              "rounded-t-modal-32 md:rounded-modal-32 w-full max-w-none rounded-b-none",
+            size === "sm" && "w-full max-w-[18.3125rem]",
             size === "md" &&
               (presentation === "responsive"
-                ? "md:w-93.75 md:max-w-93.75"
-                : "w-full max-w-93.75"),
+                ? "md:w-[23.4375rem] md:max-w-[23.4375rem]"
+                : "w-full max-w-[23.4375rem]"),
             size === "lg" &&
               (presentation === "responsive"
-                ? "md:w-93.75 md:max-w-93.75 xl:w-full xl:max-w-152"
-                : "w-full max-w-152"),
+                ? "md:w-[23.4375rem] md:max-w-[23.4375rem] xl:w-full xl:max-w-[38rem]"
+                : "w-full max-w-[38rem]"),
             className,
           )}
         >

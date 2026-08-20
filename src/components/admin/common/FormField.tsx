@@ -66,14 +66,14 @@ const FormField = ({
   );
 
   return (
-    <div className={cn("flex flex-col gap-10", className)}>
-      <div className="flex w-full flex-col gap-4">
+    <div className={cn("flex flex-col gap-modal-10", className)}>
+      <div className="flex w-full flex-col gap-modal-4">
         {labelFor ? (
           <Text
             as="label"
             htmlFor={labelFor}
             variant={resolvedLabelVariant}
-            className={cn(labelClassName, "flex items-center gap-4")}
+            className={cn(labelClassName, "flex items-center gap-modal-4")}
           >
             {labelContent}
           </Text>
@@ -82,7 +82,7 @@ const FormField = ({
             as="p"
             id={labelId}
             variant={resolvedLabelVariant}
-            className={cn(labelClassName, "flex items-center gap-4")}
+            className={cn(labelClassName, "flex items-center gap-modal-4")}
           >
             {labelContent}
           </Text>
