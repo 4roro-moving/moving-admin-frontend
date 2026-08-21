@@ -5,6 +5,7 @@ export default async function MoverDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  await params;
-  return <AdminMoverDetailPage />;
+  const { id } = await params;
+
+  return <AdminMoverDetailPage moverId={id} />;
 }

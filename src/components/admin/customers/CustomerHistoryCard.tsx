@@ -6,6 +6,7 @@ interface CustomerHistoryCardProps {
   title: string;
   totalCount: number;
   children: ReactNode;
+  summaryLabel?: string;
 }
 
 export function CustomerHistoryEmpty() {
@@ -20,6 +21,7 @@ export default function CustomerHistoryCard({
   title,
   totalCount,
   children,
+  summaryLabel = "최근 5건",
 }: CustomerHistoryCardProps) {
   return (
     <section className="overflow-hidden rounded-20 border border-border bg-surface shadow-select">
@@ -28,7 +30,7 @@ export default function CustomerHistoryCard({
           {title}
         </Text>
         <Text as="span" variant="sm-medium" className="text-muted">
-          총 {totalCount}건 · 최근 5건
+          총 {totalCount}건 · {summaryLabel}
         </Text>
       </header>
       {children}

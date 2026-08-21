@@ -46,6 +46,8 @@ export const QUERY_KEYS = {
   },
   MOVERS: {
     ALL: ["admin", "movers"] as const,
+    DETAIL_PLACEHOLDER: ["admin", "movers", "detail"] as const,
+    DETAIL: (moverId: string) => ["admin", "movers", "detail", moverId] as const,
     LIST: (params: {
       page: number;
       limit: number;
