@@ -11,23 +11,23 @@ function getDateParts(value: string, withTime: boolean) {
   }).formatToParts(date);
 }
 
-function value(
+function getPartValue(
   parts: Intl.DateTimeFormatPart[],
   type: Intl.DateTimeFormatPartTypes,
 ) {
   return parts.find((part) => part.type === type)?.value ?? "";
 }
 
-export function formatCustomerDetailDate(input: string) {
+export function formatKoreanDate(input: string) {
   const parts = getDateParts(input, false);
   return parts
-    ? `${value(parts, "year")}.${value(parts, "month")}.${value(parts, "day")}`
+    ? `${getPartValue(parts, "year")}.${getPartValue(parts, "month")}.${getPartValue(parts, "day")}`
     : "";
 }
 
-export function formatCustomerDetailDateTime(input: string) {
+export function formatKoreanDateTime(input: string) {
   const parts = getDateParts(input, true);
   return parts
-    ? `${value(parts, "year")}.${value(parts, "month")}.${value(parts, "day")} ${value(parts, "hour")}:${value(parts, "minute")}`
+    ? `${getPartValue(parts, "year")}.${getPartValue(parts, "month")}.${getPartValue(parts, "day")} ${getPartValue(parts, "hour")}:${getPartValue(parts, "minute")}`
     : "";
 }

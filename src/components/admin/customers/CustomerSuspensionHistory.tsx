@@ -2,7 +2,7 @@ import Text from "@/components/admin/common/Text";
 import CustomerHistoryCard, {
   CustomerHistoryEmpty,
 } from "@/components/admin/customers/CustomerHistoryCard";
-import { formatCustomerDetailDateTime } from "@/lib/utils/adminCustomerDetail";
+import { formatKoreanDateTime } from "@/lib/utils/date";
 import { cn } from "@/lib/utils/cn";
 import type { AdminCustomerDetail } from "@/types/adminCustomerDetail";
 
@@ -60,7 +60,7 @@ export default function CustomerSuspensionHistory({
                     variant="sm-medium"
                     className="text-text-secondary"
                   >
-                    {formatCustomerDetailDateTime(item.createdAt)}
+                    {formatKoreanDateTime(item.createdAt)}
                   </Text>
                   <Text as="p" variant="md-medium" className="text-foreground">
                     {item.admin.name}

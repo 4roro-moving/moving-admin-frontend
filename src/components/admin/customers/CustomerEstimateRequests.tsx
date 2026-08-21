@@ -3,9 +3,9 @@ import CustomerHistoryCard, {
   CustomerHistoryEmpty,
 } from "@/components/admin/customers/CustomerHistoryCard";
 import {
-  formatCustomerDetailDate,
-  formatCustomerDetailDateTime,
-} from "@/lib/utils/adminCustomerDetail";
+  formatKoreanDate,
+  formatKoreanDateTime,
+} from "@/lib/utils/date";
 import { cn } from "@/lib/utils/cn";
 import type { AdminEstimateCancellationTarget } from "@/types/adminEstimate";
 import type { AdminCustomerDetail } from "@/types/adminCustomerDetail";
@@ -105,7 +105,7 @@ export default function CustomerEstimateRequests({
                       className="flex flex-col gap-1 text-foreground"
                     >
                       <span className="font-semibold">
-                        {formatCustomerDetailDate(item.moveDate)}
+                        {formatKoreanDate(item.moveDate)}
                       </span>
                       <span>{moveTypeLabel[item.moveType]}</span>
                     </Text>
@@ -114,7 +114,7 @@ export default function CustomerEstimateRequests({
                       variant="md-medium"
                       className="text-foreground"
                     >
-                      {formatCustomerDetailDate(item.createdAt)}
+                      {formatKoreanDate(item.createdAt)}
                     </Text>
                     <div>
                       <span
@@ -152,7 +152,7 @@ export default function CustomerEstimateRequests({
                           variant="sm-medium"
                           className="text-text-secondary"
                         >
-                          {formatCustomerDetailDateTime(time)} {label}
+                          {formatKoreanDateTime(time)} {label}
                         </Text>
                       ) : (
                         <span className="text-sm text-text-subtle">-</span>

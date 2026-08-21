@@ -9,7 +9,7 @@ import Modal, {
 import Text from "@/components/admin/common/Text";
 import Textarea from "@/components/admin/common/Textarea";
 import { getApiErrorMessage } from "@/lib/api/getApiErrorMessage";
-import { formatCustomerDetailDate } from "@/lib/utils/adminCustomerDetail";
+import { formatKoreanDate } from "@/lib/utils/date";
 import { cn } from "@/lib/utils/cn";
 import type {
   AdminEstimateCancellationPayload,
@@ -131,7 +131,7 @@ export default function EstimateCancellationModal({
                 이사 예정일
               </Text>
               <Text as="dd" variant="md-medium" className="text-text-primary">
-                {formatCustomerDetailDate(target.moveDate)}
+                {formatKoreanDate(target.moveDate)}
               </Text>
             </div>
             <div className="flex flex-col gap-modal-4">

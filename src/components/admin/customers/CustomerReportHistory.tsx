@@ -2,7 +2,7 @@ import Text from "@/components/admin/common/Text";
 import CustomerHistoryCard, {
   CustomerHistoryEmpty,
 } from "@/components/admin/customers/CustomerHistoryCard";
-import { formatCustomerDetailDate } from "@/lib/utils/adminCustomerDetail";
+import { formatKoreanDate } from "@/lib/utils/date";
 import { cn } from "@/lib/utils/cn";
 import type { AdminCustomerDetail } from "@/types/adminCustomerDetail";
 
@@ -81,7 +81,7 @@ function Table({
                 {status[item.status]}
               </span>
               <Text as="p" variant="sm-medium" className="text-text-secondary">
-                {formatCustomerDetailDate(item.createdAt)}
+                {formatKoreanDate(item.createdAt)}
               </Text>
               <button
                 type="button"
