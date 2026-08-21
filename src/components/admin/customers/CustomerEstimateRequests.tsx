@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import Text from "@/components/admin/common/Text";
 import UserHistoryCard, {
   UserHistoryEmpty,
@@ -6,6 +8,7 @@ import {
   formatKoreanDate,
   formatKoreanDateTime,
 } from "@/lib/utils/date";
+import { APP_ROUTES } from "@/lib/constants/appRoutes";
 import { cn } from "@/lib/utils/cn";
 import type { AdminEstimateCancellationTarget } from "@/types/adminEstimate";
 import type { AdminCustomerDetail } from "@/types/adminCustomerDetail";
@@ -157,8 +160,15 @@ export default function CustomerEstimateRequests({
                           className="mt-1 text-text-secondary"
                         >
                           확정 견적 정보:{" "}
-                          {item.confirmedEstimate.mover.nickname}(
-                          {item.confirmedEstimate.mover.name}) ·{" "}
+                          <Link
+                            href={`${APP_ROUTES.MOVERS}/${item.confirmedEstimate.mover.id}`}
+                            className="font-semibold text-foreground underline decoration-1 decoration-text-secondary underline-offset-2 hover:text-text-secondary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                            title={`${item.confirmedEstimate.mover.nickname} 기사 상세 보기`}
+                          >
+                            {item.confirmedEstimate.mover.nickname}(
+                            {item.confirmedEstimate.mover.name})
+                          </Link>{" "}
+                          ·{" "}
                           {item.confirmedEstimate.price.toLocaleString("ko-KR")}
                           원
                         </Text>
