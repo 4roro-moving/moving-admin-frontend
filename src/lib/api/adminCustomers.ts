@@ -6,7 +6,11 @@ import type {
   AdminCustomerListQuery,
   AdminCustomerListResult,
 } from "@/types/adminCustomer";
-import type { AdminCustomerDetail } from "@/types/adminCustomerDetail";
+import type {
+  AdminCustomerDetail,
+  AdminCustomerStatusUpdatePayload,
+  AdminCustomerStatusUpdateResult,
+} from "@/types/adminCustomerDetail";
 
 export const ADMIN_CUSTOMER_LIST_DEFAULT_LIMIT = 20;
 
@@ -39,6 +43,18 @@ export async function fetchAdminCustomerDetail(
 ): Promise<AdminCustomerDetail> {
   const result = await fetchInstance.get<ApiResponse<AdminCustomerDetail>>(
     API_ROUTES.ADMIN.USERS.DETAIL(customerId),
+  );
+
+  return result.data;
+}
+
+export async function updateAdminCustomerStatus(
+  customerId: string,
+  payload: AdminCustomerStatusUpdatePayload,
+): Promise<AdminCustomerStatusUpdateResult> {
+  const result = await fetchInstance.patch<ApiResponse<AdminCustomerStatusUpdateResult>>(
+    API_ROUTES.ADMIN.USERS.STATUS(customerId),
+    payload,
   );
 
   return result.data;

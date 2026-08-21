@@ -3,7 +3,7 @@ import CustomerHistoryCard, {
   CustomerHistoryEmpty,
 } from "@/components/admin/customers/CustomerHistoryCard";
 import { StarIcon } from "@/icons";
-import { formatCustomerDetailDate } from "@/lib/utils/adminCustomerDetail";
+import { formatKoreanDate } from "@/lib/utils/date";
 import { cn } from "@/lib/utils/cn";
 import type { AdminCustomerDetail } from "@/types/adminCustomerDetail";
 
@@ -54,7 +54,7 @@ export default function CustomerReviewHistory({
                   variant="xs-medium"
                   className="text-text-subtle"
                 >
-                  {formatCustomerDetailDate(item.createdAt)}
+                  {formatKoreanDate(item.createdAt)}
                 </Text>
               </div>
               <p className="mt-3 text-sm leading-6 text-text-secondary">

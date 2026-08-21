@@ -3,10 +3,11 @@ import CustomerHistoryCard, {
   CustomerHistoryEmpty,
 } from "@/components/admin/customers/CustomerHistoryCard";
 import {
-  formatCustomerDetailDate,
-  formatCustomerDetailDateTime,
-} from "@/lib/utils/adminCustomerDetail";
+  formatKoreanDate,
+  formatKoreanDateTime,
+} from "@/lib/utils/date";
 import { cn } from "@/lib/utils/cn";
+import type { AdminEstimateCancellationTarget } from "@/types/adminEstimate";
 import type { AdminCustomerDetail } from "@/types/adminCustomerDetail";
 
 const moveTypeLabel = {
@@ -36,22 +37,26 @@ const estimateStatusClass = {
 const statusBadgeClass = "inline-flex rounded-full px-2.5 py-1 text-xs font-semibold";
 
 interface CustomerEstimateRequestsProps {
+  customerName: string;
   history: AdminCustomerDetail["estimateRequests"];
+  onCancelConfirmedEstimate: (target: AdminEstimateCancellationTarget) => void;
 }
 
 export default function CustomerEstimateRequests({
+  customerName,
   history,
+  onCancelConfirmedEstimate,
 }: CustomerEstimateRequestsProps) {
   return (
-    <CustomerHistoryCard title="견적 요청 이력" totalCount={history.totalCount}>
+    <div id="estimate-requests" className="scroll-mt-6">
+      <CustomerHistoryCard title="견적 요청 이력" totalCount={history.totalCount}>
       {history.items.length === 0 ? (
         <CustomerHistoryEmpty />
       ) : (
         <div className="overflow-x-auto">
-          <div className="min-w-[1120px]">
-            <div className="grid grid-cols-[8rem_8rem_8rem_8rem_minmax(18rem,1fr)_11rem_8rem] gap-4 border-b border-border bg-background-muted px-5 py-3 text-xs font-semibold text-muted">
-              <span>이사 예정일</span>
-              <span>이사 유형</span>
+          <div className="min-w-[1040px]">
+            <div className="grid grid-cols-[9rem_7rem_8rem_minmax(16rem,1fr)_10rem_8rem] gap-4 border-b border-border bg-background-muted px-5 py-3 text-xs font-semibold text-muted">
+              <span>이사 정보</span>
               <span>요청 등록일</span>
               <span>상태</span>
               <span>견적/확정 정보</span>
@@ -92,28 +97,24 @@ export default function CustomerEstimateRequests({
                 return (
                   <div
                     key={item.id}
-                    className="grid grid-cols-[8rem_8rem_8rem_8rem_minmax(18rem,1fr)_11rem_8rem] gap-4 px-5 py-4"
+                    className="grid grid-cols-[9rem_7rem_8rem_minmax(16rem,1fr)_10rem_8rem] gap-4 px-5 py-4"
                   >
                     <Text
-                      as="p"
-                      variant="md-semibold"
-                      className="text-foreground"
+                      as="div"
+                      variant="md-medium"
+                      className="flex flex-col gap-1 text-foreground"
                     >
-                      {formatCustomerDetailDate(item.moveDate)}
+                      <span className="font-semibold">
+                        {formatKoreanDate(item.moveDate)}
+                      </span>
+                      <span>{moveTypeLabel[item.moveType]}</span>
                     </Text>
                     <Text
                       as="p"
                       variant="md-medium"
                       className="text-foreground"
                     >
-                      {moveTypeLabel[item.moveType]}
-                    </Text>
-                    <Text
-                      as="p"
-                      variant="md-medium"
-                      className="text-foreground"
-                    >
-                      {formatCustomerDetailDate(item.createdAt)}
+                      {formatKoreanDate(item.createdAt)}
                     </Text>
                     <div>
                       <span
@@ -151,32 +152,37 @@ export default function CustomerEstimateRequests({
                           variant="sm-medium"
                           className="text-text-secondary"
                         >
-                          {formatCustomerDetailDateTime(time)} {label}
+                          {formatKoreanDateTime(time)} {label}
                         </Text>
                       ) : (
                         <span className="text-sm text-text-subtle">-</span>
                       )}
                     </div>
-                    {item.confirmedEstimate?.cancelable ? (
-                      <div className="flex flex-col items-start gap-1">
-                        <button
-                          type="button"
-                          disabled
-                          aria-describedby={`estimate-cancel-pending-${item.id}`}
-                          className="cursor-not-allowed rounded-lg border border-border px-2.5 py-1.5 text-xs font-semibold text-text-subtle opacity-60"
-                        >
-                          확정 견적 취소
-                        </button>
-                        <span
-                          id={`estimate-cancel-pending-${item.id}`}
-                          className="text-xs text-text-subtle"
-                        >
-                          준비 중
-                        </span>
-                      </div>
-                    ) : (
-                      <span className="text-sm text-text-subtle">-</span>
-                    )}
+                    <div>
+                      {item.confirmedEstimate?.cancelable ? (
+                        <div className="flex items-start">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (!item.confirmedEstimate) return;
+                              onCancelConfirmedEstimate({
+                                estimateId: item.confirmedEstimate.id,
+                                customerName,
+                                moverName: item.confirmedEstimate.mover.name,
+                                moverNickname: item.confirmedEstimate.mover.nickname,
+                                moveDate: item.moveDate,
+                                price: item.confirmedEstimate.price,
+                              });
+                            }}
+                            className="rounded-lg border border-border px-2.5 py-1.5 text-xs font-semibold text-text-secondary hover:bg-background-hover"
+                          >
+                            확정 견적 취소
+                          </button>
+                        </div>
+                      ) : (
+                        <span className="text-sm text-text-subtle">-</span>
+                      )}
+                    </div>
                   </div>
                 );
               })}
@@ -184,6 +190,7 @@ export default function CustomerEstimateRequests({
           </div>
         </div>
       )}
-    </CustomerHistoryCard>
+      </CustomerHistoryCard>
+    </div>
   );
 }
