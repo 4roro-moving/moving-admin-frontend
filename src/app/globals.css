@@ -26,6 +26,12 @@
   --status-suspended-background: #ffeef0;
   --status-suspended-foreground: #d7354b;
   --status-suspended-ring: rgb(215 53 75 / 20%);
+  --status-neutral-background: #f1f5f9;
+  --status-neutral-foreground: #475569;
+  --status-progress-background: #feeeea;
+  --status-progress-foreground: #f9502e;
+  --status-confirmed-background: #f3f0ff;
+  --status-confirmed-foreground: #6d28d9;
   --report-pending-background: #ffeef0;
   --report-pending-foreground: #d7354b;
   --input-shadow: 0 4px 4px -1px rgb(249 80 46 / 20%);
@@ -71,6 +77,12 @@
   --color-status-suspended-background: var(--status-suspended-background);
   --color-status-suspended-foreground: var(--status-suspended-foreground);
   --color-status-suspended-ring: var(--status-suspended-ring);
+  --color-status-neutral-background: var(--status-neutral-background);
+  --color-status-neutral-foreground: var(--status-neutral-foreground);
+  --color-status-progress-background: var(--status-progress-background);
+  --color-status-progress-foreground: var(--status-progress-foreground);
+  --color-status-confirmed-background: var(--status-confirmed-background);
+  --color-status-confirmed-foreground: var(--status-confirmed-foreground);
   --color-report-pending-background: var(--report-pending-background);
   --color-report-pending-foreground: var(--report-pending-foreground);
   --color-rating-fill: var(--color-yellow-100);

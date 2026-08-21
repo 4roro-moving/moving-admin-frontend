@@ -1,10 +1,12 @@
 import { fetchInstance } from "@/lib/api/fetchInstance";
 import { API_ROUTES } from "@/lib/constants/apiRoutes";
+import type { ApiResponse } from "@/types/api";
 import type {
   AdminCustomerListItem,
   AdminCustomerListQuery,
   AdminCustomerListResult,
 } from "@/types/adminCustomer";
+import type { AdminCustomerDetail } from "@/types/adminCustomerDetail";
 
 export const ADMIN_CUSTOMER_LIST_DEFAULT_LIMIT = 20;
 
@@ -30,4 +32,14 @@ export async function fetchAdminCustomers(
   );
 
   return { items: result.data, pagination: result.pagination };
+}
+
+export async function fetchAdminCustomerDetail(
+  customerId: string,
+): Promise<AdminCustomerDetail> {
+  const result = await fetchInstance.get<ApiResponse<AdminCustomerDetail>>(
+    API_ROUTES.ADMIN.USERS.DETAIL(customerId),
+  );
+
+  return result.data;
 }
