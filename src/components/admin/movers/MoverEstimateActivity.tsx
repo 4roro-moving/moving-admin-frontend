@@ -7,6 +7,7 @@ import UserHistoryCard, {
 import { formatKoreanDate, formatKoreanDateTime } from "@/lib/utils/date";
 import { cn } from "@/lib/utils/cn";
 import { APP_ROUTES } from "@/lib/constants/appRoutes";
+import type { AdminEstimateCancellationTarget } from "@/types/adminEstimate";
 import type { AdminMoverDetail } from "@/types/adminMoverDetail";
 
 const inProgressStatusLabel = {
@@ -70,18 +71,28 @@ function getRecentStatusDate(
 
 interface MoverEstimateActivityProps {
   activity: AdminMoverDetail["estimateActivity"];
+  moverName: string;
+  moverNickname: string;
+  onCancelConfirmedEstimate: (target: AdminEstimateCancellationTarget) => void;
 }
 
 function InProgressEstimates({
   history,
+  moverName,
+  moverNickname,
+  onCancelConfirmedEstimate,
 }: {
   history: AdminMoverDetail["estimateActivity"]["inProgress"];
+  moverName: string;
+  moverNickname: string;
+  onCancelConfirmedEstimate: (target: AdminEstimateCancellationTarget) => void;
 }) {
   return (
-    <UserHistoryCard
-      title="진행 중 견적 활동"
-      totalCount={history.totalCount}
-    >
+    <div id="in-progress-estimates" className="scroll-mt-6">
+      <UserHistoryCard
+        title="진행 중 견적 활동"
+        totalCount={history.totalCount}
+      >
       {history.items.length ? (
         <div>
           <div className="grid grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)_minmax(0,1.3fr)_minmax(0,0.9fr)_minmax(0,0.8fr)] gap-3 border-b border-border bg-background-muted px-5 py-3 text-xs font-semibold text-muted">
@@ -134,22 +145,24 @@ function InProgressEstimates({
                   <Text as="p" variant="md-semibold" className="text-foreground">
                     {item.price.toLocaleString("ko-KR")}원
                   </Text>
-                  {item.cancelable ? (
+                  {item.status === "CONFIRMED" && item.cancelable ? (
                     <div className="flex flex-col items-start gap-1">
                       <button
                         type="button"
-                        disabled
-                        aria-describedby={`mover-estimate-cancel-pending-${item.id}`}
-                        className="cursor-not-allowed rounded-lg border border-border px-2.5 py-1.5 text-xs font-semibold text-text-subtle opacity-60"
+                        onClick={() =>
+                          onCancelConfirmedEstimate({
+                            estimateId: item.id,
+                            customerName: item.customer.name,
+                            moverName,
+                            moverNickname,
+                            moveDate: item.moveDate,
+                            price: item.price,
+                          })
+                        }
+                        className="rounded-lg border border-border px-2.5 py-1.5 text-xs font-semibold text-text-secondary hover:bg-background-hover"
                       >
                         견적 취소
                       </button>
-                      <span
-                        id={`mover-estimate-cancel-pending-${item.id}`}
-                        className="text-xs text-text-subtle"
-                      >
-                        준비 중
-                      </span>
                     </div>
                   ) : (
                     <span className="text-sm text-text-subtle">-</span>
@@ -161,7 +174,8 @@ function InProgressEstimates({
       ) : (
         <UserHistoryEmpty />
       )}
-    </UserHistoryCard>
+      </UserHistoryCard>
+    </div>
   );
 }
 
@@ -236,10 +250,18 @@ function RecentEstimates({
 
 export default function MoverEstimateActivity({
   activity,
+  moverName,
+  moverNickname,
+  onCancelConfirmedEstimate,
 }: MoverEstimateActivityProps) {
   return (
     <div className="grid gap-6 xl:grid-cols-2">
-      <InProgressEstimates history={activity.inProgress} />
+      <InProgressEstimates
+        history={activity.inProgress}
+        moverName={moverName}
+        moverNickname={moverNickname}
+        onCancelConfirmedEstimate={onCancelConfirmedEstimate}
+      />
       <RecentEstimates history={activity.recent} />
     </div>
   );
