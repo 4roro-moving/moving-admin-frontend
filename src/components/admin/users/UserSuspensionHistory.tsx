@@ -1,10 +1,9 @@
 import Text from "@/components/admin/common/Text";
-import CustomerHistoryCard, {
-  CustomerHistoryEmpty,
-} from "@/components/admin/customers/CustomerHistoryCard";
+import UserHistoryCard, {
+  UserHistoryEmpty,
+} from "@/components/admin/users/UserHistoryCard";
 import { formatKoreanDateTime } from "@/lib/utils/date";
 import { cn } from "@/lib/utils/cn";
-import type { AdminCustomerDetail } from "@/types/adminCustomerDetail";
 
 const actionLabel = { SUSPEND: "계정 정지", RELEASE: "정지 해제" } as const;
 
@@ -13,18 +12,30 @@ const suspensionActionClass = {
   RELEASE: "bg-status-active-background text-status-active-foreground",
 } as const;
 
-interface CustomerSuspensionHistoryProps {
-  history: AdminCustomerDetail["suspensionHistory"];
+interface SuspensionHistory {
+  totalCount: number;
+  items: Array<{
+    id: number;
+    action: "SUSPEND" | "RELEASE";
+    reason: string;
+    internalNote: string | null;
+    createdAt: string;
+    admin: {
+      id: string;
+      name: string;
+    };
+  }>;
 }
 
-export default function CustomerSuspensionHistory({
+interface UserSuspensionHistoryProps {
+  history: SuspensionHistory;
+}
+
+export default function UserSuspensionHistory({
   history,
-}: CustomerSuspensionHistoryProps) {
+}: UserSuspensionHistoryProps) {
   return (
-    <CustomerHistoryCard
-      title="계정 정지/해제 이력"
-      totalCount={history.totalCount}
-    >
+    <UserHistoryCard title="계정 정지/해제 이력" totalCount={history.totalCount}>
       {history.items.length ? (
         <div className="overflow-x-auto">
           <div className="min-w-[860px]">
@@ -71,8 +82,8 @@ export default function CustomerSuspensionHistory({
           </div>
         </div>
       ) : (
-        <CustomerHistoryEmpty />
+        <UserHistoryEmpty />
       )}
-    </CustomerHistoryCard>
+    </UserHistoryCard>
   );
 }

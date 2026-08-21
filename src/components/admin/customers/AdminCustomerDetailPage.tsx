@@ -3,13 +3,13 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import CustomerAccountInfo from "@/components/admin/customers/CustomerAccountInfo";
-import CustomerDetailHeader from "@/components/admin/customers/CustomerDetailHeader";
 import CustomerDetailHistories from "@/components/admin/customers/CustomerDetailHistories";
 import CustomerProfileInfo from "@/components/admin/customers/CustomerProfileInfo";
 import CustomerStatusAction from "@/components/admin/customers/CustomerStatusAction";
 import EstimateCancellationModal from "@/components/admin/estimates/EstimateCancellationModal";
+import AdminAccountInfo from "@/components/admin/users/AdminAccountInfo";
 import AccountRestrictionModal from "@/components/admin/users/AccountRestrictionModal";
+import UserDetailHeader from "@/components/admin/users/UserDetailHeader";
 import { useAdminCustomerDetail } from "@/hooks/useAdminCustomerDetail";
 import { useAdminEstimateCancellationMutation } from "@/hooks/useAdminEstimateCancellationMutation";
 import { useAdminCustomerStatusMutation } from "@/hooks/useAdminCustomerStatusMutation";
@@ -115,9 +115,10 @@ export default function AdminCustomerDetailPage({
 
   return (
     <section className="flex w-full flex-col gap-6">
-      <CustomerDetailHeader
+      <UserDetailHeader
         name={account.name}
         status={account.status}
+        backLabel="고객 목록으로"
         onBack={() => router.back()}
         action={
           <CustomerStatusAction
@@ -143,7 +144,7 @@ export default function AdminCustomerDetailPage({
         </div>
       ) : null}
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(20rem,0.85fr)]">
-        <CustomerAccountInfo account={account} />
+        <AdminAccountInfo account={account} />
         <CustomerProfileInfo account={account} profile={profile} />
       </div>
       <CustomerDetailHistories

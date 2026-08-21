@@ -3,17 +3,15 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-import Text from "@/components/admin/common/Text";
-import CustomerSuspensionHistory from "@/components/admin/customers/CustomerSuspensionHistory";
-import MoverAccountInfo from "@/components/admin/movers/MoverAccountInfo";
+import UserSuspensionHistory from "@/components/admin/users/UserSuspensionHistory";
 import MoverEstimateActivity from "@/components/admin/movers/MoverEstimateActivity";
 import MoverFiledReportHistory from "@/components/admin/movers/MoverFiledReportHistory";
 import MoverProfileInfo from "@/components/admin/movers/MoverProfileInfo";
 import MoverReceivedReportHistory from "@/components/admin/movers/MoverReceivedReportHistory";
 import MoverReviewHistory from "@/components/admin/movers/MoverReviewHistory";
-import AdminStatusBadge from "@/components/admin/users/AdminStatusBadge";
+import AdminAccountInfo from "@/components/admin/users/AdminAccountInfo";
+import UserDetailHeader from "@/components/admin/users/UserDetailHeader";
 import { useAdminMoverDetail } from "@/hooks/useAdminMoverDetail";
-import { ChevronLeftIcon } from "@/icons";
 import { getApiErrorMessage } from "@/lib/api/getApiErrorMessage";
 
 interface AdminMoverDetailPageProps {
@@ -62,27 +60,29 @@ export default function AdminMoverDetailPage({
 
   return (
     <section className="flex w-full flex-col gap-6">
-      <header className="flex items-start justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            aria-label="기사 목록으로"
-            title="기사 목록으로"
-            onClick={() => router.back()}
-            className="flex size-9 items-center justify-center rounded-lg text-text-secondary hover:bg-background-hover hover:text-foreground"
-          >
-            <ChevronLeftIcon aria-hidden="true" className="size-5" />
-          </button>
-          <div className="flex flex-wrap items-center gap-2">
-            <Text as="h1" variant="2xl-semibold" className="text-foreground">
-              {profile.nickname}
-            </Text>
-            <AdminStatusBadge status={account.status} />
-          </div>
-        </div>
-      </header>
+      <UserDetailHeader
+        name={profile.nickname || account.name}
+        status={account.status}
+        backLabel="기사 목록으로"
+        onBack={() => router.back()}
+        action={
+          account.status === "WITHDRAWN" ? null : (
+            <div className="flex flex-col items-end gap-1">
+              <button
+                type="button"
+                disabled
+                title="기사 상태 변경 API 연동 전"
+                className="cursor-not-allowed rounded-lg border border-border px-3 py-2 text-sm font-semibold text-text-subtle opacity-60"
+              >
+                {account.status === "SUSPENDED" ? "정지 해제" : "계정 정지"}
+              </button>
+              <span className="text-xs text-text-subtle">준비 중</span>
+            </div>
+          )
+        }
+      />
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(20rem,1.15fr)]">
-        <MoverAccountInfo account={account} />
+        <AdminAccountInfo account={account} />
         <MoverProfileInfo account={account} profile={profile} />
       </div>
       <MoverEstimateActivity activity={estimateActivity} />
@@ -97,7 +97,7 @@ export default function AdminMoverDetailPage({
           onDetail={(reportId) => router.push(`/reports?reportId=${reportId}`)}
         />
       </div>
-      <CustomerSuspensionHistory history={suspensionHistory} />
+      <UserSuspensionHistory history={suspensionHistory} />
     </section>
   );
 }

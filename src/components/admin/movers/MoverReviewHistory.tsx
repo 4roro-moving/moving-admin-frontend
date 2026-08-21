@@ -1,7 +1,7 @@
 import Text from "@/components/admin/common/Text";
-import CustomerHistoryCard, {
-  CustomerHistoryEmpty,
-} from "@/components/admin/customers/CustomerHistoryCard";
+import UserHistoryCard, {
+  UserHistoryEmpty,
+} from "@/components/admin/users/UserHistoryCard";
 import { StarIcon } from "@/icons";
 import { formatKoreanDate } from "@/lib/utils/date";
 import { cn } from "@/lib/utils/cn";
@@ -18,7 +18,7 @@ interface MoverReviewHistoryProps {
 
 export default function MoverReviewHistory({ history }: MoverReviewHistoryProps) {
   return (
-    <CustomerHistoryCard title="받은 리뷰 이력" totalCount={history.totalCount}>
+    <UserHistoryCard title="받은 리뷰 이력" totalCount={history.totalCount}>
       {history.items.length ? (
         <div className="divide-y divide-border">
           {history.items.map((item) => (
@@ -49,8 +49,8 @@ export default function MoverReviewHistory({ history }: MoverReviewHistoryProps)
           ))}
         </div>
       ) : (
-        <CustomerHistoryEmpty />
+        <UserHistoryEmpty />
       )}
-    </CustomerHistoryCard>
+    </UserHistoryCard>
   );
 }

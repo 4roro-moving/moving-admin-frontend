@@ -1,14 +1,23 @@
 import Text from "@/components/admin/common/Text";
 import { formatJoinedDate } from "@/lib/utils/user/date";
-import type { AdminCustomerDetail } from "@/types/adminCustomerDetail";
+
+interface AdminAccount {
+  name: string;
+  email: string;
+  phone: string;
+  authProvider: string;
+  isProfileCompleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
 
 interface ItemProps {
   label: string;
   value: string;
 }
 
-interface CustomerAccountInfoProps {
-  account: AdminCustomerDetail["account"];
+interface AdminAccountInfoProps {
+  account: AdminAccount;
 }
 
 function Item({ label, value }: ItemProps) {
@@ -17,14 +26,14 @@ function Item({ label, value }: ItemProps) {
       <Text as="dt" variant="md-medium" className="text-muted">
         {label}
       </Text>
-      <dd className="min-w-0 text-sm text-foreground">{value}</dd>
+      <Text as="dd" variant="md-regular" className="min-w-0 text-foreground">
+        {value}
+      </Text>
     </div>
   );
 }
 
-export default function CustomerAccountInfo({
-  account,
-}: CustomerAccountInfoProps) {
+export default function AdminAccountInfo({ account }: AdminAccountInfoProps) {
   return (
     <section className="rounded-20 border border-border bg-surface p-5 shadow-select">
       <Text as="h2" variant="lg-semibold" className="text-foreground">

@@ -1,9 +1,9 @@
 import Link from "next/link";
 
 import Text from "@/components/admin/common/Text";
-import CustomerHistoryCard, {
-  CustomerHistoryEmpty,
-} from "@/components/admin/customers/CustomerHistoryCard";
+import UserHistoryCard, {
+  UserHistoryEmpty,
+} from "@/components/admin/users/UserHistoryCard";
 import { formatKoreanDate, formatKoreanDateTime } from "@/lib/utils/date";
 import { cn } from "@/lib/utils/cn";
 import { APP_ROUTES } from "@/lib/constants/appRoutes";
@@ -78,7 +78,7 @@ function InProgressEstimates({
   history: AdminMoverDetail["estimateActivity"]["inProgress"];
 }) {
   return (
-    <CustomerHistoryCard
+    <UserHistoryCard
       title="진행 중 견적 활동"
       totalCount={history.totalCount}
     >
@@ -159,9 +159,9 @@ function InProgressEstimates({
           </div>
         </div>
       ) : (
-        <CustomerHistoryEmpty />
+        <UserHistoryEmpty />
       )}
-    </CustomerHistoryCard>
+    </UserHistoryCard>
   );
 }
 
@@ -171,7 +171,7 @@ function RecentEstimates({
   history: AdminMoverDetail["estimateActivity"]["recent"];
 }) {
   return (
-    <CustomerHistoryCard title="최근 견적 활동" totalCount={history.totalCount}>
+    <UserHistoryCard title="최근 견적 활동" totalCount={history.totalCount}>
       {history.items.length ? (
         <div>
           <div className="grid grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)_minmax(0,1.3fr)_minmax(0,0.9fr)] gap-3 border-b border-border bg-background-muted px-5 py-3 text-xs font-semibold text-muted">
@@ -228,9 +228,9 @@ function RecentEstimates({
           </div>
         </div>
       ) : (
-        <CustomerHistoryEmpty />
+        <UserHistoryEmpty />
       )}
-    </CustomerHistoryCard>
+    </UserHistoryCard>
   );
 }
 

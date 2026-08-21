@@ -1,7 +1,7 @@
 import Text from "@/components/admin/common/Text";
-import CustomerHistoryCard, {
-  CustomerHistoryEmpty,
-} from "@/components/admin/customers/CustomerHistoryCard";
+import UserHistoryCard, {
+  UserHistoryEmpty,
+} from "@/components/admin/users/UserHistoryCard";
 import {
   formatKoreanDate,
   formatKoreanDateTime,
@@ -59,9 +59,9 @@ export default function CustomerEstimateRequests({
 }: CustomerEstimateRequestsProps) {
   return (
     <div id="estimate-requests" className="scroll-mt-6">
-      <CustomerHistoryCard title="견적 요청 이력" totalCount={history.totalCount}>
+    <UserHistoryCard title="견적 요청 이력" totalCount={history.totalCount}>
       {history.items.length === 0 ? (
-        <CustomerHistoryEmpty />
+        <UserHistoryEmpty />
       ) : (
         <div className="overflow-x-auto">
           <div className="min-w-[1040px]">
@@ -209,7 +209,7 @@ export default function CustomerEstimateRequests({
           </div>
         </div>
       )}
-      </CustomerHistoryCard>
+    </UserHistoryCard>
     </div>
   );
 }
