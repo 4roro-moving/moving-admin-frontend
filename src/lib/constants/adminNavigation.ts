@@ -25,8 +25,12 @@ export type AdminNavigationItem = AdminNavigationLinkItem | AdminNavigationGroup
 
 export const ADMIN_CONTENTS_CHILDREN: AdminNavigationChildItem[] = [
   { label: "리뷰 관리", href: APP_ROUTES.CONTENTS.REVIEWS, enabled: true },
-  { label: "거주 후기 관리", enabled: false },
-  { label: "나눔 관리", enabled: false },
+  {
+    label: "거주 후기 관리",
+    href: APP_ROUTES.CONTENTS.RESIDENCE_REVIEWS,
+    enabled: true,
+  },
+  { label: "나눔 관리", href: APP_ROUTES.CONTENTS.GIVEAWAYS, enabled: true },
 ];
 
 export const ADMIN_NAVIGATION_ITEMS: AdminNavigationItem[] = [

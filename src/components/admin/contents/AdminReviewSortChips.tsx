@@ -2,15 +2,28 @@ import { ADMIN_REVIEW_SORT_OPTIONS } from "@/lib/constants/adminReviews";
 import { cn } from "@/lib/utils/cn";
 import type { AdminReviewSort } from "@/types/adminReview";
 
-interface AdminReviewSortChipsProps {
-  value: AdminReviewSort;
-  onChange: (sort: AdminReviewSort) => void;
+interface AdminContentSortOption<T extends string> {
+  value: T;
+  label: string;
 }
 
-export default function AdminReviewSortChips({ value, onChange }: AdminReviewSortChipsProps) {
+interface AdminReviewSortChipsProps<T extends string = AdminReviewSort> {
+  value: T;
+  onChange: (sort: T) => void;
+  options?: Array<AdminContentSortOption<T>>;
+}
+
+export default function AdminReviewSortChips<T extends string = AdminReviewSort>({
+  value,
+  onChange,
+  options,
+}: AdminReviewSortChipsProps<T>) {
+  const sortOptions = (options ??
+    ADMIN_REVIEW_SORT_OPTIONS) as Array<AdminContentSortOption<T>>;
+
   return (
     <div className="flex flex-wrap items-center gap-2">
-      {ADMIN_REVIEW_SORT_OPTIONS.map((option) => {
+      {sortOptions.map((option) => {
         const isActive = value === option.value;
         return (
           <button

@@ -197,7 +197,7 @@ export default function AdminContentsReviewsPage() {
 
       {reasonModal ? (
         <AdminReviewHideReasonModal
-          review={reasonModal.review}
+          authorName={reasonModal.review.author.name}
           reason={reasonInput}
           isPending={hideMutation.isPending}
           error={hideMutation.isError ? hideMutation.error : null}
