@@ -160,7 +160,10 @@ export default function AdminCustomerDetailPage({
           initialAction={account.status === "SUSPENDED" ? "RELEASE" : "SUSPEND"}
           isPending={customerStatusMutation.isPending}
           open={isRestrictionModalOpen}
-          onClose={() => setIsRestrictionModalOpen(false)}
+          onClose={() => {
+            setIsRestrictionModalOpen(false);
+            customerStatusMutation.reset();
+          }}
           onSubmit={handleRestrictionSubmit}
         />
       ) : null}
