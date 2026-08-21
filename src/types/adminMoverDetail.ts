@@ -1,11 +1,11 @@
 import type { AdminAuthProvider } from "@/types/adminCustomer";
 import type { AdminMoveType } from "@/types/adminMover";
 import type {
-  AdminReportReason,
-  AdminReportStatus,
-  AdminReportTargetType,
-} from "@/types/adminReport";
-import type { AdminAccountStatus } from "@/types/adminUser";
+  AdminAccountStatus,
+  AdminReportHistory,
+  AdminSuspensionHistory,
+  AdminTargetReportHistory,
+} from "@/types/adminUser";
 
 export interface AdminMoverDetail {
   account: {
@@ -82,39 +82,8 @@ export interface AdminMoverDetail {
     }>;
   };
   reportHistory: {
-    filed: {
-      totalCount: number;
-      items: Array<{
-        id: number;
-        targetType: AdminReportTargetType;
-        targetId: string;
-        reason: AdminReportReason;
-        status: AdminReportStatus;
-        createdAt: string;
-      }>;
-    };
-    received: {
-      totalCount: number;
-      items: Array<{
-        id: number;
-        reason: AdminReportReason;
-        status: AdminReportStatus;
-        createdAt: string;
-      }>;
-    };
+    filed: AdminTargetReportHistory;
+    received: AdminReportHistory;
   };
-  suspensionHistory: {
-    totalCount: number;
-    items: Array<{
-      id: number;
-      action: "SUSPEND" | "RELEASE";
-      reason: string;
-      internalNote: string | null;
-      createdAt: string;
-      admin: {
-        id: string;
-        name: string;
-      };
-    }>;
-  };
+  suspensionHistory: AdminSuspensionHistory;
 }

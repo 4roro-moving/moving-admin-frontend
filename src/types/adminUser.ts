@@ -1,4 +1,9 @@
 import type { Pagination } from "@/types/pagination";
+import type {
+  AdminReportReason,
+  AdminReportStatus,
+  AdminReportTargetType,
+} from "@/types/adminReport";
 
 export type AdminAccountStatus = "ACTIVE" | "SUSPENDED" | "WITHDRAWN";
 
@@ -19,6 +24,43 @@ export interface AdminAccountStatusUpdateResult {
     createdAt: string;
   };
 }
+
+export interface AdminSuspensionHistory {
+  totalCount: number;
+  items: Array<{
+    id: number;
+    action: AdminAccountStatusUpdatePayload["action"];
+    reason: string;
+    internalNote: string | null;
+    createdAt: string;
+    admin: {
+      id: string;
+      name: string;
+    };
+  }>;
+}
+
+export interface AdminReportHistoryItem {
+  id: number;
+  reason: AdminReportReason;
+  status: AdminReportStatus;
+  createdAt: string;
+}
+
+export interface AdminTargetReportHistoryItem extends AdminReportHistoryItem {
+  targetType: AdminReportTargetType;
+  targetId: string;
+}
+
+export interface AdminReportHistory<
+  TItem extends AdminReportHistoryItem = AdminReportHistoryItem,
+> {
+  totalCount: number;
+  items: TItem[];
+}
+
+export type AdminTargetReportHistory =
+  AdminReportHistory<AdminTargetReportHistoryItem>;
 export type AdminProfileFilterValue = "ALL" | "COMPLETED" | "INCOMPLETE";
 export type AdminListOpenFilter =
   | "status"

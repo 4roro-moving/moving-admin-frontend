@@ -4,6 +4,7 @@ import UserHistoryCard, {
 } from "@/components/admin/users/UserHistoryCard";
 import { formatKoreanDateTime } from "@/lib/utils/date";
 import { cn } from "@/lib/utils/cn";
+import type { AdminSuspensionHistory } from "@/types/adminUser";
 
 const actionLabel = { SUSPEND: "계정 정지", RELEASE: "정지 해제" } as const;
 
@@ -12,23 +13,8 @@ const suspensionActionClass = {
   RELEASE: "bg-status-active-background text-status-active-foreground",
 } as const;
 
-interface SuspensionHistory {
-  totalCount: number;
-  items: Array<{
-    id: number;
-    action: "SUSPEND" | "RELEASE";
-    reason: string;
-    internalNote: string | null;
-    createdAt: string;
-    admin: {
-      id: string;
-      name: string;
-    };
-  }>;
-}
-
 interface UserSuspensionHistoryProps {
-  history: SuspensionHistory;
+  history: AdminSuspensionHistory;
 }
 
 export default function UserSuspensionHistory({
