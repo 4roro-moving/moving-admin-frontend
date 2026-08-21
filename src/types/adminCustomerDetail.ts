@@ -80,6 +80,7 @@ interface AdminCustomerEstimateRequests {
     expiresAt: string;
     expiredAt: string | null;
     canceledAt: string | null;
+    canceledBy: "CUSTOMER" | "ADMIN" | null;
     completedAt: string | null;
     createdAt: string;
     estimateSummary: {
