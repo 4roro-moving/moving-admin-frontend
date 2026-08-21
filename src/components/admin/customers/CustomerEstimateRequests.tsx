@@ -34,6 +34,16 @@ const estimateStatusClass = {
   COMPLETED: "bg-status-active-background text-status-active-foreground",
 } as const;
 
+const canceledByLabel = {
+  CUSTOMER: "고객 직접 취소",
+  ADMIN: "관리자 취소",
+} as const;
+
+const canceledByClass = {
+  CUSTOMER: "text-text-subtle",
+  ADMIN: "text-status-progress-foreground",
+} as const;
+
 const statusBadgeClass = "inline-flex rounded-full px-2.5 py-1 text-xs font-semibold";
 
 interface CustomerEstimateRequestsProps {
@@ -116,12 +126,21 @@ export default function CustomerEstimateRequests({
                     >
                       {formatKoreanDate(item.createdAt)}
                     </Text>
-                    <div>
+                    <div className="flex flex-col items-start gap-1">
                       <span
                         className={cn(statusBadgeClass, estimateStatusClass[item.status])}
                       >
                         {estimateStatusLabel[item.status]}
                       </span>
+                      {item.status === "CANCELED" && item.canceledBy ? (
+                        <Text
+                          as="span"
+                          variant="xs-medium"
+                          className={canceledByClass[item.canceledBy]}
+                        >
+                          {canceledByLabel[item.canceledBy]}
+                        </Text>
+                      ) : null}
                     </div>
                     <div>
                       <Text
