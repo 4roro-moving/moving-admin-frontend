@@ -5,11 +5,11 @@ import { useEffect, useState } from "react";
 
 import CustomerDetailHistories from "@/components/admin/customers/CustomerDetailHistories";
 import CustomerProfileInfo from "@/components/admin/customers/CustomerProfileInfo";
-import CustomerStatusAction from "@/components/admin/customers/CustomerStatusAction";
 import EstimateCancellationModal from "@/components/admin/estimates/EstimateCancellationModal";
 import AdminAccountInfo from "@/components/admin/users/AdminAccountInfo";
 import AccountRestrictionModal from "@/components/admin/users/AccountRestrictionModal";
 import UserDetailHeader from "@/components/admin/users/UserDetailHeader";
+import UserStatusAction from "@/components/admin/users/UserStatusAction";
 import { useAdminCustomerDetail } from "@/hooks/useAdminCustomerDetail";
 import { useAdminEstimateCancellationMutation } from "@/hooks/useAdminEstimateCancellationMutation";
 import { useAdminCustomerStatusMutation } from "@/hooks/useAdminCustomerStatusMutation";
@@ -121,7 +121,7 @@ export default function AdminCustomerDetailPage({
         backLabel="고객 목록으로"
         onBack={() => router.back()}
         action={
-          <CustomerStatusAction
+          <UserStatusAction
             status={account.status}
             onClick={() => setIsRestrictionModalOpen(true)}
           />

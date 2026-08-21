@@ -9,6 +9,7 @@ export const API_ROUTES = {
     MOVERS: {
       ROOT: "/admin/movers",
       DETAIL: (moverId: string) => `/admin/movers/${moverId}`,
+      STATUS: (moverId: string) => `/admin/movers/${moverId}/status`,
     },
     USERS: {
       ROOT: "/admin/users",

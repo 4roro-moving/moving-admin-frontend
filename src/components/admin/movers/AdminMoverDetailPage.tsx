@@ -1,8 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
+import AccountRestrictionModal from "@/components/admin/users/AccountRestrictionModal";
 import UserSuspensionHistory from "@/components/admin/users/UserSuspensionHistory";
 import MoverEstimateActivity from "@/components/admin/movers/MoverEstimateActivity";
 import MoverFiledReportHistory from "@/components/admin/movers/MoverFiledReportHistory";
@@ -11,8 +12,11 @@ import MoverReceivedReportHistory from "@/components/admin/movers/MoverReceivedR
 import MoverReviewHistory from "@/components/admin/movers/MoverReviewHistory";
 import AdminAccountInfo from "@/components/admin/users/AdminAccountInfo";
 import UserDetailHeader from "@/components/admin/users/UserDetailHeader";
+import UserStatusAction from "@/components/admin/users/UserStatusAction";
 import { useAdminMoverDetail } from "@/hooks/useAdminMoverDetail";
+import { useAdminMoverStatusMutation } from "@/hooks/useAdminMoverStatusMutation";
 import { getApiErrorMessage } from "@/lib/api/getApiErrorMessage";
+import type { AdminAccountStatusUpdatePayload } from "@/types/adminUser";
 
 interface AdminMoverDetailPageProps {
   moverId: string;
@@ -24,6 +28,8 @@ export default function AdminMoverDetailPage({
   const router = useRouter();
   const { data: mover, error, isError, isFetching, isLoading, refetch } =
     useAdminMoverDetail(moverId);
+  const moverStatusMutation = useAdminMoverStatusMutation();
+  const [isRestrictionModalOpen, setIsRestrictionModalOpen] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -58,6 +64,17 @@ export default function AdminMoverDetailPage({
   const { account, profile, estimateActivity, reviewHistory, reportHistory, suspensionHistory } =
     mover;
 
+  const handleRestrictionSubmit = async (
+    payload: AdminAccountStatusUpdatePayload,
+  ) => {
+    try {
+      await moverStatusMutation.mutateAsync({ moverId, payload });
+      setIsRestrictionModalOpen(false);
+    } catch {
+      // 오류는 모달 내부에서 안내한다.
+    }
+  };
+
   return (
     <section className="flex w-full flex-col gap-6">
       <UserDetailHeader
@@ -66,19 +83,10 @@ export default function AdminMoverDetailPage({
         backLabel="기사 목록으로"
         onBack={() => router.back()}
         action={
-          account.status === "WITHDRAWN" ? null : (
-            <div className="flex flex-col items-end gap-1">
-              <button
-                type="button"
-                disabled
-                title="기사 상태 변경 API 연동 전"
-                className="cursor-not-allowed rounded-lg border border-border px-3 py-2 text-sm font-semibold text-text-subtle opacity-60"
-              >
-                {account.status === "SUSPENDED" ? "정지 해제" : "계정 정지"}
-              </button>
-              <span className="text-xs text-text-subtle">준비 중</span>
-            </div>
-          )
+          <UserStatusAction
+            status={account.status}
+            onClick={() => setIsRestrictionModalOpen(true)}
+          />
         }
       />
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(20rem,1.15fr)]">
@@ -98,6 +106,23 @@ export default function AdminMoverDetailPage({
         />
       </div>
       <UserSuspensionHistory history={suspensionHistory} />
+      {isRestrictionModalOpen ? (
+        <AccountRestrictionModal
+          account={account}
+          targetLabel="기사"
+          error={
+            moverStatusMutation.isError ? moverStatusMutation.error : undefined
+          }
+          initialAction={account.status === "SUSPENDED" ? "RELEASE" : "SUSPEND"}
+          isPending={moverStatusMutation.isPending}
+          open={isRestrictionModalOpen}
+          onClose={() => {
+            setIsRestrictionModalOpen(false);
+            moverStatusMutation.reset();
+          }}
+          onSubmit={handleRestrictionSubmit}
+        />
+      ) : null}
     </section>
   );
 }

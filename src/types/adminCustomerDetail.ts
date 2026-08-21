@@ -1,4 +1,8 @@
-import type { AdminAccountStatus } from "@/types/adminUser";
+import type {
+  AdminAccountStatus,
+  AdminAccountStatusUpdatePayload,
+  AdminAccountStatusUpdateResult,
+} from "@/types/adminUser";
 import type { AdminAuthProvider } from "@/types/adminCustomer";
 import type { AdminMoveType } from "@/types/adminMover";
 import type {
@@ -46,23 +50,8 @@ export interface AdminCustomerDetail {
   };
 }
 
-export interface AdminCustomerStatusUpdatePayload {
-  action: "SUSPEND" | "RELEASE";
-  reason: string;
-  internalNote?: string;
-}
-
-export interface AdminCustomerStatusUpdateResult {
-  id: string;
-  status: Exclude<AdminAccountStatus, "WITHDRAWN">;
-  suspension: {
-    id: number;
-    action: AdminCustomerStatusUpdatePayload["action"];
-    reason: string;
-    adminId: string;
-    createdAt: string;
-  };
-}
+export type AdminCustomerStatusUpdatePayload = AdminAccountStatusUpdatePayload;
+export type AdminCustomerStatusUpdateResult = AdminAccountStatusUpdateResult;
 
 interface AdminCustomerEstimateRequests {
   totalCount: number;

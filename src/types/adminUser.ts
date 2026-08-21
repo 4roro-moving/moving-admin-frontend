@@ -1,6 +1,24 @@
 import type { Pagination } from "@/types/pagination";
 
 export type AdminAccountStatus = "ACTIVE" | "SUSPENDED" | "WITHDRAWN";
+
+export interface AdminAccountStatusUpdatePayload {
+  action: "SUSPEND" | "RELEASE";
+  reason: string;
+  internalNote?: string;
+}
+
+export interface AdminAccountStatusUpdateResult {
+  id: string;
+  status: Exclude<AdminAccountStatus, "WITHDRAWN">;
+  suspension: {
+    id: number;
+    action: AdminAccountStatusUpdatePayload["action"];
+    reason: string;
+    adminId: string;
+    createdAt: string;
+  };
+}
 export type AdminProfileFilterValue = "ALL" | "COMPLETED" | "INCOMPLETE";
 export type AdminListOpenFilter =
   | "status"
