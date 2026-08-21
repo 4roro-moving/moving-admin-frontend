@@ -104,6 +104,7 @@ export default function AdminCustomerDetailPage({
     try {
       await estimateCancellationMutation.mutateAsync({
         customerId,
+        moverId: selectedEstimate.moverId,
         estimateId: selectedEstimate.estimateId,
         payload,
       });

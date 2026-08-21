@@ -50,12 +50,14 @@ const canceledByClass = {
 const statusBadgeClass = "inline-flex rounded-full px-2.5 py-1 text-xs font-semibold";
 
 interface CustomerEstimateRequestsProps {
+  customerId: string;
   customerName: string;
   history: AdminCustomerDetail["estimateRequests"];
   onCancelConfirmedEstimate: (target: AdminEstimateCancellationTarget) => void;
 }
 
 export default function CustomerEstimateRequests({
+  customerId,
   customerName,
   history,
   onCancelConfirmedEstimate,
@@ -196,7 +198,9 @@ export default function CustomerEstimateRequests({
                               if (!item.confirmedEstimate) return;
                               onCancelConfirmedEstimate({
                                 estimateId: item.confirmedEstimate.id,
+                                customerId,
                                 customerName,
+                                moverId: item.confirmedEstimate.mover.id,
                                 moverName: item.confirmedEstimate.mover.name,
                                 moverNickname: item.confirmedEstimate.mover.nickname,
                                 moveDate: item.moveDate,

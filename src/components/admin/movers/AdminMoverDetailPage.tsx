@@ -92,6 +92,7 @@ export default function AdminMoverDetailPage({
     try {
       await estimateCancellationMutation.mutateAsync({
         moverId,
+        customerId: selectedEstimate.customerId,
         estimateId: selectedEstimate.estimateId,
         payload,
       });
@@ -143,6 +144,7 @@ export default function AdminMoverDetailPage({
       </div>
       <MoverEstimateActivity
         activity={estimateActivity}
+        moverId={moverId}
         moverName={account.name}
         moverNickname={profile.nickname || account.name}
         onCancelConfirmedEstimate={setSelectedEstimate}

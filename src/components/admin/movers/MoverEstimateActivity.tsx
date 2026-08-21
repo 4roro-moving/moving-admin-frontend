@@ -71,6 +71,7 @@ function getRecentStatusDate(
 
 interface MoverEstimateActivityProps {
   activity: AdminMoverDetail["estimateActivity"];
+  moverId: string;
   moverName: string;
   moverNickname: string;
   onCancelConfirmedEstimate: (target: AdminEstimateCancellationTarget) => void;
@@ -78,11 +79,13 @@ interface MoverEstimateActivityProps {
 
 function InProgressEstimates({
   history,
+  moverId,
   moverName,
   moverNickname,
   onCancelConfirmedEstimate,
 }: {
   history: AdminMoverDetail["estimateActivity"]["inProgress"];
+  moverId: string;
   moverName: string;
   moverNickname: string;
   onCancelConfirmedEstimate: (target: AdminEstimateCancellationTarget) => void;
@@ -152,7 +155,9 @@ function InProgressEstimates({
                         onClick={() =>
                           onCancelConfirmedEstimate({
                             estimateId: item.id,
+                            customerId: item.customer.id,
                             customerName: item.customer.name,
+                            moverId,
                             moverName,
                             moverNickname,
                             moveDate: item.moveDate,
@@ -250,6 +255,7 @@ function RecentEstimates({
 
 export default function MoverEstimateActivity({
   activity,
+  moverId,
   moverName,
   moverNickname,
   onCancelConfirmedEstimate,
@@ -258,6 +264,7 @@ export default function MoverEstimateActivity({
     <div className="grid gap-6 xl:grid-cols-2">
       <InProgressEstimates
         history={activity.inProgress}
+        moverId={moverId}
         moverName={moverName}
         moverNickname={moverNickname}
         onCancelConfirmedEstimate={onCancelConfirmedEstimate}

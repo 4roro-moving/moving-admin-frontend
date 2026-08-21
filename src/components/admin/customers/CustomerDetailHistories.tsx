@@ -18,8 +18,9 @@ export default function CustomerDetailHistories({
 }: CustomerDetailHistoriesProps) {
   return (
     <>
-      <CustomerEstimateRequests
-        customerName={customer.account.name}
+        <CustomerEstimateRequests
+          customerId={customer.account.id}
+          customerName={customer.account.name}
         history={customer.estimateRequests}
         onCancelConfirmedEstimate={onCancelConfirmedEstimate}
       />

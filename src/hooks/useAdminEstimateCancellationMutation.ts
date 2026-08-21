@@ -8,6 +8,7 @@ import type { AdminEstimateCancellationPayload } from "@/types/adminEstimate";
 
 interface CancelAdminEstimateVariables {
   customerId: string;
+  moverId: string;
   estimateId: number;
   payload: AdminEstimateCancellationPayload;
 }
@@ -18,10 +19,15 @@ export function useAdminEstimateCancellationMutation() {
   return useMutation({
     mutationFn: ({ estimateId, payload }: CancelAdminEstimateVariables) =>
       cancelAdminEstimate(estimateId, payload),
-    onSuccess: async (_data, { customerId }) => {
-      await queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.CUSTOMERS.DETAIL(customerId),
-      });
+    onSuccess: async (_data, { customerId, moverId }) => {
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.CUSTOMERS.DETAIL(customerId),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.MOVERS.DETAIL(moverId),
+        }),
+      ]);
     },
   });
 }
