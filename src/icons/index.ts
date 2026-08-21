@@ -1,4 +1,5 @@
 export { default as ChevronDownIcon } from "./chevron-down.svg";
+export { default as ChevronLeftIcon } from "./chevron-left.svg";
 export { default as ClearCircleIcon } from "./clear-circle.svg";
 export { default as ClearIcon } from "./clear-circle.svg";
 export { default as CloseIcon } from "./close.svg";
