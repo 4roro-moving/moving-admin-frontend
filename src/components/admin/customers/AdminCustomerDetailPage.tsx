@@ -32,6 +32,7 @@ export default function AdminCustomerDetailPage({
     data: customer,
     error,
     isError,
+    isFetching,
     isLoading,
     refetch,
   } = useAdminCustomerDetail(customerId);
@@ -63,10 +64,11 @@ export default function AdminCustomerDetailPage({
         </p>
         <button
           type="button"
+          disabled={isFetching}
           onClick={() => void refetch()}
-          className="mt-4 rounded-lg border border-border px-4 py-2 text-sm font-semibold text-text-secondary hover:bg-background-hover"
+          className="mt-4 rounded-lg border border-border px-4 py-2 text-sm font-semibold text-text-secondary hover:bg-background-hover disabled:cursor-not-allowed disabled:opacity-60"
         >
-          다시 시도
+          {isFetching ? "다시 시도 중..." : "다시 시도"}
         </button>
       </section>
     );
