@@ -175,9 +175,8 @@ reviews:
     # ------------------------------------------------------------------
     - path: "src/lib/api/**/*.ts"
       instructions: |
-        - 브라우저에서의 API 호출은 `src/lib/api/axiosInstance.ts` 를
-          사용합니다. `fetch` 를 직접 쓰면 지적해 주세요.
-          (단, Route Handler 내부의 외부 API 호출은 `fetch` 를 사용합니다)
+        - 브라우저에서의 API 호출은 `src/lib/api/fetchInstance.ts` 를
+          사용합니다.
         - 엔드포인트는 `API_ROUTES` 상수를 사용하고, 문자열을 직접
           작성하지 않습니다.
         - 요청/응답 타입을 명시해야 합니다.
