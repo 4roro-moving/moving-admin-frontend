@@ -1,40 +1,42 @@
 import { useState } from "react";
 
-export interface RestrictionFormInput {
-  action: "SUSPEND" | "RELEASE";
+export const MAX_REASON_LENGTH = 500;
+export const MAX_INTERNAL_NOTE_LENGTH = 1_000;
+
+export interface ReasonWithNoteFormInput {
   reason: string;
   internalNote?: string;
 }
 
-interface UseAccountRestrictionFormOptions {
-  initialAction: RestrictionFormInput["action"];
+interface UseReasonWithNoteFormOptions {
   isPending: boolean;
   onClose: () => void;
-  onSubmit: (input: RestrictionFormInput) => void;
+  onSubmit: (input: ReasonWithNoteFormInput) => void;
 }
 
-export function useAccountRestrictionForm({
-  initialAction,
+export function useReasonWithNoteForm({
   isPending,
   onClose,
   onSubmit,
-}: UseAccountRestrictionFormOptions) {
+}: UseReasonWithNoteFormOptions) {
   const [reason, setReason] = useState("");
-  const [isReasonTouched, setIsReasonTouched] = useState(false);
   const [internalNote, setInternalNote] = useState("");
+  const [isReasonTouched, setIsReasonTouched] = useState(false);
   const [isInternalNoteTouched, setIsInternalNoteTouched] = useState(false);
 
   const trimmedReason = reason.trim();
   const trimmedInternalNote = internalNote.trim();
   const isReasonValid =
-    trimmedReason.length >= 1 && trimmedReason.length <= 500;
-  const isInternalNoteValid = trimmedInternalNote.length <= 1_000;
+    trimmedReason.length >= 1 && trimmedReason.length <= MAX_REASON_LENGTH;
+  const isInternalNoteValid =
+    trimmedInternalNote.length <= MAX_INTERNAL_NOTE_LENGTH;
 
   const handleClose = () => {
     if (isPending) return;
+
     setReason("");
-    setIsReasonTouched(false);
     setInternalNote("");
+    setIsReasonTouched(false);
     setIsInternalNoteTouched(false);
     onClose();
   };
@@ -42,13 +44,13 @@ export function useAccountRestrictionForm({
   const handleSubmit = () => {
     if (!isReasonValid || !isInternalNoteValid || isPending) {
       setIsReasonTouched(true);
+      setIsInternalNoteTouched(true);
       return;
     }
 
     onSubmit({
-      action: initialAction,
       reason: trimmedReason,
-      ...(trimmedInternalNote && { internalNote: trimmedInternalNote }),
+      ...(trimmedInternalNote ? { internalNote: trimmedInternalNote } : {}),
     });
   };
 

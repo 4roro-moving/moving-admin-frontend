@@ -1,13 +1,16 @@
 "use client";
 
-import { useState } from "react";
-
 import FormField from "@/components/admin/common/FormField";
 import Modal, {
   RESPONSIVE_FORM_MODAL_PANEL_CLASSNAME,
 } from "@/components/admin/common/Modal/Modal";
 import Text from "@/components/admin/common/Text";
 import Textarea from "@/components/admin/common/Textarea";
+import {
+  MAX_INTERNAL_NOTE_LENGTH,
+  MAX_REASON_LENGTH,
+  useReasonWithNoteForm,
+} from "@/hooks/useReasonWithNoteForm";
 import { getApiErrorMessage } from "@/lib/api/getApiErrorMessage";
 import { formatKoreanDate } from "@/lib/utils/date";
 import { cn } from "@/lib/utils/cn";
@@ -25,9 +28,6 @@ interface EstimateCancellationModalProps {
   onSubmit: (payload: AdminEstimateCancellationPayload) => void;
 }
 
-const MAX_REASON_LENGTH = 500;
-const MAX_INTERNAL_NOTE_LENGTH = 1_000;
-
 export default function EstimateCancellationModal({
   error,
   isPending = false,
@@ -36,40 +36,25 @@ export default function EstimateCancellationModal({
   onClose,
   onSubmit,
 }: EstimateCancellationModalProps) {
-  const [reason, setReason] = useState("");
-  const [internalNote, setInternalNote] = useState("");
-  const [isReasonTouched, setIsReasonTouched] = useState(false);
-  const [isInternalNoteTouched, setIsInternalNoteTouched] = useState(false);
-  const trimmedReason = reason.trim();
-  const trimmedInternalNote = internalNote.trim();
-  const isReasonValid =
-    trimmedReason.length >= 1 && trimmedReason.length <= MAX_REASON_LENGTH;
-  const isInternalNoteValid =
-    trimmedInternalNote.length <= MAX_INTERNAL_NOTE_LENGTH;
-  const canSubmit = isReasonValid && isInternalNoteValid && !isPending;
-
-  const handleClose = () => {
-    if (isPending) return;
-
-    setReason("");
-    setInternalNote("");
-    setIsReasonTouched(false);
-    setIsInternalNoteTouched(false);
-    onClose();
-  };
-
-  const handleSubmit = () => {
-    if (!isReasonValid || !isInternalNoteValid || isPending) {
-      setIsReasonTouched(true);
-      setIsInternalNoteTouched(true);
-      return;
-    }
-
-    onSubmit({
-      reason: trimmedReason,
-      ...(trimmedInternalNote ? { internalNote: trimmedInternalNote } : {}),
-    });
-  };
+  const {
+    reason,
+    internalNote,
+    isReasonTouched,
+    isInternalNoteTouched,
+    isReasonValid,
+    isInternalNoteValid,
+    canSubmit,
+    setReason,
+    setInternalNote,
+    handleReasonBlur,
+    handleInternalNoteBlur,
+    handleClose,
+    handleSubmit,
+  } = useReasonWithNoteForm({
+    isPending,
+    onClose,
+    onSubmit,
+  });
 
   return (
     <Modal
@@ -170,7 +155,7 @@ export default function EstimateCancellationModal({
                     : undefined
                 }
                 onChange={(event) => setReason(event.target.value)}
-                onBlur={() => setIsReasonTouched(true)}
+                onBlur={handleReasonBlur}
               />
               <Text
                 as="span"
@@ -206,7 +191,7 @@ export default function EstimateCancellationModal({
                     : undefined
                 }
                 onChange={(event) => setInternalNote(event.target.value)}
-                onBlur={() => setIsInternalNoteTouched(true)}
+                onBlur={handleInternalNoteBlur}
               />
               <Text
                 as="span"

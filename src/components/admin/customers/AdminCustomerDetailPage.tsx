@@ -13,12 +13,12 @@ import AccountRestrictionModal from "@/components/admin/users/AccountRestriction
 import { useAdminCustomerDetail } from "@/hooks/useAdminCustomerDetail";
 import { useAdminEstimateCancellationMutation } from "@/hooks/useAdminEstimateCancellationMutation";
 import { useAdminCustomerStatusMutation } from "@/hooks/useAdminCustomerStatusMutation";
-import type { RestrictionFormInput } from "@/hooks/useAccountRestrictionForm";
 import { getApiErrorMessage } from "@/lib/api/getApiErrorMessage";
 import type {
   AdminEstimateCancellationPayload,
   AdminEstimateCancellationTarget,
 } from "@/types/adminEstimate";
+import type { AdminCustomerStatusUpdatePayload } from "@/types/adminCustomerDetail";
 
 interface AdminCustomerDetailPageProps {
   customerId: string;
@@ -82,7 +82,9 @@ export default function AdminCustomerDetailPage({
   const shouldShowSuspendedEstimateNotice =
     account.status === "SUSPENDED" && hasCancelableConfirmedEstimate;
 
-  const handleRestrictionSubmit = async (input: RestrictionFormInput) => {
+  const handleRestrictionSubmit = async (
+    input: AdminCustomerStatusUpdatePayload,
+  ) => {
     try {
       await customerStatusMutation.mutateAsync({
         customerId,

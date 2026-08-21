@@ -8,25 +8,26 @@ import Modal, {
 } from "@/components/admin/common/Modal/Modal";
 import Text from "@/components/admin/common/Text";
 import {
-  useAccountRestrictionForm,
-  type RestrictionFormInput,
-} from "@/hooks/useAccountRestrictionForm";
+  MAX_INTERNAL_NOTE_LENGTH,
+  MAX_REASON_LENGTH,
+  useReasonWithNoteForm,
+} from "@/hooks/useReasonWithNoteForm";
 import { getApiErrorMessage } from "@/lib/api/getApiErrorMessage";
 import { cn } from "@/lib/utils/cn";
-import type { AdminCustomerDetail } from "@/types/adminCustomerDetail";
+import type {
+  AdminCustomerDetail,
+  AdminCustomerStatusUpdatePayload,
+} from "@/types/adminCustomerDetail";
 
 interface AccountRestrictionModalProps {
   account: Pick<AdminCustomerDetail["account"], "name" | "email" | "phone" | "status">;
   error?: unknown;
-  initialAction: RestrictionFormInput["action"];
+  initialAction: AdminCustomerStatusUpdatePayload["action"];
   open: boolean;
   isPending?: boolean;
   onClose: () => void;
-  onSubmit: (input: RestrictionFormInput) => void;
+  onSubmit: (input: AdminCustomerStatusUpdatePayload) => void;
 }
-
-const MAX_REASON_LENGTH = 500;
-const MAX_INTERNAL_NOTE_LENGTH = 1_000;
 
 export default function AccountRestrictionModal({
   account,
@@ -53,11 +54,10 @@ export default function AccountRestrictionModal({
     handleInternalNoteBlur,
     handleClose,
     handleSubmit,
-  } = useAccountRestrictionForm({
-    initialAction,
+  } = useReasonWithNoteForm({
     isPending,
     onClose,
-    onSubmit,
+    onSubmit: (input) => onSubmit({ action: initialAction, ...input }),
   });
 
   return (
