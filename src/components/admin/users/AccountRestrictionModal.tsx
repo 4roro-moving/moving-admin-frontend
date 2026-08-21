@@ -20,7 +20,10 @@ import type {
 } from "@/types/adminCustomerDetail";
 
 interface AccountRestrictionModalProps {
-  account: Pick<AdminCustomerDetail["account"], "name" | "email" | "phone" | "status">;
+  account: Pick<
+    AdminCustomerDetail["account"],
+    "name" | "email" | "phone" | "status"
+  >;
   error?: unknown;
   initialAction: AdminCustomerStatusUpdatePayload["action"];
   open: boolean;
@@ -89,11 +92,16 @@ export default function AccountRestrictionModal({
           role="note"
           className="flex flex-col gap-modal-4 rounded-modal-12 border border-status-progress-foreground bg-status-progress-background p-modal-14"
         >
-          <Text as="h3" variant="xs-semibold" className="text-status-progress-foreground">
+          <Text
+            as="h3"
+            variant="xs-semibold"
+            className="text-status-progress-foreground"
+          >
             확정 거래 처리 안내
           </Text>
           <Text as="p" variant="xs-regular" className="text-text-secondary">
-            계정 정지만으로 확정 거래는 취소되지 않습니다. 취소가 필요한 경우 견적 요청 이력에서 별도로 처리해 주세요.
+            계정 정지만으로 확정 거래는 취소되지 않습니다. 취소가 필요한 경우
+            견적 요청 이력에서 별도로 처리해 주세요.
           </Text>
         </div>
       ) : null}
@@ -138,7 +146,8 @@ export default function AccountRestrictionModal({
         >
           <div className="flex flex-col gap-modal-10">
             <Text as="p" variant="md-regular" className="text-text-subtle">
-              운영팀 내부 참고용 메모입니다. 고객과 기사에게 공개되지 않습니다.
+              관리자 활동 로그에 기록되는 사유입니다. 고객과 기사에게 공개되지
+              않습니다.
             </Text>
             <div className="flex flex-col gap-modal-4">
               <Textarea
