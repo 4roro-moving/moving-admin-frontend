@@ -3,13 +3,13 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import CustomerAccountInfo from "@/components/admin/customers/CustomerAccountInfo";
-import CustomerDetailHeader from "@/components/admin/customers/CustomerDetailHeader";
 import CustomerDetailHistories from "@/components/admin/customers/CustomerDetailHistories";
 import CustomerProfileInfo from "@/components/admin/customers/CustomerProfileInfo";
-import CustomerStatusAction from "@/components/admin/customers/CustomerStatusAction";
 import EstimateCancellationModal from "@/components/admin/estimates/EstimateCancellationModal";
+import AdminAccountInfo from "@/components/admin/users/AdminAccountInfo";
 import AccountRestrictionModal from "@/components/admin/users/AccountRestrictionModal";
+import UserDetailHeader from "@/components/admin/users/UserDetailHeader";
+import UserStatusAction from "@/components/admin/users/UserStatusAction";
 import { useAdminCustomerDetail } from "@/hooks/useAdminCustomerDetail";
 import { useAdminEstimateCancellationMutation } from "@/hooks/useAdminEstimateCancellationMutation";
 import { useAdminCustomerStatusMutation } from "@/hooks/useAdminCustomerStatusMutation";
@@ -38,7 +38,9 @@ export default function AdminCustomerDetailPage({
   } = useAdminCustomerDetail(customerId);
   const customerStatusMutation = useAdminCustomerStatusMutation();
   const estimateCancellationMutation = useAdminEstimateCancellationMutation();
-  const [isRestrictionModalOpen, setIsRestrictionModalOpen] = useState(false);
+  const [restrictionAction, setRestrictionAction] = useState<
+    AdminCustomerStatusUpdatePayload["action"] | null
+  >(null);
   const [selectedEstimate, setSelectedEstimate] =
     useState<AdminEstimateCancellationTarget | null>(null);
 
@@ -90,7 +92,7 @@ export default function AdminCustomerDetailPage({
         customerId,
         payload: input,
       });
-      setIsRestrictionModalOpen(false);
+      setRestrictionAction(null);
     } catch {
       // 오류는 모달 내부에서 안내한다.
     }
@@ -104,6 +106,7 @@ export default function AdminCustomerDetailPage({
     try {
       await estimateCancellationMutation.mutateAsync({
         customerId,
+        moverId: selectedEstimate.moverId,
         estimateId: selectedEstimate.estimateId,
         payload,
       });
@@ -115,14 +118,19 @@ export default function AdminCustomerDetailPage({
 
   return (
     <section className="flex w-full flex-col gap-6">
-      <CustomerDetailHeader
+      <UserDetailHeader
         name={account.name}
         status={account.status}
+        backLabel="고객 목록으로"
         onBack={() => router.back()}
         action={
-          <CustomerStatusAction
+          <UserStatusAction
             status={account.status}
-            onClick={() => setIsRestrictionModalOpen(true)}
+            onClick={() =>
+              setRestrictionAction(
+                account.status === "SUSPENDED" ? "RELEASE" : "SUSPEND",
+              )
+            }
           />
         }
       />
@@ -143,7 +151,7 @@ export default function AdminCustomerDetailPage({
         </div>
       ) : null}
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(20rem,0.85fr)]">
-        <CustomerAccountInfo account={account} />
+        <AdminAccountInfo account={account} />
         <CustomerProfileInfo account={account} profile={profile} />
       </div>
       <CustomerDetailHistories
@@ -153,7 +161,7 @@ export default function AdminCustomerDetailPage({
           router.push(`/reports?reportId=${reportId}`)
         }
       />
-      {isRestrictionModalOpen ? (
+      {restrictionAction !== null ? (
         <AccountRestrictionModal
           account={account}
           error={
@@ -161,11 +169,11 @@ export default function AdminCustomerDetailPage({
               ? customerStatusMutation.error
               : undefined
           }
-          initialAction={account.status === "SUSPENDED" ? "RELEASE" : "SUSPEND"}
+          initialAction={restrictionAction}
           isPending={customerStatusMutation.isPending}
-          open={isRestrictionModalOpen}
+          open
           onClose={() => {
-            setIsRestrictionModalOpen(false);
+            setRestrictionAction(null);
             customerStatusMutation.reset();
           }}
           onSubmit={handleRestrictionSubmit}

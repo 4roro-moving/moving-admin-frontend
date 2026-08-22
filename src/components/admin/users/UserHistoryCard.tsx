@@ -2,13 +2,14 @@ import type { ReactNode } from "react";
 
 import Text from "@/components/admin/common/Text";
 
-interface CustomerHistoryCardProps {
+interface UserHistoryCardProps {
   title: string;
   totalCount: number;
   children: ReactNode;
+  summaryLabel?: string;
 }
 
-export function CustomerHistoryEmpty() {
+export function UserHistoryEmpty() {
   return (
     <p className="px-5 py-10 text-center text-sm text-muted">
       최근 이력이 없습니다.
@@ -16,11 +17,12 @@ export function CustomerHistoryEmpty() {
   );
 }
 
-export default function CustomerHistoryCard({
+export default function UserHistoryCard({
   title,
   totalCount,
   children,
-}: CustomerHistoryCardProps) {
+  summaryLabel = "최근 5건",
+}: UserHistoryCardProps) {
   return (
     <section className="overflow-hidden rounded-20 border border-border bg-surface shadow-select">
       <header className="flex items-center justify-between border-b border-border px-5 py-4">
@@ -28,7 +30,7 @@ export default function CustomerHistoryCard({
           {title}
         </Text>
         <Text as="span" variant="sm-medium" className="text-muted">
-          총 {totalCount}건 · 최근 5건
+          총 {totalCount}건 · {summaryLabel}
         </Text>
       </header>
       {children}

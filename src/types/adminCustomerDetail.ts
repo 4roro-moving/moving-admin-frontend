@@ -1,11 +1,12 @@
-import type { AdminAccountStatus } from "@/types/adminUser";
+import type {
+  AdminAccountStatus,
+  AdminAccountStatusUpdatePayload,
+  AdminAccountStatusUpdateResult,
+  AdminSuspensionHistory,
+  AdminTargetReportHistory,
+} from "@/types/adminUser";
 import type { AdminAuthProvider } from "@/types/adminCustomer";
 import type { AdminMoveType } from "@/types/adminMover";
-import type {
-  AdminReportReason,
-  AdminReportStatus,
-  AdminReportTargetType,
-} from "@/types/adminReport";
 
 export interface AdminCustomerDetail {
   account: {
@@ -27,42 +28,14 @@ export interface AdminCustomerDetail {
   estimateRequests: AdminCustomerEstimateRequests;
   reviewHistory: AdminCustomerReviewHistory;
   reportHistory: {
-    filed: AdminCustomerReportHistory;
-    received: AdminCustomerReportHistory;
+    filed: AdminTargetReportHistory;
+    received: AdminTargetReportHistory;
   };
-  suspensionHistory: {
-    totalCount: number;
-    items: Array<{
-      id: number;
-      action: "SUSPEND" | "RELEASE";
-      reason: string;
-      internalNote: string | null;
-      createdAt: string;
-      admin: {
-        id: string;
-        name: string;
-      };
-    }>;
-  };
+  suspensionHistory: AdminSuspensionHistory;
 }
 
-export interface AdminCustomerStatusUpdatePayload {
-  action: "SUSPEND" | "RELEASE";
-  reason: string;
-  internalNote?: string;
-}
-
-export interface AdminCustomerStatusUpdateResult {
-  id: string;
-  status: Exclude<AdminAccountStatus, "WITHDRAWN">;
-  suspension: {
-    id: number;
-    action: AdminCustomerStatusUpdatePayload["action"];
-    reason: string;
-    adminId: string;
-    createdAt: string;
-  };
-}
+export type AdminCustomerStatusUpdatePayload = AdminAccountStatusUpdatePayload;
+export type AdminCustomerStatusUpdateResult = AdminAccountStatusUpdateResult;
 
 interface AdminCustomerEstimateRequests {
   totalCount: number;
@@ -113,18 +86,6 @@ interface AdminCustomerReviewHistory {
     rating: number;
     content: string;
     isHidden: boolean;
-    createdAt: string;
-  }>;
-}
-
-interface AdminCustomerReportHistory {
-  totalCount: number;
-  items: Array<{
-    id: number;
-    targetType: AdminReportTargetType;
-    targetId: string;
-    reason: AdminReportReason;
-    status: AdminReportStatus;
     createdAt: string;
   }>;
 }

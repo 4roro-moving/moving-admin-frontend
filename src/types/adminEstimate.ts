@@ -18,7 +18,9 @@ export interface AdminEstimateCancellationResult {
 
 export interface AdminEstimateCancellationTarget {
   estimateId: number;
+  customerId: string;
   customerName: string;
+  moverId: string;
   moverName: string;
   moverNickname: string;
   moveDate: string;

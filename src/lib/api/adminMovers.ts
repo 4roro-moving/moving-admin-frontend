@@ -1,10 +1,16 @@
 import { fetchInstance } from "@/lib/api/fetchInstance";
 import { API_ROUTES } from "@/lib/constants/apiRoutes";
+import type { ApiResponse } from "@/types/api";
 import type {
   AdminMoverListItem,
   AdminMoverListQuery,
   AdminMoverListResult,
 } from "@/types/adminMover";
+import type { AdminMoverDetail } from "@/types/adminMoverDetail";
+import type {
+  AdminAccountStatusUpdatePayload,
+  AdminAccountStatusUpdateResult,
+} from "@/types/adminUser";
 
 export const ADMIN_MOVER_LIST_DEFAULT_LIMIT = 20;
 
@@ -31,4 +37,26 @@ export async function fetchAdminMovers(
   );
 
   return { items: result.data, pagination: result.pagination };
+}
+
+export async function fetchAdminMoverDetail(
+  moverId: string,
+): Promise<AdminMoverDetail> {
+  const result = await fetchInstance.get<ApiResponse<AdminMoverDetail>>(
+    API_ROUTES.ADMIN.MOVERS.DETAIL(moverId),
+  );
+
+  return result.data;
+}
+
+export async function updateAdminMoverStatus(
+  moverId: string,
+  payload: AdminAccountStatusUpdatePayload,
+): Promise<AdminAccountStatusUpdateResult> {
+  const result = await fetchInstance.patch<ApiResponse<AdminAccountStatusUpdateResult>>(
+    API_ROUTES.ADMIN.MOVERS.STATUS(moverId),
+    payload,
+  );
+
+  return result.data;
 }

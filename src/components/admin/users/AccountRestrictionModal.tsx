@@ -15,25 +15,31 @@ import {
 import { getApiErrorMessage } from "@/lib/api/getApiErrorMessage";
 import { cn } from "@/lib/utils/cn";
 import type {
-  AdminCustomerDetail,
-  AdminCustomerStatusUpdatePayload,
-} from "@/types/adminCustomerDetail";
+  AdminAccountStatus,
+  AdminAccountStatusUpdatePayload,
+} from "@/types/adminUser";
+
+interface RestrictionTargetAccount {
+  name: string;
+  email: string;
+  phone: string | null;
+  status: AdminAccountStatus;
+}
 
 interface AccountRestrictionModalProps {
-  account: Pick<
-    AdminCustomerDetail["account"],
-    "name" | "email" | "phone" | "status"
-  >;
+  account: RestrictionTargetAccount;
+  targetLabel?: string;
   error?: unknown;
-  initialAction: AdminCustomerStatusUpdatePayload["action"];
+  initialAction: AdminAccountStatusUpdatePayload["action"];
   open: boolean;
   isPending?: boolean;
   onClose: () => void;
-  onSubmit: (input: AdminCustomerStatusUpdatePayload) => void;
+  onSubmit: (input: AdminAccountStatusUpdatePayload) => void;
 }
 
 export default function AccountRestrictionModal({
   account,
+  targetLabel = "고객",
   error,
   initialAction,
   open,
@@ -101,7 +107,7 @@ export default function AccountRestrictionModal({
           </Text>
           <Text as="p" variant="xs-regular" className="text-text-secondary">
             계정 정지만으로 확정 거래는 취소되지 않습니다. 취소가 필요한 경우
-            견적 요청 이력에서 별도로 처리해 주세요.
+            해당 거래를 별도로 처리해 주세요.
           </Text>
         </div>
       ) : null}
@@ -124,7 +130,7 @@ export default function AccountRestrictionModal({
       <div className="flex min-h-0 w-full flex-1 flex-col gap-modal-20 overflow-y-auto">
         <div className="flex flex-col gap-modal-4 rounded-modal-12 border border-border bg-background-muted p-modal-14">
           <Text as="h3" variant="md-semibold" className="text-text-primary">
-            대상 고객
+            대상 {targetLabel}
           </Text>
           <div className="flex flex-wrap items-center gap-modal-8">
             <Text as="p" variant="md-medium" className="text-text-primary">

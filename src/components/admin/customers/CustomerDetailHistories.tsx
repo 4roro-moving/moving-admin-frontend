@@ -1,7 +1,7 @@
 import CustomerEstimateRequests from "@/components/admin/customers/CustomerEstimateRequests";
 import CustomerReportHistory from "@/components/admin/customers/CustomerReportHistory";
 import CustomerReviewHistory from "@/components/admin/customers/CustomerReviewHistory";
-import CustomerSuspensionHistory from "@/components/admin/customers/CustomerSuspensionHistory";
+import UserSuspensionHistory from "@/components/admin/users/UserSuspensionHistory";
 import type { AdminEstimateCancellationTarget } from "@/types/adminEstimate";
 import type { AdminCustomerDetail } from "@/types/adminCustomerDetail";
 
@@ -18,8 +18,9 @@ export default function CustomerDetailHistories({
 }: CustomerDetailHistoriesProps) {
   return (
     <>
-      <CustomerEstimateRequests
-        customerName={customer.account.name}
+        <CustomerEstimateRequests
+          customerId={customer.account.id}
+          customerName={customer.account.name}
         history={customer.estimateRequests}
         onCancelConfirmedEstimate={onCancelConfirmedEstimate}
       />
@@ -28,7 +29,7 @@ export default function CustomerDetailHistories({
         history={customer.reportHistory}
         onDetail={onReportDetail}
       />
-      <CustomerSuspensionHistory history={customer.suspensionHistory} />
+      <UserSuspensionHistory history={customer.suspensionHistory} />
     </>
   );
 }

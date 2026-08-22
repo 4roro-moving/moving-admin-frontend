@@ -1,11 +1,14 @@
+import Link from "next/link";
+
 import Text from "@/components/admin/common/Text";
-import CustomerHistoryCard, {
-  CustomerHistoryEmpty,
-} from "@/components/admin/customers/CustomerHistoryCard";
+import UserHistoryCard, {
+  UserHistoryEmpty,
+} from "@/components/admin/users/UserHistoryCard";
 import {
   formatKoreanDate,
   formatKoreanDateTime,
 } from "@/lib/utils/date";
+import { APP_ROUTES } from "@/lib/constants/appRoutes";
 import { cn } from "@/lib/utils/cn";
 import type { AdminEstimateCancellationTarget } from "@/types/adminEstimate";
 import type { AdminCustomerDetail } from "@/types/adminCustomerDetail";
@@ -47,21 +50,23 @@ const canceledByClass = {
 const statusBadgeClass = "inline-flex rounded-full px-2.5 py-1 text-xs font-semibold";
 
 interface CustomerEstimateRequestsProps {
+  customerId: string;
   customerName: string;
   history: AdminCustomerDetail["estimateRequests"];
   onCancelConfirmedEstimate: (target: AdminEstimateCancellationTarget) => void;
 }
 
 export default function CustomerEstimateRequests({
+  customerId,
   customerName,
   history,
   onCancelConfirmedEstimate,
 }: CustomerEstimateRequestsProps) {
   return (
     <div id="estimate-requests" className="scroll-mt-6">
-      <CustomerHistoryCard title="견적 요청 이력" totalCount={history.totalCount}>
+    <UserHistoryCard title="견적 요청 이력" totalCount={history.totalCount}>
       {history.items.length === 0 ? (
-        <CustomerHistoryEmpty />
+        <UserHistoryEmpty />
       ) : (
         <div className="overflow-x-auto">
           <div className="min-w-[1040px]">
@@ -157,8 +162,15 @@ export default function CustomerEstimateRequests({
                           className="mt-1 text-text-secondary"
                         >
                           확정 견적 정보:{" "}
-                          {item.confirmedEstimate.mover.nickname}(
-                          {item.confirmedEstimate.mover.name}) ·{" "}
+                          <Link
+                            href={`${APP_ROUTES.MOVERS}/${item.confirmedEstimate.mover.id}`}
+                            className="font-semibold text-foreground underline decoration-1 decoration-text-secondary underline-offset-2 hover:text-text-secondary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                            title={`${item.confirmedEstimate.mover.nickname} 기사 상세 보기`}
+                          >
+                            {item.confirmedEstimate.mover.nickname}(
+                            {item.confirmedEstimate.mover.name})
+                          </Link>{" "}
+                          ·{" "}
                           {item.confirmedEstimate.price.toLocaleString("ko-KR")}
                           원
                         </Text>
@@ -186,7 +198,9 @@ export default function CustomerEstimateRequests({
                               if (!item.confirmedEstimate) return;
                               onCancelConfirmedEstimate({
                                 estimateId: item.confirmedEstimate.id,
+                                customerId,
                                 customerName,
+                                moverId: item.confirmedEstimate.mover.id,
                                 moverName: item.confirmedEstimate.mover.name,
                                 moverNickname: item.confirmedEstimate.mover.nickname,
                                 moveDate: item.moveDate,
@@ -209,7 +223,7 @@ export default function CustomerEstimateRequests({
           </div>
         </div>
       )}
-      </CustomerHistoryCard>
+    </UserHistoryCard>
     </div>
   );
 }

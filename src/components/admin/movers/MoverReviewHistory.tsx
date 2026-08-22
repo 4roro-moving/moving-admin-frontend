@@ -5,35 +5,26 @@ import UserHistoryCard, {
 import { StarIcon } from "@/icons";
 import { formatKoreanDate } from "@/lib/utils/date";
 import { cn } from "@/lib/utils/cn";
-import type { AdminCustomerDetail } from "@/types/adminCustomerDetail";
+import type { AdminMoverDetail } from "@/types/adminMoverDetail";
 
-const reviewVisibilityClass = {
+const visibilityClass = {
   hidden: "bg-status-suspended-background text-status-suspended-foreground",
   visible: "bg-status-active-background text-status-active-foreground",
 } as const;
 
-interface CustomerReviewHistoryProps {
-  history: AdminCustomerDetail["reviewHistory"];
+interface MoverReviewHistoryProps {
+  history: AdminMoverDetail["reviewHistory"];
 }
 
-export default function CustomerReviewHistory({
-  history,
-}: CustomerReviewHistoryProps) {
+export default function MoverReviewHistory({ history }: MoverReviewHistoryProps) {
   return (
-    <UserHistoryCard title="작성 리뷰 이력" totalCount={history.totalCount}>
+    <UserHistoryCard title="받은 리뷰 이력" totalCount={history.totalCount}>
       {history.items.length ? (
         <div className="divide-y divide-border">
           {history.items.map((item) => (
             <article key={item.id} className="px-5 py-4">
               <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
                 <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                  <Text
-                    as="p"
-                    variant="md-semibold"
-                    className="text-foreground"
-                  >
-                    {item.moverNickname}
-                  </Text>
                   <span className="inline-flex items-center text-sm text-text-secondary">
                     <StarIcon className="mr-1 size-[1.1em] text-rating-fill" />
                     {item.rating}점
@@ -41,25 +32,19 @@ export default function CustomerReviewHistory({
                   <span
                     className={cn(
                       "rounded-full px-2 py-0.5 text-xs font-semibold",
-                      item.isHidden
-                        ? reviewVisibilityClass.hidden
-                        : reviewVisibilityClass.visible,
+                      item.isHidden ? visibilityClass.hidden : visibilityClass.visible,
                     )}
                   >
                     {item.isHidden ? "숨김" : "공개"}
                   </span>
                 </div>
-                <Text
-                  as="span"
-                  variant="xs-medium"
-                  className="text-text-subtle"
-                >
+                <Text as="span" variant="xs-medium" className="text-text-subtle">
                   {formatKoreanDate(item.createdAt)}
                 </Text>
               </div>
-              <p className="mt-3 text-sm leading-6 text-text-secondary">
+              <Text as="p" variant="md-regular" className="mt-3 text-text-secondary">
                 {item.content}
-              </p>
+              </Text>
             </article>
           ))}
         </div>
