@@ -2,7 +2,11 @@ import type { Pagination } from "@/types/pagination";
 
 export type AdminReportStatus = "PENDING" | "RESOLVED" | "REJECTED";
 
-export type AdminReportTargetType = "REVIEW" | "MOVER" | "RESIDENCE_REVIEW" | "GIVEAWAY";
+export type AdminReportTargetType =
+  | "REVIEW"
+  | "MOVER"
+  | "RESIDENCE_REVIEW"
+  | "GIVEAWAY";
 
 export type AdminReportSort = "LATEST" | "OLDEST";
 
@@ -35,6 +39,11 @@ export interface AdminReportHandler {
   id: string;
   name: string;
   email: string;
+}
+
+export interface AdminReportImageItem {
+  id: number;
+  imageUrl: string;
 }
 
 export interface AdminReviewReportTarget {
@@ -131,6 +140,7 @@ export interface AdminReportListItem {
 
 export interface AdminReportDetail extends AdminReportListItem {
   target: AdminReportTarget | null;
+  images: AdminReportImageItem[];
 }
 
 export interface AdminReportListResult {

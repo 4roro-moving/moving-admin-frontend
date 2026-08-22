@@ -38,7 +38,9 @@ export default function AdminReportDetailCard({
   onModerate,
 }: AdminReportDetailCardProps) {
   const [handlerNote, setHandlerNote] = useState(report?.handlerNote ?? "");
-  const [pendingStatus, setPendingStatus] = useState<"RESOLVED" | "REJECTED" | null>(null);
+  const [pendingStatus, setPendingStatus] = useState<
+    "RESOLVED" | "REJECTED" | null
+  >(null);
 
   if (isLoading) {
     return (
@@ -78,6 +80,7 @@ export default function AdminReportDetailCard({
             <h2 className="text-lg font-semibold text-foreground">신고 상세</h2>
             <p className="text-muted mt-1 text-sm">신고 #{report.id}</p>
           </div>
+
           <span
             className={cn(
               "inline-flex min-w-[72px] items-center justify-center rounded-full px-3 py-1 text-xs",
@@ -92,34 +95,82 @@ export default function AdminReportDetailCard({
           <dl className="space-y-4">
             <div>
               <dt>신고 대상</dt>
-              <dd className="mt-1 text-foreground">{getAdminReportDetailTargetTitle(report)}</dd>
+              <dd className="mt-1 text-foreground">
+                {getAdminReportDetailTargetTitle(report)}
+              </dd>
               <dd className="mt-1 text-xs text-muted">
-                대상 유형 {getAdminReportTargetLabel(report.targetType)} · 대상 ID {report.targetId}
+                대상 유형 {getAdminReportTargetLabel(report.targetType)} · 대상
+                ID {report.targetId}
               </dd>
             </div>
+
             <div>
               <dt>신고자</dt>
               <dd className="mt-1 text-foreground">
                 {report.reporter.name} · {report.reporter.email}
               </dd>
             </div>
+
             <div>
               <dt>신고 사유</dt>
-              <dd className="mt-1 text-foreground">{getAdminReportReasonLabel(report.reason)}</dd>
+              <dd className="mt-1 text-foreground">
+                {getAdminReportReasonLabel(report.reason)}
+              </dd>
             </div>
+
             <div>
               <dt>신고 내용</dt>
-              <dd className="mt-1 text-foreground">{report.detail ?? "상세 신고 내용 없음"}</dd>
+              <dd className="mt-1 whitespace-pre-line text-foreground">
+                {report.detail ?? "상세 신고 내용 없음"}
+              </dd>
             </div>
+
+            {report.images.length > 0 ? (
+              <div>
+                <dt>첨부 이미지</dt>
+
+                <dd className="mt-2">
+                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                    {report.images.map((image, index) => (
+                      <a
+                        key={image.id}
+                        href={image.imageUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={cn(
+                          "border-border bg-surface relative block aspect-square overflow-hidden rounded-xl border",
+                          "transition hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-accent",
+                        )}
+                        aria-label={`신고 첨부 이미지 ${index + 1} 원본 보기`}
+                      >
+                        <span
+                          role="img"
+                          aria-label={`신고 첨부 이미지 ${index + 1}`}
+                          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+                          style={{
+                            backgroundImage: `url("${image.imageUrl}")`,
+                          }}
+                        />
+                      </a>
+                    ))}
+                  </div>
+                </dd>
+              </div>
+            ) : null}
+
             <div>
               <dt>접수일</dt>
-              <dd className="mt-1 text-foreground">{formatAdminReportDateTime(report.createdAt)}</dd>
+              <dd className="mt-1 text-foreground">
+                {formatAdminReportDateTime(report.createdAt)}
+              </dd>
             </div>
+
             {report.handler && report.handledAt ? (
               <div>
                 <dt>처리 정보</dt>
                 <dd className="mt-1 text-foreground">
-                  {report.handler.name} · {formatAdminReportDateTime(report.handledAt)}
+                  {report.handler.name} ·{" "}
+                  {formatAdminReportDateTime(report.handledAt)}
                 </dd>
               </div>
             ) : null}
@@ -128,15 +179,25 @@ export default function AdminReportDetailCard({
 
         <section className="rounded-xl border border-[#f9c8bc] bg-[#fff7f3] p-4 text-sm text-muted">
           <p>신고된 원본 콘텐츠</p>
-          <p className="mt-2 text-foreground">{getAdminReportDetailTargetTitle(report)}</p>
-          {targetMeta ? <p className="mt-2 text-xs text-muted">{targetMeta}</p> : null}
-          <p className="mt-2 whitespace-pre-line leading-6 text-foreground/80">{targetContent}</p>
+
+          <p className="mt-2 text-foreground">
+            {getAdminReportDetailTargetTitle(report)}
+          </p>
+
+          {targetMeta ? (
+            <p className="mt-2 text-xs text-muted">{targetMeta}</p>
+          ) : null}
+
+          <p className="mt-2 whitespace-pre-line leading-6 text-foreground/80">
+            {targetContent}
+          </p>
         </section>
 
         <div className="flex flex-col gap-2">
           <label htmlFor="admin-report-note" className="text-sm text-muted">
             처리 메모
           </label>
+
           <textarea
             id="admin-report-note"
             value={handlerNote}
@@ -156,6 +217,7 @@ export default function AdminReportDetailCard({
           >
             반려
           </button>
+
           <button
             type="button"
             className="bg-accent rounded-xl px-4 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40"
