@@ -107,6 +107,11 @@ export default function AdminCustomersPage() {
     "PENDING_DESC",
     "PENDING_ASC",
   );
+  const openInquirySort: SortDirection = getListSortDirection(
+    sorts,
+    "OPEN_INQUIRY_DESC",
+    "OPEN_INQUIRY_ASC",
+  );
   const joinedSort: SortDirection = sorts.includes("CREATED_AT_ASC")
     ? "asc"
     : "desc";
@@ -135,6 +140,7 @@ export default function AdminCustomersPage() {
         fromDate,
         toDate,
         reportSort,
+        openInquirySort,
         joinedSort,
         openFilter,
         setOpenFilter,
@@ -154,6 +160,16 @@ export default function AdminCustomersPage() {
             page: 1,
           });
         },
+        onOpenInquirySort: () => {
+          replaceFilters({
+            sorts: toggleListSort(
+              sorts,
+              "OPEN_INQUIRY_DESC",
+              "OPEN_INQUIRY_ASC",
+            ),
+            page: 1,
+          });
+        },
         onJoinedSort: () => {
           replaceFilters({
             sorts: toggleRequiredListSort(
@@ -170,6 +186,7 @@ export default function AdminCustomersPage() {
       fromDate,
       joinedSort,
       openFilter,
+      openInquirySort,
       profileFilter,
       reportSort,
       replaceFilters,

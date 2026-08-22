@@ -72,6 +72,8 @@ export type AdminListOpenFilter =
 export type AdminListApiSort =
   | "PENDING_DESC"
   | "PENDING_ASC"
+  | "OPEN_INQUIRY_DESC"
+  | "OPEN_INQUIRY_ASC"
   | "CREATED_AT_DESC"
   | "CREATED_AT_ASC";
 
@@ -98,6 +100,7 @@ export interface AdminListItemBase {
   isProfileCompleted: boolean;
   receivedReportCount: number;
   pendingReceivedReportCount: number;
+  openInquiryCount: number;
   createdAt: string;
 }
 

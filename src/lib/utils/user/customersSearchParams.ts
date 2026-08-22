@@ -30,6 +30,8 @@ export const CUSTOMER_LIST_DEFAULTS: CustomerListFilters = {
 const CUSTOMER_LIST_SORTS = new Set<AdminListApiSort>([
   "PENDING_DESC",
   "PENDING_ASC",
+  "OPEN_INQUIRY_DESC",
+  "OPEN_INQUIRY_ASC",
   "CREATED_AT_DESC",
   "CREATED_AT_ASC",
 ]);
