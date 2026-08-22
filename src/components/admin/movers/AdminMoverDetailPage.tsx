@@ -36,7 +36,9 @@ export default function AdminMoverDetailPage({
     useAdminMoverDetail(moverId);
   const moverStatusMutation = useAdminMoverStatusMutation();
   const estimateCancellationMutation = useAdminMoverEstimateCancellationMutation();
-  const [isRestrictionModalOpen, setIsRestrictionModalOpen] = useState(false);
+  const [restrictionAction, setRestrictionAction] = useState<
+    AdminAccountStatusUpdatePayload["action"] | null
+  >(null);
   const [selectedEstimate, setSelectedEstimate] =
     useState<AdminEstimateCancellationTarget | null>(null);
 
@@ -78,7 +80,7 @@ export default function AdminMoverDetailPage({
   ) => {
     try {
       await moverStatusMutation.mutateAsync({ moverId, payload });
-      setIsRestrictionModalOpen(false);
+      setRestrictionAction(null);
     } catch {
       // 오류는 모달 내부에서 안내한다.
     }
@@ -118,7 +120,11 @@ export default function AdminMoverDetailPage({
         action={
           <UserStatusAction
             status={account.status}
-            onClick={() => setIsRestrictionModalOpen(true)}
+            onClick={() =>
+              setRestrictionAction(
+                account.status === "SUSPENDED" ? "RELEASE" : "SUSPEND",
+              )
+            }
           />
         }
       />
@@ -161,18 +167,18 @@ export default function AdminMoverDetailPage({
         />
       </div>
       <UserSuspensionHistory history={suspensionHistory} />
-      {isRestrictionModalOpen ? (
+      {restrictionAction !== null ? (
         <AccountRestrictionModal
           account={account}
           targetLabel="기사"
           error={
             moverStatusMutation.isError ? moverStatusMutation.error : undefined
           }
-          initialAction={account.status === "SUSPENDED" ? "RELEASE" : "SUSPEND"}
+          initialAction={restrictionAction}
           isPending={moverStatusMutation.isPending}
-          open={isRestrictionModalOpen}
+          open
           onClose={() => {
-            setIsRestrictionModalOpen(false);
+            setRestrictionAction(null);
             moverStatusMutation.reset();
           }}
           onSubmit={handleRestrictionSubmit}
