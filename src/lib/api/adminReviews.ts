@@ -1,10 +1,5 @@
 import { fetchInstance } from "@/lib/api/fetchInstance";
 import { API_ROUTES } from "@/lib/constants/apiRoutes";
-import {
-  hideMockAdminReview,
-  listMockAdminReviews,
-  unhideMockAdminReview,
-} from "@/mocks/adminReviewsMock";
 import type { ApiResponse } from "@/types/api";
 import type {
   AdminReviewActionReasonPayload,
@@ -17,16 +12,9 @@ export const ADMIN_REVIEW_LIST_PAGE_LIMIT = 10;
 
 const SORT_FALLBACK = "LATEST";
 
-export const USE_ADMIN_REVIEWS_MOCK =
-  process.env.NEXT_PUBLIC_USE_ADMIN_REVIEWS_MOCK === "true";
-
 export async function fetchAdminReviews(
   query: AdminReviewListQuery = {},
 ): Promise<AdminReviewListResult> {
-  if (USE_ADMIN_REVIEWS_MOCK) {
-    return listMockAdminReviews(query);
-  }
-
   const page = query.page ?? 1;
   const limit = query.limit ?? ADMIN_REVIEW_LIST_PAGE_LIMIT;
   const sort = query.sort ?? SORT_FALLBACK;
@@ -54,10 +42,6 @@ export async function hideAdminReview(
   reviewId: number,
   payload: AdminReviewActionReasonPayload,
 ): Promise<AdminReviewItem> {
-  if (USE_ADMIN_REVIEWS_MOCK) {
-    return hideMockAdminReview(reviewId, payload.reason);
-  }
-
   const body = await fetchInstance.post<ApiResponse<AdminReviewItem>>(
     API_ROUTES.ADMIN.REVIEWS.HIDE(reviewId),
     payload,
@@ -70,10 +54,6 @@ export async function unhideAdminReview(
   reviewId: number,
   payload?: AdminReviewActionReasonPayload,
 ): Promise<AdminReviewItem> {
-  if (USE_ADMIN_REVIEWS_MOCK) {
-    return unhideMockAdminReview(reviewId, payload?.reason);
-  }
-
   const body = await fetchInstance.post<ApiResponse<AdminReviewItem>>(
     API_ROUTES.ADMIN.REVIEWS.UNHIDE(reviewId),
     payload,
