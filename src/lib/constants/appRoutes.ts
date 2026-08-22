@@ -8,5 +8,7 @@ export const APP_ROUTES = {
   TERMS: "/terms",
   CONTENTS: {
     REVIEWS: "/contents/reviews",
+    RESIDENCE_REVIEWS: "/contents/residence-reviews",
+    GIVEAWAYS: "/contents/giveaways",
   },
 } as const;

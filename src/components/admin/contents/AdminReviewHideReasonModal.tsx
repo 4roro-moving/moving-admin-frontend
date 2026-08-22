@@ -8,10 +8,9 @@ import {
 } from "@/lib/constants/adminReviews";
 import { getApiErrorMessage } from "@/lib/api/getApiErrorMessage";
 import { getHideReasonCharCount, isValidHideReason } from "@/lib/utils/adminReview";
-import type { AdminReviewItem } from "@/types/adminReview";
 
 interface AdminReviewHideReasonModalProps {
-  review: AdminReviewItem;
+  authorName: string;
   reason: string;
   isPending: boolean;
   error: unknown;
@@ -21,7 +20,7 @@ interface AdminReviewHideReasonModalProps {
 }
 
 export default function AdminReviewHideReasonModal({
-  review,
+  authorName,
   reason,
   isPending,
   error,
@@ -105,7 +104,7 @@ export default function AdminReviewHideReasonModal({
         <h2 id="admin-review-reason-title" className="text-xl font-semibold text-foreground">
           숨김 사유 입력
         </h2>
-        <p className="text-muted mt-2 text-sm">작성자 {review.author.name}</p>
+        <p className="text-muted mt-2 text-sm">작성자 {authorName}</p>
         <p className="text-muted mt-3 text-sm">
           콘텐츠를 숨김 처리합니다. 사유는 공백 제외 최소 {HIDE_REASON_MIN_LENGTH}자 이상 입력해야
           하며, 작성자 알림으로 전달됩니다.
