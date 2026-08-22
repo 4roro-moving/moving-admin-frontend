@@ -4,6 +4,7 @@ import type {
   AdminReportStatus,
   AdminReportTargetType,
 } from "@/types/adminReport";
+import type { AdminGiveawaySort } from "@/types/adminGiveaway";
 import type { AdminResidenceReviewSort } from "@/types/adminResidenceReview";
 import type { AdminReviewSort } from "@/types/adminReview";
 
@@ -79,5 +80,14 @@ export const QUERY_KEYS = {
       keyword: string;
       sort: AdminResidenceReviewSort;
     }) => ["admin", "residence-reviews", "list", params] as const,
+  },
+  GIVEAWAYS: {
+    ALL: ["admin", "giveaways"] as const,
+    LIST: (params: {
+      page: number;
+      limit: number;
+      keyword: string;
+      sort: AdminGiveawaySort;
+    }) => ["admin", "giveaways", "list", params] as const,
   },
 } as const;

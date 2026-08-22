@@ -33,5 +33,10 @@ export const API_ROUTES = {
       UNHIDE: (residenceReviewId: number) =>
         `/admin/residence-reviews/${residenceReviewId}/unhide`,
     },
+    GIVEAWAYS: {
+      ROOT: "/admin/giveaways",
+      HIDE: (giveawayId: number) => `/admin/giveaways/${giveawayId}/hide`,
+      UNHIDE: (giveawayId: number) => `/admin/giveaways/${giveawayId}/unhide`,
+    },
   },
 } as const;
