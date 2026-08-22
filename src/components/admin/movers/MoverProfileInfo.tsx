@@ -50,8 +50,10 @@ export default function MoverProfileInfo({
             className="size-16 rounded-full border border-border object-cover"
           />
         ) : (
-          <div className="flex size-16 items-center justify-center rounded-full bg-accent-muted text-xl font-semibold text-accent">
-            {profile.nickname?.slice(0, 1) ?? account.name.slice(0, 1)}
+          <div className="flex size-16 items-center justify-center rounded-full bg-accent-muted text-accent">
+            <Text as="span" variant="2lg-semibold">
+              {profile.nickname?.slice(0, 1) ?? account.name.slice(0, 1)}
+            </Text>
           </div>
         )}
         <div className="min-w-0">

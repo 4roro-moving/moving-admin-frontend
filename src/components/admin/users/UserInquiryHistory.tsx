@@ -39,13 +39,25 @@ export default function UserInquiryHistory({
       {history.items.length ? (
         <div className="overflow-x-auto">
           <div className="min-w-[900px]">
-            <div className="grid grid-cols-[10rem_minmax(14rem,1.5fr)_8rem_10rem_10rem_9rem] gap-4 border-b border-border bg-background-muted px-5 py-3 text-xs font-semibold text-muted">
-              <span>카테고리</span>
-              <span>제목</span>
-              <span>상태</span>
-              <span>마지막 대화</span>
-              <span>생성일</span>
-              <span>처리 관리자</span>
+            <div className="grid grid-cols-[10rem_minmax(14rem,1.5fr)_8rem_10rem_10rem_9rem] gap-4 border-b border-border bg-background-muted px-5 py-3 text-muted">
+              <Text as="span" variant="xs-semibold">
+                카테고리
+              </Text>
+              <Text as="span" variant="xs-semibold">
+                제목
+              </Text>
+              <Text as="span" variant="xs-semibold">
+                상태
+              </Text>
+              <Text as="span" variant="xs-semibold">
+                마지막 대화
+              </Text>
+              <Text as="span" variant="xs-semibold">
+                생성일
+              </Text>
+              <Text as="span" variant="xs-semibold">
+                처리 관리자
+              </Text>
             </div>
             <div className="divide-y divide-border">
               {history.items.map((item) => (
@@ -59,16 +71,18 @@ export default function UserInquiryHistory({
                   <Text as="p" variant="md-medium" className="truncate text-foreground">
                     {item.title}
                   </Text>
-                  <span
+                  <Text
+                    as="span"
+                    variant="xs-semibold"
                     className={cn(
-                      "w-fit rounded-full px-2.5 py-1 text-xs font-semibold",
+                      "w-fit rounded-full px-2.5 py-1",
                       item.status === "OPEN"
                         ? "bg-status-progress-background text-status-progress-foreground"
                         : "bg-status-active-background text-status-active-foreground",
                     )}
                   >
                     {getStatusLabel(item.status)}
-                  </span>
+                  </Text>
                   <Text as="p" variant="sm-medium" className="text-text-secondary">
                     {formatKoreanDateTime(item.lastMessageAt)}
                   </Text>
