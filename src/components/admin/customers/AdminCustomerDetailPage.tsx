@@ -38,7 +38,9 @@ export default function AdminCustomerDetailPage({
   } = useAdminCustomerDetail(customerId);
   const customerStatusMutation = useAdminCustomerStatusMutation();
   const estimateCancellationMutation = useAdminEstimateCancellationMutation();
-  const [isRestrictionModalOpen, setIsRestrictionModalOpen] = useState(false);
+  const [restrictionAction, setRestrictionAction] = useState<
+    AdminCustomerStatusUpdatePayload["action"] | null
+  >(null);
   const [selectedEstimate, setSelectedEstimate] =
     useState<AdminEstimateCancellationTarget | null>(null);
 
@@ -90,7 +92,7 @@ export default function AdminCustomerDetailPage({
         customerId,
         payload: input,
       });
-      setIsRestrictionModalOpen(false);
+      setRestrictionAction(null);
     } catch {
       // 오류는 모달 내부에서 안내한다.
     }
@@ -124,7 +126,11 @@ export default function AdminCustomerDetailPage({
         action={
           <UserStatusAction
             status={account.status}
-            onClick={() => setIsRestrictionModalOpen(true)}
+            onClick={() =>
+              setRestrictionAction(
+                account.status === "SUSPENDED" ? "RELEASE" : "SUSPEND",
+              )
+            }
           />
         }
       />
@@ -155,7 +161,7 @@ export default function AdminCustomerDetailPage({
           router.push(`/reports?reportId=${reportId}`)
         }
       />
-      {isRestrictionModalOpen ? (
+      {restrictionAction !== null ? (
         <AccountRestrictionModal
           account={account}
           error={
@@ -163,11 +169,11 @@ export default function AdminCustomerDetailPage({
               ? customerStatusMutation.error
               : undefined
           }
-          initialAction={account.status === "SUSPENDED" ? "RELEASE" : "SUSPEND"}
+          initialAction={restrictionAction}
           isPending={customerStatusMutation.isPending}
-          open={isRestrictionModalOpen}
+          open
           onClose={() => {
-            setIsRestrictionModalOpen(false);
+            setRestrictionAction(null);
             customerStatusMutation.reset();
           }}
           onSubmit={handleRestrictionSubmit}
