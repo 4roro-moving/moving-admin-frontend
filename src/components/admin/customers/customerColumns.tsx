@@ -30,6 +30,7 @@ interface Options {
   fromDate: string;
   toDate: string;
   reportSort: SortDirection;
+  openInquirySort: SortDirection;
   joinedSort: SortDirection;
   openFilter: AdminCustomerOpenFilter;
   setOpenFilter: (value: AdminCustomerOpenFilter) => void;
@@ -40,6 +41,7 @@ interface Options {
   setToDate: (value: string) => void;
   resetDate: () => void;
   onReportSort: () => void;
+  onOpenInquirySort: () => void;
   onJoinedSort: () => void;
 }
 
@@ -150,6 +152,23 @@ export function createCustomerColumns(
           totalCount={m.receivedReportCount}
         />
       ),
+    },
+    {
+      id: "openInquiry",
+      width: "w-[12%]",
+      header: (
+        <div className="flex items-center gap-1">
+          미답변 문의
+          <button
+            type="button"
+            aria-label="미답변 문의 정렬"
+            onClick={o.onOpenInquirySort}
+          >
+            <SortIcon direction={o.openInquirySort} />
+          </button>
+        </div>
+      ),
+      cell: (m) => <span className="text-muted">{m.openInquiryCount}건</span>,
     },
     {
       id: "provider",

@@ -17,11 +17,10 @@ export function useAdminMoverStatusMutation() {
   return useMutation({
     mutationFn: ({ moverId, payload }: UpdateMoverStatusVariables) =>
       updateAdminMoverStatus(moverId, payload),
-    onSuccess: async (_data, { moverId }) => {
+    onSuccess: async () => {
       await queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.MOVERS.DETAIL(moverId),
+        queryKey: QUERY_KEYS.MOVERS.ALL,
       });
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.MOVERS.ALL });
     },
   });
 }

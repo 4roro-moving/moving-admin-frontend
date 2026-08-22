@@ -22,6 +22,8 @@ export const MOVER_LIST_DEFAULTS: MoverListFilters = {
 const MOVER_LIST_SORTS = new Set<AdminMoverListSort>([
   "PENDING_DESC",
   "PENDING_ASC",
+  "OPEN_INQUIRY_DESC",
+  "OPEN_INQUIRY_ASC",
   "CONFIRMED_DESC",
   "CONFIRMED_ASC",
   "RATING_DESC",

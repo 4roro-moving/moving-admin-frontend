@@ -28,6 +28,7 @@ interface Options {
   fromDate: string;
   toDate: string;
   reportSort: SortDirection;
+  openInquirySort: SortDirection;
   confirmedSort: SortDirection;
   ratingSort: SortDirection;
   careerSort: SortDirection;
@@ -40,6 +41,7 @@ interface Options {
   setToDate: (value: string) => void;
   resetDate: () => void;
   onReportSort: () => void;
+  onOpenInquirySort: () => void;
   onConfirmedSort: () => void;
   onRatingSort: () => void;
   onCareerSort: () => void;
@@ -173,6 +175,23 @@ export function createMoverColumns(
         </div>
       ),
       cell: (m) => <span className="text-muted">{m.confirmedCount}건</span>,
+    },
+    {
+      id: "openInquiry",
+      width: "w-[9%]",
+      header: (
+        <div className="flex items-center gap-1">
+          미답변 문의
+          <button
+            type="button"
+            aria-label="미답변 문의 정렬"
+            onClick={o.onOpenInquirySort}
+          >
+            <SortIcon direction={o.openInquirySort} />
+          </button>
+        </div>
+      ),
+      cell: (m) => <span className="text-muted">{m.openInquiryCount}건</span>,
     },
     {
       id: "rating",

@@ -98,6 +98,11 @@ export default function AdminMoversPage() {
     "PENDING_DESC",
     "PENDING_ASC",
   );
+  const openInquirySort: SortDirection = getListSortDirection(
+    sorts,
+    "OPEN_INQUIRY_DESC",
+    "OPEN_INQUIRY_ASC",
+  );
   const confirmedSort: SortDirection = getListSortDirection(
     sorts,
     "CONFIRMED_DESC",
@@ -138,6 +143,7 @@ export default function AdminMoversPage() {
         fromDate,
         toDate,
         reportSort,
+        openInquirySort,
         confirmedSort,
         ratingSort,
         careerSort,
@@ -156,6 +162,16 @@ export default function AdminMoversPage() {
         onReportSort: () => {
           replaceFilters({
             sorts: toggleListSort(sorts, "PENDING_DESC", "PENDING_ASC"),
+            page: 1,
+          });
+        },
+        onOpenInquirySort: () => {
+          replaceFilters({
+            sorts: toggleListSort(
+              sorts,
+              "OPEN_INQUIRY_DESC",
+              "OPEN_INQUIRY_ASC",
+            ),
             page: 1,
           });
         },
@@ -194,6 +210,7 @@ export default function AdminMoversPage() {
       confirmedSort,
       joinedSort,
       openFilter,
+      openInquirySort,
       profileFilter,
       reportSort,
       ratingSort,
