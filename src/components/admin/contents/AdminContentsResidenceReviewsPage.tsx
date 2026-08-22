@@ -6,20 +6,21 @@ import AdminResidenceReviewCard from "@/components/admin/contents/AdminResidence
 import AdminReviewHideReasonModal from "@/components/admin/contents/AdminReviewHideReasonModal";
 import {
   AdminReviewEmptyState,
+  AdminReviewErrorState,
   AdminReviewFeedbackToast,
+  AdminReviewLoadingState,
 } from "@/components/admin/contents/AdminReviewListStates";
 import AdminReviewPagination from "@/components/admin/contents/AdminReviewPagination";
 import AdminReviewSearchBar from "@/components/admin/contents/AdminReviewSearchBar";
 import AdminReviewSortChips from "@/components/admin/contents/AdminReviewSortChips";
+import { useAdminResidenceReviewModeration } from "@/hooks/useAdminResidenceReviewModeration";
+import { useAdminResidenceReviews } from "@/hooks/useAdminResidenceReviews";
 import {
   ADMIN_RESIDENCE_REVIEW_LIST_PAGE_LIMIT,
   ADMIN_RESIDENCE_REVIEW_SORT_OPTIONS,
 } from "@/lib/constants/adminResidenceReviews";
+import { getApiErrorMessage } from "@/lib/api/getApiErrorMessage";
 import { isValidHideReason } from "@/lib/utils/adminReview";
-import {
-  listMockAdminResidenceReviews,
-  MOCK_ADMIN_RESIDENCE_REVIEWS,
-} from "@/mocks/adminResidenceReviewsMock";
 import type {
   AdminResidenceReviewItem,
   AdminResidenceReviewSort,
@@ -35,31 +36,32 @@ interface ModerationFeedback {
 }
 
 export default function AdminContentsResidenceReviewsPage() {
-  const [items, setItems] = useState<AdminResidenceReviewItem[]>(() =>
-    structuredClone(MOCK_ADMIN_RESIDENCE_REVIEWS),
-  );
   const [page, setPage] = useState(1);
   const [keywordInput, setKeywordInput] = useState("");
   const [keyword, setKeyword] = useState("");
   const [sort, setSort] = useState<AdminResidenceReviewSort>("LATEST");
   const [reasonModal, setReasonModal] = useState<HideReasonModalState | null>(null);
   const [reasonInput, setReasonInput] = useState("");
-  const [isPending, setIsPending] = useState(false);
   const [feedback, setFeedback] = useState<ModerationFeedback | null>(null);
 
   const previouslyFocusedElementRef = useRef<HTMLElement | null>(null);
 
-  const listResult = useMemo(
-    () =>
-      listMockAdminResidenceReviews({
-        page,
-        limit: ADMIN_RESIDENCE_REVIEW_LIST_PAGE_LIMIT,
-        sort,
-        keyword: keyword || undefined,
-        items,
-      }),
-    [items, keyword, page, sort],
+  const listQuery = useMemo(
+    () => ({
+      page,
+      limit: ADMIN_RESIDENCE_REVIEW_LIST_PAGE_LIMIT,
+      sort,
+      keyword: keyword || undefined,
+    }),
+    [keyword, page, sort],
   );
+
+  const { data, isLoading, isFetching, isError, error, refetch } =
+    useAdminResidenceReviews(listQuery);
+  const { hideMutation, unhideMutation, isPending } = useAdminResidenceReviewModeration();
+
+  const items = data?.items ?? [];
+  const pagination = data?.pagination;
 
   useEffect(() => {
     if (!feedback) {
@@ -94,15 +96,15 @@ export default function AdminContentsResidenceReviewsPage() {
   };
 
   const closeReasonModal = useCallback(() => {
-    if (isPending) {
+    if (hideMutation.isPending) {
       return;
     }
     setReasonModal(null);
     setReasonInput("");
     restoreFocus();
-  }, [isPending, restoreFocus]);
+  }, [hideMutation.isPending, restoreFocus]);
 
-  const handleConfirmHide = () => {
+  const handleConfirmHide = async () => {
     if (!reasonModal) return;
 
     const trimmedReason = reasonInput.trim();
@@ -110,59 +112,36 @@ export default function AdminContentsResidenceReviewsPage() {
       return;
     }
 
-    setIsPending(true);
-    const now = new Date().toISOString();
-    setItems((prev) =>
-      prev.map((item) =>
-        item.id === reasonModal.review.id
-          ? {
-              ...item,
-              isHidden: true,
-              updatedAt: now,
-              latestModeration: {
-                action: "HIDE",
-                reason: trimmedReason,
-                adminName: "관리자",
-                createdAt: now,
-              },
-            }
-          : item,
-      ),
-    );
-    setReasonModal(null);
-    setReasonInput("");
-    setIsPending(false);
-    restoreFocus();
-    setFeedback({ tone: "success", message: "거주후기를 숨김 처리했습니다." });
+    try {
+      await hideMutation.mutateAsync({
+        residenceReviewId: reasonModal.review.id,
+        reason: trimmedReason,
+      });
+      setReasonModal(null);
+      setReasonInput("");
+      restoreFocus();
+      setFeedback({ tone: "success", message: "거주후기를 숨김 처리했습니다." });
+    } catch {
+      // 실패 시 모달이 열린 채로 hideMutation.error를 표시하므로 토스트는 중복하지 않는다.
+    }
   };
 
-  const handleUnhide = (review: AdminResidenceReviewItem) => {
+  const handleUnhide = async (review: AdminResidenceReviewItem) => {
     if (isPending) {
       return;
     }
 
     setFeedback(null);
-    setIsPending(true);
-    const now = new Date().toISOString();
-    setItems((prev) =>
-      prev.map((item) =>
-        item.id === review.id
-          ? {
-              ...item,
-              isHidden: false,
-              updatedAt: now,
-              latestModeration: {
-                action: "UNHIDE",
-                reason: null,
-                adminName: "관리자",
-                createdAt: now,
-              },
-            }
-          : item,
-      ),
-    );
-    setIsPending(false);
-    setFeedback({ tone: "success", message: "거주후기를 복구했습니다." });
+
+    try {
+      await unhideMutation.mutateAsync({ residenceReviewId: review.id });
+      setFeedback({ tone: "success", message: "거주후기를 복구했습니다." });
+    } catch (unhideException) {
+      setFeedback({
+        tone: "error",
+        message: getApiErrorMessage(unhideException, "복구 처리에 실패했습니다."),
+      });
+    }
   };
 
   return (
@@ -190,38 +169,63 @@ export default function AdminContentsResidenceReviewsPage() {
         }}
       />
 
-      <div className="flex flex-col gap-3">
-        {listResult.items.map((review) => (
-          <AdminResidenceReviewCard
-            key={review.id}
-            review={review}
-            disabled={isPending}
-            onHide={openHideReasonModal}
-            onUnhide={handleUnhide}
-          />
-        ))}
-      </div>
+      {isLoading ? <AdminReviewLoadingState /> : null}
 
-      {listResult.items.length === 0 ? (
-        <AdminReviewEmptyState message="조건에 맞는 거주후기가 없습니다." />
+      {isError ? (
+        <AdminReviewErrorState
+          error={error}
+          onRetry={() => {
+            void refetch();
+          }}
+        />
       ) : null}
 
-      <AdminReviewPagination pagination={listResult.pagination} onChangePage={setPage} />
+      {!isLoading && !isError ? (
+        <>
+          <div className="flex flex-col gap-3">
+            {items.map((review) => (
+              <AdminResidenceReviewCard
+                key={review.id}
+                review={review}
+                disabled={isPending}
+                onHide={openHideReasonModal}
+                onUnhide={(target) => {
+                  void handleUnhide(target);
+                }}
+              />
+            ))}
+          </div>
+
+          {items.length === 0 ? (
+            <AdminReviewEmptyState message="조건에 맞는 거주후기가 없습니다." />
+          ) : null}
+
+          {pagination ? (
+            <AdminReviewPagination pagination={pagination} onChangePage={setPage} />
+          ) : null}
+        </>
+      ) : null}
 
       {reasonModal ? (
         <AdminReviewHideReasonModal
           authorName={reasonModal.review.author.name}
           reason={reasonInput}
-          isPending={isPending}
-          error={null}
+          isPending={hideMutation.isPending}
+          error={hideMutation.isError ? hideMutation.error : null}
           onReasonChange={setReasonInput}
           onClose={closeReasonModal}
-          onConfirm={handleConfirmHide}
+          onConfirm={() => {
+            void handleConfirmHide();
+          }}
         />
       ) : null}
 
       {feedback ? (
         <AdminReviewFeedbackToast tone={feedback.tone} message={feedback.message} />
+      ) : null}
+
+      {!feedback && isFetching && !isLoading ? (
+        <AdminReviewFeedbackToast tone="info" message="목록을 갱신 중입니다." />
       ) : null}
     </section>
   );

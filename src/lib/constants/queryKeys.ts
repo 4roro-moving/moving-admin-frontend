@@ -4,6 +4,7 @@ import type {
   AdminReportStatus,
   AdminReportTargetType,
 } from "@/types/adminReport";
+import type { AdminResidenceReviewSort } from "@/types/adminResidenceReview";
 import type { AdminReviewSort } from "@/types/adminReview";
 
 export const QUERY_KEYS = {
@@ -69,5 +70,14 @@ export const QUERY_KEYS = {
       keyword: string;
       sort: AdminReviewSort;
     }) => ["admin", "reviews", "list", params] as const,
+  },
+  RESIDENCE_REVIEWS: {
+    ALL: ["admin", "residence-reviews"] as const,
+    LIST: (params: {
+      page: number;
+      limit: number;
+      keyword: string;
+      sort: AdminResidenceReviewSort;
+    }) => ["admin", "residence-reviews", "list", params] as const,
   },
 } as const;
