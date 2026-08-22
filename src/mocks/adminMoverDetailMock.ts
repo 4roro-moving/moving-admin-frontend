@@ -160,6 +160,33 @@ export const ADMIN_MOVER_DETAIL_MOCK: AdminMoverDetail = {
       ],
     },
   },
+  inquiryHistory: {
+    totalCount: 2,
+    openCount: 1,
+    items: [
+      {
+        id: 41,
+        category: "SUSPENSION_APPEAL",
+        title: "계정 정지 이의 제기",
+        status: "OPEN",
+        lastMessageAt: "2026-08-22T10:20:00.000Z",
+        createdAt: "2026-08-21T09:00:00.000Z",
+        handledBy: null,
+      },
+      {
+        id: 39,
+        category: "SUSPENSION_APPEAL",
+        title: "계정 상태 확인 요청",
+        status: "CLOSED",
+        lastMessageAt: "2026-08-18T08:30:00.000Z",
+        createdAt: "2026-08-17T14:00:00.000Z",
+        handledBy: {
+          id: "8b65c50f-5136-4bd5-9a8d-ca86000f7650",
+          name: "관리자",
+        },
+      },
+    ],
+  },
   suspensionHistory: {
     totalCount: 2,
     items: [

@@ -2,6 +2,7 @@ import type { AdminAuthProvider } from "@/types/adminCustomer";
 import type { AdminMoveType } from "@/types/adminMover";
 import type {
   AdminAccountStatus,
+  AdminInquiryHistory,
   AdminReportHistory,
   AdminSuspensionHistory,
   AdminTargetReportHistory,
@@ -85,5 +86,6 @@ export interface AdminMoverDetail {
     filed: AdminTargetReportHistory;
     received: AdminReportHistory;
   };
+  inquiryHistory: AdminInquiryHistory;
   suspensionHistory: AdminSuspensionHistory;
 }

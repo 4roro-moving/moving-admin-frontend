@@ -61,6 +61,26 @@ export interface AdminReportHistory<
 
 export type AdminTargetReportHistory =
   AdminReportHistory<AdminTargetReportHistoryItem>;
+
+export type AdminInquiryCategory = "SUSPENSION_APPEAL" | (string & {});
+export type AdminInquiryStatus = "OPEN" | "CLOSED" | (string & {});
+
+export interface AdminInquiryHistory {
+  totalCount: number;
+  openCount: number;
+  items: Array<{
+    id: number;
+    category: AdminInquiryCategory;
+    title: string;
+    status: AdminInquiryStatus;
+    lastMessageAt: string;
+    createdAt: string;
+    handledBy: {
+      id: string;
+      name: string;
+    } | null;
+  }>;
+}
 export type AdminProfileFilterValue = "ALL" | "COMPLETED" | "INCOMPLETE";
 export type AdminListOpenFilter =
   | "status"

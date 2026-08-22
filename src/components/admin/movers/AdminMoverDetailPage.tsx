@@ -14,6 +14,7 @@ import MoverReviewHistory from "@/components/admin/movers/MoverReviewHistory";
 import AdminAccountInfo from "@/components/admin/users/AdminAccountInfo";
 import UserDetailHeader from "@/components/admin/users/UserDetailHeader";
 import UserStatusAction from "@/components/admin/users/UserStatusAction";
+import UserInquiryHistory from "@/components/admin/users/UserInquiryHistory";
 import { useAdminMoverDetail } from "@/hooks/useAdminMoverDetail";
 import { useAdminMoverEstimateCancellationMutation } from "@/hooks/useAdminMoverEstimateCancellationMutation";
 import { useAdminMoverStatusMutation } from "@/hooks/useAdminMoverStatusMutation";
@@ -156,6 +157,7 @@ export default function AdminMoverDetailPage({
         onCancelConfirmedEstimate={setSelectedEstimate}
       />
       <MoverReviewHistory history={reviewHistory} />
+      <UserInquiryHistory history={mover.inquiryHistory} />
       <div className="grid gap-6 xl:grid-cols-2">
         <MoverFiledReportHistory
           history={reportHistory.filed}

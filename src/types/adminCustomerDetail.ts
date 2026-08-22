@@ -2,6 +2,7 @@ import type {
   AdminAccountStatus,
   AdminAccountStatusUpdatePayload,
   AdminAccountStatusUpdateResult,
+  AdminInquiryHistory,
   AdminSuspensionHistory,
   AdminTargetReportHistory,
 } from "@/types/adminUser";
@@ -31,6 +32,7 @@ export interface AdminCustomerDetail {
     filed: AdminTargetReportHistory;
     received: AdminTargetReportHistory;
   };
+  inquiryHistory: AdminInquiryHistory;
   suspensionHistory: AdminSuspensionHistory;
 }
 
