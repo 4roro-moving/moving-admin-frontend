@@ -4,6 +4,7 @@ import type {
   AdminReportStatus,
   AdminReportTargetType,
 } from "@/types/adminReport";
+import type { AdminInquiryStatus } from "@/types/adminInquiry";
 import type { AdminReviewSort } from "@/types/adminReview";
 
 export const QUERY_KEYS = {
@@ -26,7 +27,8 @@ export const QUERY_KEYS = {
       reason: AdminReportReason | "ALL";
       sort: AdminReportSort;
     }) => ["admin", "reports", "list", params] as const,
-    DETAIL: (reportId: number) => ["admin", "reports", "detail", reportId] as const,
+    DETAIL: (reportId: number) =>
+      ["admin", "reports", "detail", reportId] as const,
   },
   CUSTOMERS: {
     ALL: ["admin", "customers"] as const,
@@ -69,5 +71,45 @@ export const QUERY_KEYS = {
       keyword: string;
       sort: AdminReviewSort;
     }) => ["admin", "reviews", "list", params] as const,
+  },
+  FAQS: {
+    ALL: ["admin", "faqs"] as const,
+
+    LIST: (params: {
+      page: number;
+      limit: number;
+      keyword: string;
+      isVisible?: boolean;
+    }) => ["admin", "faqs", "list", params] as const,
+
+    DETAIL: (faqId: number) => ["admin", "faqs", "detail", faqId] as const,
+  },
+  INQUIRIES: {
+    ALL: ["admin", "inquiries"] as const,
+
+    LIST: (params: {
+      page: number;
+      limit: number;
+      keyword: string;
+      status?: AdminInquiryStatus;
+      openOnly?: boolean;
+    }) => ["admin", "inquiries", "list", params] as const,
+
+    DETAIL: (inquiryId: number) =>
+      ["admin", "inquiries", "detail", inquiryId] as const,
+  },
+  NOTICES: {
+    ALL: ["admin", "notices"] as const,
+
+    LIST: (params: {
+      page: number;
+      limit: number;
+      keyword: string;
+      audience?: string;
+      isVisible?: boolean;
+    }) => ["admin", "notices", "list", params] as const,
+
+    DETAIL: (noticeId: number) =>
+      ["admin", "notices", "detail", noticeId] as const,
   },
 } as const;
