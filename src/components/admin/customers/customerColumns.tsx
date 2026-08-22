@@ -154,6 +154,23 @@ export function createCustomerColumns(
       ),
     },
     {
+      id: "openInquiry",
+      width: "w-[12%]",
+      header: (
+        <div className="flex items-center gap-1">
+          미답변 문의
+          <button
+            type="button"
+            aria-label="미답변 문의 정렬"
+            onClick={o.onOpenInquirySort}
+          >
+            <SortIcon direction={o.openInquirySort} />
+          </button>
+        </div>
+      ),
+      cell: (m) => <span className="text-muted">{m.openInquiryCount}건</span>,
+    },
+    {
       id: "provider",
       width: "w-[11%]",
       header: (
@@ -189,23 +206,6 @@ export function createCustomerColumns(
         </TableFilter>
       ),
       cell: (m) => <span className="text-muted">{m.authProvider}</span>,
-    },
-    {
-      id: "openInquiry",
-      width: "w-[12%]",
-      header: (
-        <div className="flex items-center gap-1">
-          미답변 문의
-          <button
-            type="button"
-            aria-label="미답변 문의 정렬"
-            onClick={o.onOpenInquirySort}
-          >
-            <SortIcon direction={o.openInquirySort} />
-          </button>
-        </div>
-      ),
-      cell: (m) => <span className="text-muted">{m.openInquiryCount}건</span>,
     },
     {
       id: "joined",
