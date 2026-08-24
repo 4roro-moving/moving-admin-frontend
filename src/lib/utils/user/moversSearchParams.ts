@@ -1,4 +1,5 @@
 import {
+  ADMIN_MOVER_MOVE_TYPE_OPTIONS,
   ADMIN_MOVER_REGION_OPTIONS,
   type AdminMoveType,
   type AdminMoverListSort,
@@ -36,6 +37,13 @@ export const MOVER_LIST_DEFAULTS: MoverListFilters = {
 const MOVER_REGION_IDS = new Set<number>(
   ADMIN_MOVER_REGION_OPTIONS.map(({ value }) => value),
 );
+const MOVER_MOVE_TYPES = new Set<AdminMoveType>(
+  ADMIN_MOVER_MOVE_TYPE_OPTIONS.map(({ value }) => value),
+);
+
+function isMoverMoveType(value: string | undefined): value is AdminMoveType {
+  return value !== undefined && MOVER_MOVE_TYPES.has(value as AdminMoveType);
+}
 
 const MOVER_LIST_SORTS = new Set<AdminMoverListSort>([
   "PENDING_DESC",
@@ -61,10 +69,7 @@ export function parseMoverListFilters(
   return {
     ...parseAdminListSearchFilters(params, MOVER_LIST_SORTS),
     regionId: MOVER_REGION_IDS.has(regionId) ? regionId : null,
-    moveType:
-      moveType === "SMALL" || moveType === "HOME" || moveType === "OFFICE"
-        ? moveType
-        : "ALL",
+    moveType: isMoverMoveType(moveType) ? moveType : "ALL",
   };
 }
 
