@@ -1,4 +1,8 @@
-import type { AdminMoveType, AdminMoverListSort } from "@/types/adminMover";
+import {
+  ADMIN_MOVER_REGION_OPTIONS,
+  type AdminMoveType,
+  type AdminMoverListSort,
+} from "@/types/adminMover";
 import {
   createAdminListSearchParams,
   parseAdminListSearchFilters,
@@ -29,6 +33,10 @@ export const MOVER_LIST_DEFAULTS: MoverListFilters = {
   limit: 20,
 };
 
+const MOVER_REGION_IDS = new Set<number>(
+  ADMIN_MOVER_REGION_OPTIONS.map(({ value }) => value),
+);
+
 const MOVER_LIST_SORTS = new Set<AdminMoverListSort>([
   "PENDING_DESC",
   "PENDING_ASC",
@@ -52,7 +60,7 @@ export function parseMoverListFilters(
 
   return {
     ...parseAdminListSearchFilters(params, MOVER_LIST_SORTS),
-    regionId: regionId >= 1 && regionId <= 17 ? regionId : null,
+    regionId: MOVER_REGION_IDS.has(regionId) ? regionId : null,
     moveType:
       moveType === "SMALL" || moveType === "HOME" || moveType === "OFFICE"
         ? moveType
