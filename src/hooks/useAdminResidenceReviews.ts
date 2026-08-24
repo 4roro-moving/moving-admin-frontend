@@ -14,6 +14,7 @@ export function useAdminResidenceReviews(query: AdminResidenceReviewListQuery = 
   const limit = query.limit ?? ADMIN_RESIDENCE_REVIEW_LIST_PAGE_LIMIT;
   const keyword = query.keyword?.trim() ?? "";
   const sort = query.sort ?? "LATEST";
+  const isHidden = query.isHidden;
 
   return useQuery({
     queryKey: QUERY_KEYS.RESIDENCE_REVIEWS.LIST({
@@ -21,6 +22,7 @@ export function useAdminResidenceReviews(query: AdminResidenceReviewListQuery = 
       limit,
       keyword,
       sort,
+      isHidden,
     }),
     queryFn: () =>
       fetchAdminResidenceReviews({
@@ -29,6 +31,7 @@ export function useAdminResidenceReviews(query: AdminResidenceReviewListQuery = 
         limit,
         keyword: keyword || undefined,
         sort,
+        isHidden,
       }),
     placeholderData: keepPreviousData,
     enabled: isAuthenticated,

@@ -14,6 +14,7 @@ export function useAdminGiveaways(query: AdminGiveawayListQuery = {}) {
   const limit = query.limit ?? ADMIN_GIVEAWAY_LIST_PAGE_LIMIT;
   const keyword = query.keyword?.trim() ?? "";
   const sort = query.sort ?? "LATEST";
+  const isHidden = query.isHidden;
 
   return useQuery({
     queryKey: QUERY_KEYS.GIVEAWAYS.LIST({
@@ -21,6 +22,7 @@ export function useAdminGiveaways(query: AdminGiveawayListQuery = {}) {
       limit,
       keyword,
       sort,
+      isHidden,
     }),
     queryFn: () =>
       fetchAdminGiveaways({
@@ -29,6 +31,7 @@ export function useAdminGiveaways(query: AdminGiveawayListQuery = {}) {
         limit,
         keyword: keyword || undefined,
         sort,
+        isHidden,
       }),
     placeholderData: keepPreviousData,
     enabled: isAuthenticated,

@@ -79,6 +79,7 @@ export const QUERY_KEYS = {
       limit: number;
       keyword: string;
       sort: AdminResidenceReviewSort;
+      isHidden?: boolean;
     }) => ["admin", "residence-reviews", "list", params] as const,
   },
   GIVEAWAYS: {
@@ -88,6 +89,7 @@ export const QUERY_KEYS = {
       limit: number;
       keyword: string;
       sort: AdminGiveawaySort;
+      isHidden?: boolean;
     }) => ["admin", "giveaways", "list", params] as const,
   },
 } as const;
