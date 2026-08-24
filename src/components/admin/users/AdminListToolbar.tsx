@@ -1,5 +1,7 @@
 "use client";
 
+import type { ReactNode } from "react";
+
 import Search from "@/components/admin/common/Search";
 import Text from "@/components/admin/common/Text";
 import {
@@ -15,6 +17,7 @@ interface AdminListToolbarProps {
   onSearchChange: (value: string) => void;
   onSearchClear: () => void;
   onSearchSubmit: () => void;
+  filters?: ReactNode;
   limit: number;
   isLimitOpen: boolean;
   onLimitToggle: () => void;
@@ -29,6 +32,7 @@ export default function AdminListToolbar({
   onSearchChange,
   onSearchClear,
   onSearchSubmit,
+  filters,
   limit,
   isLimitOpen,
   onLimitToggle,
@@ -46,6 +50,7 @@ export default function AdminListToolbar({
         </Text>
       </div>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+        {filters}
         <div className="w-full sm:max-w-[420px]">
           <Search
             size="responsive"
