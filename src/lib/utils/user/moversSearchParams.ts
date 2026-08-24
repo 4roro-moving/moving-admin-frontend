@@ -1,16 +1,31 @@
-import type { AdminMoverListSort } from "@/types/adminMover";
+import {
+  ADMIN_MOVER_MOVE_TYPE_OPTIONS,
+  ADMIN_MOVER_REGION_OPTIONS,
+  type AdminMoveType,
+  type AdminMoverListSort,
+} from "@/types/adminMover";
 import {
   createAdminListSearchParams,
   parseAdminListSearchFilters,
   type AdminListSearchFilters,
 } from "./listSearchParams";
-import type { SearchParamsInput } from "@/lib/utils/urlSearchParams";
+import {
+  getSearchParam,
+  parsePositiveInteger,
+  type SearchParamsInput,
+} from "@/lib/utils/urlSearchParams";
 
-export type MoverListFilters = AdminListSearchFilters<AdminMoverListSort>;
+export interface MoverListFilters
+  extends AdminListSearchFilters<AdminMoverListSort> {
+  regionId: number | null;
+  moveType: "ALL" | AdminMoveType;
+}
 
 export const MOVER_LIST_DEFAULTS: MoverListFilters = {
   keyword: "",
   status: "ALL",
+  regionId: null,
+  moveType: "ALL",
   profile: "ALL",
   fromDate: "",
   toDate: "",
@@ -18,6 +33,17 @@ export const MOVER_LIST_DEFAULTS: MoverListFilters = {
   page: 1,
   limit: 20,
 };
+
+const MOVER_REGION_IDS = new Set<number>(
+  ADMIN_MOVER_REGION_OPTIONS.map(({ value }) => value),
+);
+const MOVER_MOVE_TYPES = new Set<AdminMoveType>(
+  ADMIN_MOVER_MOVE_TYPE_OPTIONS.map(({ value }) => value),
+);
+
+function isMoverMoveType(value: string | undefined): value is AdminMoveType {
+  return value !== undefined && MOVER_MOVE_TYPES.has(value as AdminMoveType);
+}
 
 const MOVER_LIST_SORTS = new Set<AdminMoverListSort>([
   "PENDING_DESC",
@@ -37,9 +63,21 @@ const MOVER_LIST_SORTS = new Set<AdminMoverListSort>([
 export function parseMoverListFilters(
   params: SearchParamsInput,
 ): MoverListFilters {
-  return parseAdminListSearchFilters(params, MOVER_LIST_SORTS);
+  const regionId = parsePositiveInteger(getSearchParam(params, "regionId"), 0);
+  const moveType = getSearchParam(params, "moveType");
+
+  return {
+    ...parseAdminListSearchFilters(params, MOVER_LIST_SORTS),
+    regionId: MOVER_REGION_IDS.has(regionId) ? regionId : null,
+    moveType: isMoverMoveType(moveType) ? moveType : "ALL",
+  };
 }
 
 export function buildMoverListQueryString(filters: MoverListFilters) {
-  return createAdminListSearchParams(filters).toString();
+  const params = createAdminListSearchParams(filters);
+
+  if (filters.regionId) params.set("regionId", String(filters.regionId));
+  if (filters.moveType !== "ALL") params.set("moveType", filters.moveType);
+
+  return params.toString();
 }

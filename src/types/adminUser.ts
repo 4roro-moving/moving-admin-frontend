@@ -86,6 +86,8 @@ export type AdminListOpenFilter =
   | "status"
   | "profile"
   | "date"
+  | "region"
+  | "moveType"
   | "limit"
   | null;
 
