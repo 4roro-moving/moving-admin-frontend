@@ -8,6 +8,10 @@ import { createMoverColumns } from "@/components/admin/movers/moverColumns";
 import AdminListPagination from "@/components/admin/users/AdminListPagination";
 import AdminListTable from "@/components/admin/users/AdminListTable";
 import AdminListToolbar from "@/components/admin/users/AdminListToolbar";
+import {
+  FilterOption,
+  TableFilter,
+} from "@/components/admin/users/TableFilter";
 import { useAdminMovers } from "@/hooks/useAdminMovers";
 import { getApiErrorMessage } from "@/lib/api/getApiErrorMessage";
 import {
@@ -27,6 +31,11 @@ import type {
   AdminListOpenFilter,
   AdminAccountStatus,
 } from "@/types/adminUser";
+import {
+  ADMIN_MOVER_MOVE_TYPE_OPTIONS,
+  ADMIN_MOVER_REGION_OPTIONS,
+  type AdminMoveType,
+} from "@/types/adminMover";
 
 function getMoverListFilters(searchParams: URLSearchParams): MoverListFilters {
   const params: Record<string, string | string[]> = {};
@@ -60,6 +69,8 @@ export default function AdminMoversPage() {
   const {
     keyword,
     status,
+    regionId,
+    moveType,
     profile: profileFilter,
     fromDate,
     toDate,
@@ -75,6 +86,15 @@ export default function AdminMoversPage() {
   const setProfileFilter = useCallback(
     (value: AdminProfileFilterValue) =>
       replaceFilters({ profile: value, page: 1 }),
+    [replaceFilters],
+  );
+  const setRegionId = useCallback(
+    (value: number | null) => replaceFilters({ regionId: value, page: 1 }),
+    [replaceFilters],
+  );
+  const setMoveType = useCallback(
+    (value: "ALL" | AdminMoveType) =>
+      replaceFilters({ moveType: value, page: 1 }),
     [replaceFilters],
   );
   const setFromDate = useCallback(
@@ -128,6 +148,8 @@ export default function AdminMoversPage() {
       limit,
       keyword: keyword || undefined,
       status: status === "ALL" ? undefined : status,
+      regionId: regionId ?? undefined,
+      moveType: moveType === "ALL" ? undefined : moveType,
       isProfileCompleted:
         profileFilter === "ALL" ? undefined : profileFilter === "COMPLETED",
       fromDate: fromDate || undefined,
@@ -241,6 +263,82 @@ export default function AdminMoversPage() {
         onSearchChange={setKeywordInput}
         onSearchClear={clearKeyword}
         onSearchSubmit={submitKeyword}
+        filters={
+          <div className="flex shrink-0 items-center gap-2">
+            <TableFilter
+              label={
+                ADMIN_MOVER_REGION_OPTIONS.find(
+                  (option) => option.value === regionId,
+                )?.label ?? "서비스 지역"
+              }
+              isOpen={openFilter === "region"}
+              isActive={regionId !== null}
+              onToggle={() =>
+                setOpenFilter(openFilter === "region" ? null : "region")
+              }
+              triggerClassName="h-11 rounded-2xl border border-border bg-surface px-4 text-foreground"
+              menuWidth={144}
+            >
+              <FilterOption
+                selected={regionId === null}
+                onClick={() => {
+                  setRegionId(null);
+                  setOpenFilter(null);
+                }}
+              >
+                전체 지역
+              </FilterOption>
+              {ADMIN_MOVER_REGION_OPTIONS.map((option) => (
+                <FilterOption
+                  key={option.value}
+                  selected={regionId === option.value}
+                  onClick={() => {
+                    setRegionId(option.value);
+                    setOpenFilter(null);
+                  }}
+                >
+                  {option.label}
+                </FilterOption>
+              ))}
+            </TableFilter>
+            <TableFilter
+              label={
+                ADMIN_MOVER_MOVE_TYPE_OPTIONS.find(
+                  (option) => option.value === moveType,
+                )?.label ?? "이사 유형"
+              }
+              isOpen={openFilter === "moveType"}
+              isActive={moveType !== "ALL"}
+              onToggle={() =>
+                setOpenFilter(openFilter === "moveType" ? null : "moveType")
+              }
+              triggerClassName="h-11 rounded-2xl border border-border bg-surface px-4 text-foreground"
+              menuWidth={168}
+            >
+              <FilterOption
+                selected={moveType === "ALL"}
+                onClick={() => {
+                  setMoveType("ALL");
+                  setOpenFilter(null);
+                }}
+              >
+                전체 유형
+              </FilterOption>
+              {ADMIN_MOVER_MOVE_TYPE_OPTIONS.map((option) => (
+                <FilterOption
+                  key={option.value}
+                  selected={moveType === option.value}
+                  onClick={() => {
+                    setMoveType(option.value);
+                    setOpenFilter(null);
+                  }}
+                >
+                  {option.label}
+                </FilterOption>
+              ))}
+            </TableFilter>
+          </div>
+        }
         limit={limit}
         isLimitOpen={openFilter === "limit"}
         onLimitToggle={() =>
