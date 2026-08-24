@@ -20,10 +20,23 @@ export const API_ROUTES = {
       CANCEL: (estimateId: number) => `/admin/estimates/${estimateId}/cancel`,
     },
     REPORTS: "/admin/reports",
+    // 2026.08.22 신영미 콘텐츠 관리 경로 추가
     REVIEWS: {
       ROOT: "/admin/reviews",
       HIDE: (reviewId: number) => `/admin/reviews/${reviewId}/hide`,
       UNHIDE: (reviewId: number) => `/admin/reviews/${reviewId}/unhide`,
+    },
+    RESIDENCE_REVIEWS: {
+      ROOT: "/admin/residence-reviews",
+      HIDE: (residenceReviewId: number) =>
+        `/admin/residence-reviews/${residenceReviewId}/hide`,
+      UNHIDE: (residenceReviewId: number) =>
+        `/admin/residence-reviews/${residenceReviewId}/unhide`,
+    },
+    GIVEAWAYS: {
+      ROOT: "/admin/giveaways",
+      HIDE: (giveawayId: number) => `/admin/giveaways/${giveawayId}/hide`,
+      UNHIDE: (giveawayId: number) => `/admin/giveaways/${giveawayId}/unhide`,
     },
     FAQS: {
       ROOT: "/admin/faqs",

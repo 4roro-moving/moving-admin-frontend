@@ -4,7 +4,9 @@ import type {
   AdminReportStatus,
   AdminReportTargetType,
 } from "@/types/adminReport";
+import type { AdminGiveawaySort } from "@/types/adminGiveaway";
 import type { AdminInquiryStatus } from "@/types/adminInquiry";
+import type { AdminResidenceReviewSort } from "@/types/adminResidenceReview";
 import type { AdminReviewSort } from "@/types/adminReview";
 
 export const QUERY_KEYS = {
@@ -72,21 +74,38 @@ export const QUERY_KEYS = {
       sort: AdminReviewSort;
     }) => ["admin", "reviews", "list", params] as const,
   },
+  RESIDENCE_REVIEWS: {
+    ALL: ["admin", "residence-reviews"] as const,
+    LIST: (params: {
+      page: number;
+      limit: number;
+      keyword: string;
+      sort: AdminResidenceReviewSort;
+      isHidden?: boolean;
+    }) => ["admin", "residence-reviews", "list", params] as const,
+  },
+  GIVEAWAYS: {
+    ALL: ["admin", "giveaways"] as const,
+    LIST: (params: {
+      page: number;
+      limit: number;
+      keyword: string;
+      sort: AdminGiveawaySort;
+      isHidden?: boolean;
+    }) => ["admin", "giveaways", "list", params] as const,
+  },
   FAQS: {
     ALL: ["admin", "faqs"] as const,
-
     LIST: (params: {
       page: number;
       limit: number;
       keyword: string;
       isVisible?: boolean;
     }) => ["admin", "faqs", "list", params] as const,
-
     DETAIL: (faqId: number) => ["admin", "faqs", "detail", faqId] as const,
   },
   INQUIRIES: {
     ALL: ["admin", "inquiries"] as const,
-
     LIST: (params: {
       page: number;
       limit: number;
@@ -94,13 +113,11 @@ export const QUERY_KEYS = {
       status?: AdminInquiryStatus;
       openOnly?: boolean;
     }) => ["admin", "inquiries", "list", params] as const,
-
     DETAIL: (inquiryId: number) =>
       ["admin", "inquiries", "detail", inquiryId] as const,
   },
   NOTICES: {
     ALL: ["admin", "notices"] as const,
-
     LIST: (params: {
       page: number;
       limit: number;
@@ -108,7 +125,6 @@ export const QUERY_KEYS = {
       audience?: string;
       isVisible?: boolean;
     }) => ["admin", "notices", "list", params] as const,
-
     DETAIL: (noticeId: number) =>
       ["admin", "notices", "detail", noticeId] as const,
   },

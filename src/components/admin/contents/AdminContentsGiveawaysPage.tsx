@@ -6,17 +6,21 @@ import AdminGiveawayCard from "@/components/admin/contents/AdminGiveawayCard";
 import AdminReviewHideReasonModal from "@/components/admin/contents/AdminReviewHideReasonModal";
 import {
   AdminReviewEmptyState,
+  AdminReviewErrorState,
   AdminReviewFeedbackToast,
+  AdminReviewLoadingState,
 } from "@/components/admin/contents/AdminReviewListStates";
 import AdminReviewPagination from "@/components/admin/contents/AdminReviewPagination";
 import AdminReviewSearchBar from "@/components/admin/contents/AdminReviewSearchBar";
 import AdminReviewSortChips from "@/components/admin/contents/AdminReviewSortChips";
+import { useAdminGiveawayModeration } from "@/hooks/useAdminGiveawayModeration";
+import { useAdminGiveaways } from "@/hooks/useAdminGiveaways";
 import {
   ADMIN_GIVEAWAY_LIST_PAGE_LIMIT,
   ADMIN_GIVEAWAY_SORT_OPTIONS,
 } from "@/lib/constants/adminGiveaways";
+import { getApiErrorMessage } from "@/lib/api/getApiErrorMessage";
 import { isValidHideReason } from "@/lib/utils/adminReview";
-import { listMockAdminGiveaways, MOCK_ADMIN_GIVEAWAYS } from "@/mocks/adminGiveawaysMock";
 import type { AdminGiveawayItem, AdminGiveawaySort } from "@/types/adminGiveaway";
 
 interface HideReasonModalState {
@@ -29,31 +33,31 @@ interface ModerationFeedback {
 }
 
 export default function AdminContentsGiveawaysPage() {
-  const [items, setItems] = useState<AdminGiveawayItem[]>(() =>
-    structuredClone(MOCK_ADMIN_GIVEAWAYS),
-  );
   const [page, setPage] = useState(1);
   const [keywordInput, setKeywordInput] = useState("");
   const [keyword, setKeyword] = useState("");
   const [sort, setSort] = useState<AdminGiveawaySort>("LATEST");
   const [reasonModal, setReasonModal] = useState<HideReasonModalState | null>(null);
   const [reasonInput, setReasonInput] = useState("");
-  const [isPending, setIsPending] = useState(false);
   const [feedback, setFeedback] = useState<ModerationFeedback | null>(null);
 
   const previouslyFocusedElementRef = useRef<HTMLElement | null>(null);
 
-  const listResult = useMemo(
-    () =>
-      listMockAdminGiveaways({
-        page,
-        limit: ADMIN_GIVEAWAY_LIST_PAGE_LIMIT,
-        sort,
-        keyword: keyword || undefined,
-        items,
-      }),
-    [items, keyword, page, sort],
+  const listQuery = useMemo(
+    () => ({
+      page,
+      limit: ADMIN_GIVEAWAY_LIST_PAGE_LIMIT,
+      sort,
+      keyword: keyword || undefined,
+    }),
+    [keyword, page, sort],
   );
+
+  const { data, isLoading, isFetching, isError, error, refetch } = useAdminGiveaways(listQuery);
+  const { hideMutation, unhideMutation, isPending } = useAdminGiveawayModeration();
+
+  const items = data?.items ?? [];
+  const pagination = data?.pagination;
 
   useEffect(() => {
     if (!feedback) {
@@ -88,15 +92,15 @@ export default function AdminContentsGiveawaysPage() {
   };
 
   const closeReasonModal = useCallback(() => {
-    if (isPending) {
+    if (hideMutation.isPending) {
       return;
     }
     setReasonModal(null);
     setReasonInput("");
     restoreFocus();
-  }, [isPending, restoreFocus]);
+  }, [hideMutation.isPending, restoreFocus]);
 
-  const handleConfirmHide = () => {
+  const handleConfirmHide = async () => {
     if (!reasonModal) return;
 
     const trimmedReason = reasonInput.trim();
@@ -104,59 +108,36 @@ export default function AdminContentsGiveawaysPage() {
       return;
     }
 
-    setIsPending(true);
-    const now = new Date().toISOString();
-    setItems((prev) =>
-      prev.map((item) =>
-        item.id === reasonModal.giveaway.id
-          ? {
-              ...item,
-              isHidden: true,
-              updatedAt: now,
-              latestModeration: {
-                action: "HIDE",
-                reason: trimmedReason,
-                adminName: "관리자",
-                createdAt: now,
-              },
-            }
-          : item,
-      ),
-    );
-    setReasonModal(null);
-    setReasonInput("");
-    setIsPending(false);
-    restoreFocus();
-    setFeedback({ tone: "success", message: "나눔 게시물을 숨김 처리했습니다." });
+    try {
+      await hideMutation.mutateAsync({
+        giveawayId: reasonModal.giveaway.id,
+        reason: trimmedReason,
+      });
+      setReasonModal(null);
+      setReasonInput("");
+      restoreFocus();
+      setFeedback({ tone: "success", message: "나눔 게시물을 숨김 처리했습니다." });
+    } catch {
+      // 실패 시 모달이 열린 채로 hideMutation.error를 표시하므로 토스트는 중복하지 않는다.
+    }
   };
 
-  const handleUnhide = (giveaway: AdminGiveawayItem) => {
+  const handleUnhide = async (giveaway: AdminGiveawayItem) => {
     if (isPending) {
       return;
     }
 
     setFeedback(null);
-    setIsPending(true);
-    const now = new Date().toISOString();
-    setItems((prev) =>
-      prev.map((item) =>
-        item.id === giveaway.id
-          ? {
-              ...item,
-              isHidden: false,
-              updatedAt: now,
-              latestModeration: {
-                action: "UNHIDE",
-                reason: null,
-                adminName: "관리자",
-                createdAt: now,
-              },
-            }
-          : item,
-      ),
-    );
-    setIsPending(false);
-    setFeedback({ tone: "success", message: "나눔 게시물을 복구했습니다." });
+
+    try {
+      await unhideMutation.mutateAsync({ giveawayId: giveaway.id });
+      setFeedback({ tone: "success", message: "나눔 게시물을 복구했습니다." });
+    } catch (unhideException) {
+      setFeedback({
+        tone: "error",
+        message: getApiErrorMessage(unhideException, "복구 처리에 실패했습니다."),
+      });
+    }
   };
 
   return (
@@ -184,38 +165,63 @@ export default function AdminContentsGiveawaysPage() {
         }}
       />
 
-      <div className="flex flex-col gap-3">
-        {listResult.items.map((giveaway) => (
-          <AdminGiveawayCard
-            key={giveaway.id}
-            giveaway={giveaway}
-            disabled={isPending}
-            onHide={openHideReasonModal}
-            onUnhide={handleUnhide}
-          />
-        ))}
-      </div>
+      {isLoading ? <AdminReviewLoadingState /> : null}
 
-      {listResult.items.length === 0 ? (
-        <AdminReviewEmptyState message="조건에 맞는 나눔 게시물이 없습니다." />
+      {isError ? (
+        <AdminReviewErrorState
+          error={error}
+          onRetry={() => {
+            void refetch();
+          }}
+        />
       ) : null}
 
-      <AdminReviewPagination pagination={listResult.pagination} onChangePage={setPage} />
+      {!isLoading && !isError ? (
+        <>
+          <div className="flex flex-col gap-3">
+            {items.map((giveaway) => (
+              <AdminGiveawayCard
+                key={giveaway.id}
+                giveaway={giveaway}
+                disabled={isPending}
+                onHide={openHideReasonModal}
+                onUnhide={(target) => {
+                  void handleUnhide(target);
+                }}
+              />
+            ))}
+          </div>
+
+          {items.length === 0 ? (
+            <AdminReviewEmptyState message="조건에 맞는 나눔 게시물이 없습니다." />
+          ) : null}
+
+          {pagination ? (
+            <AdminReviewPagination pagination={pagination} onChangePage={setPage} />
+          ) : null}
+        </>
+      ) : null}
 
       {reasonModal ? (
         <AdminReviewHideReasonModal
           authorName={reasonModal.giveaway.author.name}
           reason={reasonInput}
-          isPending={isPending}
-          error={null}
+          isPending={hideMutation.isPending}
+          error={hideMutation.isError ? hideMutation.error : null}
           onReasonChange={setReasonInput}
           onClose={closeReasonModal}
-          onConfirm={handleConfirmHide}
+          onConfirm={() => {
+            void handleConfirmHide();
+          }}
         />
       ) : null}
 
       {feedback ? (
         <AdminReviewFeedbackToast tone={feedback.tone} message={feedback.message} />
+      ) : null}
+
+      {!feedback && isFetching && !isLoading ? (
+        <AdminReviewFeedbackToast tone="info" message="목록을 갱신 중입니다." />
       ) : null}
     </section>
   );

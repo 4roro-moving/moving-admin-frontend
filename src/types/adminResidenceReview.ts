@@ -7,6 +7,15 @@ export type AdminResidenceReviewSort =
   | "RATING_LOW"
   | "REPORT_HIGH";
 
+/** GET /api/admin/residence-reviews 쿼리. BE listAdminResidenceReviewsQuerySchema 와 맞춤 */
+export interface AdminResidenceReviewListQuery {
+  page?: number;
+  limit?: number;
+  keyword?: string;
+  sort?: AdminResidenceReviewSort;
+  isHidden?: boolean;
+}
+
 export interface AdminResidenceReviewAuthor {
   id: string;
   name: string;
@@ -25,6 +34,7 @@ export interface AdminResidenceReviewLatestModeration {
   createdAt: string;
 }
 
+/** 목록·숨김/복구 응답 data 한 건. BE AdminResidenceReviewListItem 의 JSON 형태 */
 export interface AdminResidenceReviewItem {
   id: number;
   contentType: "RESIDENCE_REVIEW";
@@ -43,4 +53,9 @@ export interface AdminResidenceReviewItem {
 export interface AdminResidenceReviewListResult {
   items: AdminResidenceReviewItem[];
   pagination: Pagination;
+}
+
+/** POST .../hide body. BE hideResidenceReviewBodySchema 와 동일 */
+export interface AdminResidenceReviewHidePayload {
+  reason: string;
 }

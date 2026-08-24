@@ -4,6 +4,15 @@ export type AdminGiveawaySort = "LATEST" | "OLDEST" | "REPORT_HIGH";
 
 export type AdminGiveawayStatus = "AVAILABLE" | "IN_PROGRESS" | "COMPLETED";
 
+/** GET /api/admin/giveaways 쿼리. BE listAdminGiveawaysQuerySchema 와 맞춤 */
+export interface AdminGiveawayListQuery {
+  page?: number;
+  limit?: number;
+  keyword?: string;
+  sort?: AdminGiveawaySort;
+  isHidden?: boolean;
+}
+
 export interface AdminGiveawayAuthor {
   id: string;
   name: string;
@@ -22,6 +31,7 @@ export interface AdminGiveawayLatestModeration {
   createdAt: string;
 }
 
+/** 목록·숨김/복구 응답 data 한 건. BE AdminGiveawayListItem 의 JSON 형태 */
 export interface AdminGiveawayItem {
   id: number;
   contentType: "GIVEAWAY";
@@ -40,4 +50,9 @@ export interface AdminGiveawayItem {
 export interface AdminGiveawayListResult {
   items: AdminGiveawayItem[];
   pagination: Pagination;
+}
+
+/** POST .../hide body. BE hideGiveawayBodySchema 와 동일 */
+export interface AdminGiveawayHidePayload {
+  reason: string;
 }
