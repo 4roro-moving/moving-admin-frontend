@@ -17,9 +17,7 @@ import {
   type AdminListOpenFilter,
   type AdminProfileFilterValue,
 } from "@/types/adminUser";
-import type {
-  AdminMoverListItem,
-} from "@/types/adminMover";
+import type { AdminMoverListItem } from "@/types/adminMover";
 import { StarIcon } from "@/icons";
 
 interface Options {
@@ -92,20 +90,22 @@ export function createMoverColumns(
               o.setOpenFilter(null);
             }}
           >
-            전체 상태
+            전체 (탈퇴 제외)
           </FilterOption>
-          {(Object.keys(ADMIN_STATUS_LABEL) as AdminAccountStatus[]).map((v) => (
-            <FilterOption
-              key={v}
-              selected={o.status === v}
-              onClick={() => {
-                o.setStatus(v);
-                o.setOpenFilter(null);
-              }}
-            >
-              {ADMIN_STATUS_LABEL[v]}
-            </FilterOption>
-          ))}
+          {(Object.keys(ADMIN_STATUS_LABEL) as AdminAccountStatus[]).map(
+            (v) => (
+              <FilterOption
+                key={v}
+                selected={o.status === v}
+                onClick={() => {
+                  o.setStatus(v);
+                  o.setOpenFilter(null);
+                }}
+              >
+                {ADMIN_STATUS_LABEL[v]}
+              </FilterOption>
+            ),
+          )}
         </TableFilter>
       ),
       cell: (m) => <AdminStatusBadge status={m.status} />,
@@ -209,7 +209,11 @@ export function createMoverColumns(
         </div>
       ),
       cell: (m) => (
-        <Text as="span" variant="md-regular" className="inline-flex items-center text-muted">
+        <Text
+          as="span"
+          variant="md-regular"
+          className="inline-flex items-center text-muted"
+        >
           <StarIcon className="mr-1 size-[1.15em] text-rating-fill" />
           {m.averageRating.toFixed(1)}{" "}
           <Text as="span" variant="md-regular" className="text-text-subtle">

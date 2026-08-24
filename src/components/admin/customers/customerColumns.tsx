@@ -86,20 +86,22 @@ export function createCustomerColumns(
               o.setOpenFilter(null);
             }}
           >
-            전체 상태
+            전체 (탈퇴 제외)
           </FilterOption>
-          {(Object.keys(ADMIN_STATUS_LABEL) as AdminAccountStatus[]).map((v) => (
-            <FilterOption
-              key={v}
-              selected={o.status === v}
-              onClick={() => {
-                o.setStatus(v);
-                o.setOpenFilter(null);
-              }}
-            >
-              {ADMIN_STATUS_LABEL[v]}
-            </FilterOption>
-          ))}
+          {(Object.keys(ADMIN_STATUS_LABEL) as AdminAccountStatus[]).map(
+            (v) => (
+              <FilterOption
+                key={v}
+                selected={o.status === v}
+                onClick={() => {
+                  o.setStatus(v);
+                  o.setOpenFilter(null);
+                }}
+              >
+                {ADMIN_STATUS_LABEL[v]}
+              </FilterOption>
+            ),
+          )}
         </TableFilter>
       ),
       cell: (m) => <AdminStatusBadge status={m.status} />,
