@@ -83,7 +83,9 @@ export default function AccountRestrictionModal({
     >
       <div className="flex w-full flex-col gap-modal-8">
         <div className="flex w-full items-center justify-between gap-modal-16">
-          <Modal.Title>{isSuspending ? "계정 정지" : "정지 해제"}</Modal.Title>
+          <Modal.Title>
+            {isSuspending ? "계정 정지 처리" : "정지 해제 처리"}
+          </Modal.Title>
           <Modal.Close onClose={handleClose} disabled={isPending} />
         </div>
         <Modal.Desc className="text-text-subtle">
@@ -152,8 +154,9 @@ export default function AccountRestrictionModal({
         >
           <div className="flex flex-col gap-modal-10">
             <Text as="p" variant="md-regular" className="text-text-subtle">
-              관리자 활동 로그에 기록되는 사유입니다. 고객과 기사에게 공개되지
-              않습니다.
+              {isSuspending
+                ? "정지 사유는 관리자 활동 로그에 기록되며, 정지된 계정으로 로그인 시 고객/기사에게도 그대로 표시됩니다."
+                : "해제 사유는 관리자 활동 로그에 기록되며, 고객/기사에게는 공개되지 않습니다."}
             </Text>
             <div className="flex flex-col gap-modal-4">
               <Textarea
