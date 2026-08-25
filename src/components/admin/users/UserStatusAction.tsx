@@ -23,7 +23,7 @@ export default function UserStatusAction({
           : "bg-status-suspended-background text-status-suspended-foreground hover:opacity-80",
       )}
     >
-      {status === "SUSPENDED" ? "정지 해제" : "계정 정지"}
+      {status === "SUSPENDED" ? "정지 해제 처리" : "계정 정지 처리"}
     </button>
   );
 }
