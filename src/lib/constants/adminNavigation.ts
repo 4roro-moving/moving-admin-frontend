@@ -42,7 +42,7 @@ export const ADMIN_NAVIGATION_ITEMS: AdminNavigationItem[] = [
   { label: "공지사항 관리", href: APP_ROUTES.NOTICES, enabled: true },
   { label: "FAQ 관리", href: APP_ROUTES.FAQS, enabled: true },
   { label: "문의 관리", href: APP_ROUTES.INQUIRIES, enabled: true },
-  { label: "약관 관리", href: APP_ROUTES.TERMS, enabled: false },
+  { label: "약관 관리", href: APP_ROUTES.TERMS, enabled: true },
 ];
 
 export function isAdminNavigationChildActive(

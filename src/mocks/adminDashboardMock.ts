@@ -3,6 +3,7 @@ import type { AdminDashboardData } from "@/types/adminDashboard";
 export const MOCK_ADMIN_DASHBOARD: AdminDashboardData = {
   pageTitle: "대시보드",
   pageDescription: "MOVING 서비스와 주요 운영 현황을 한눈에 확인합니다.",
+  period: "7d",
   metrics: [
     {
       label: "전체 회원",
