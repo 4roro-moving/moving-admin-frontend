@@ -154,8 +154,9 @@ export default function AccountRestrictionModal({
         >
           <div className="flex flex-col gap-modal-10">
             <Text as="p" variant="md-regular" className="text-text-subtle">
-              이 사유는 관리자 활동 로그에 기록되며, 정지된 계정으로 로그인 시
-              고객/기사에게도 그대로 표시됩니다.
+              {isSuspending
+                ? "정지 사유는 관리자 활동 로그에 기록되며, 정지된 계정으로 로그인 시 고객/기사에게도 그대로 표시됩니다."
+                : "해제 사유는 관리자 활동 로그에 기록되며, 고객/기사에게는 공개되지 않습니다."}
             </Text>
             <div className="flex flex-col gap-modal-4">
               <Textarea
