@@ -26,11 +26,15 @@ export interface AdminMoverDetail {
     career: number;
     shortIntro: string;
     description: string;
-    averageRating: number;
-    reviewCount: number;
     confirmedCount: number;
     serviceAreas: string[];
     serviceTypes: AdminMoveType[];
+  };
+  reviewStatistics: {
+    totalCount: number;
+    visibleCount: number;
+    hiddenCount: number;
+    visibleAverageRating: number;
   };
   estimateActivity: {
     inProgress: {
