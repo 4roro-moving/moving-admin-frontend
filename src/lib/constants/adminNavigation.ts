@@ -71,13 +71,11 @@ export function isAdminNavigationChildActive(
 export function getVisibleAdminNavigationItems(
   adminRole: AdminRole | undefined,
 ): AdminNavigationItem[] {
-  return ADMIN_NAVIGATION_ITEMS.filter((item) => {
-    if (!item.superAdminOnly) {
-      return true;
-    }
+  if (isSuperAdmin(adminRole)) {
+    return ADMIN_NAVIGATION_ITEMS.filter((item) => item.superAdminOnly);
+  }
 
-    return isSuperAdmin(adminRole);
-  });
+  return ADMIN_NAVIGATION_ITEMS.filter((item) => !item.superAdminOnly);
 }
 
 export function isAdminNavigationGroupItem(

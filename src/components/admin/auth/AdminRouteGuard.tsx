@@ -1,10 +1,16 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { type ReactNode, useEffect } from "react";
 
+import {
+  getAdminHomeRoute,
+  isSuperAdmin,
+  isSuperAdminOnlyPath,
+} from "@/lib/auth/adminRole";
 import { APP_ROUTES } from "@/lib/constants/appRoutes";
 import { useAdminAuthStore } from "@/stores/useAdminAuthStore";
+import type { AdminRole } from "@/types/auth";
 
 function AdminAuthLoading() {
   return (
@@ -14,28 +20,51 @@ function AdminAuthLoading() {
   );
 }
 
-function isAuthorizedAdmin(
+function isLoggedInAdmin(
   isAuthenticated: boolean,
   role: string | undefined,
 ): boolean {
   return isAuthenticated && role === "ADMIN";
 }
 
+function canAccessAdminPath(
+  adminRole: AdminRole | undefined,
+  pathname: string,
+): boolean {
+  const isSuperAdminRoute = isSuperAdminOnlyPath(pathname);
+
+  if (isSuperAdmin(adminRole)) {
+    return isSuperAdminRoute;
+  }
+
+  return !isSuperAdminRoute;
+}
+
 export default function AdminRouteGuard({ children }: { children: ReactNode }) {
   const router = useRouter();
+  const pathname = usePathname();
   const isCheckingAuth = useAdminAuthStore((state) => state.isCheckingAuth);
   const isAuthenticated = useAdminAuthStore((state) => state.isAuthenticated);
   const userRole = useAdminAuthStore((state) => state.user?.role);
+  const adminRole = useAdminAuthStore((state) => state.user?.adminRole);
 
-  const authorized = isAuthorizedAdmin(isAuthenticated, userRole);
+  const loggedIn = isLoggedInAdmin(isAuthenticated, userRole);
+  const authorized = loggedIn && canAccessAdminPath(adminRole, pathname);
 
   useEffect(() => {
-    if (isCheckingAuth || authorized) {
+    if (isCheckingAuth) {
       return;
     }
 
-    router.replace(APP_ROUTES.LOGIN);
-  }, [authorized, isCheckingAuth, router]);
+    if (!loggedIn) {
+      router.replace(APP_ROUTES.LOGIN);
+      return;
+    }
+
+    if (!authorized) {
+      router.replace(getAdminHomeRoute(adminRole));
+    }
+  }, [adminRole, authorized, isCheckingAuth, loggedIn, router]);
 
   if (isCheckingAuth) {
     return <AdminAuthLoading />;
