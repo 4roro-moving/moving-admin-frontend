@@ -3,10 +3,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
+import AdminFeedbackToast from "@/components/admin/common/AdminFeedbackToast";
 import {
   AdminReviewEmptyState,
   AdminReviewErrorState,
-  AdminReviewFeedbackToast,
   AdminReviewLoadingState,
 } from "@/components/admin/contents/AdminReviewListStates";
 import AdminReviewPagination from "@/components/admin/contents/AdminReviewPagination";
@@ -298,7 +298,7 @@ export default function AdminReportsPage() {
         />
       </div>
 
-      {feedback ? <AdminReviewFeedbackToast tone={feedback.tone} message={feedback.message} /> : null}
+      {feedback ? <AdminFeedbackToast tone={feedback.tone} message={feedback.message} /> : null}
     </section>
   );
 }

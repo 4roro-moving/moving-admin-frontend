@@ -53,12 +53,14 @@ const CreateAdminTextField = forwardRef<
       label={label}
       labelFor={id}
       labelVariant="sm-semibold"
+      required
       className="gap-2"
     >
       <input
         {...props}
         ref={ref}
         id={id}
+        aria-required
         aria-invalid={!!error}
         aria-describedby={describedBy}
         className={cn(

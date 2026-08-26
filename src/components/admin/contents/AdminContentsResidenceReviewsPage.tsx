@@ -2,12 +2,12 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import AdminFeedbackToast from "@/components/admin/common/AdminFeedbackToast";
 import AdminResidenceReviewCard from "@/components/admin/contents/AdminResidenceReviewCard";
 import AdminReviewHideReasonModal from "@/components/admin/contents/AdminReviewHideReasonModal";
 import {
   AdminReviewEmptyState,
   AdminReviewErrorState,
-  AdminReviewFeedbackToast,
   AdminReviewLoadingState,
 } from "@/components/admin/contents/AdminReviewListStates";
 import AdminReviewPagination from "@/components/admin/contents/AdminReviewPagination";
@@ -221,11 +221,11 @@ export default function AdminContentsResidenceReviewsPage() {
       ) : null}
 
       {feedback ? (
-        <AdminReviewFeedbackToast tone={feedback.tone} message={feedback.message} />
+        <AdminFeedbackToast tone={feedback.tone} message={feedback.message} />
       ) : null}
 
       {!feedback && isFetching && !isLoading ? (
-        <AdminReviewFeedbackToast tone="info" message="목록을 갱신 중입니다." />
+        <AdminFeedbackToast tone="info" message="목록을 갱신 중입니다." />
       ) : null}
     </section>
   );

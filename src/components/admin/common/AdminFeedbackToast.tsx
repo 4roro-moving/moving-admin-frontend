@@ -1,3 +1,4 @@
+import Text from "@/components/admin/common/Text";
 import { cn } from "@/lib/utils/cn";
 
 export type AdminFeedbackToastTone = "error" | "success" | "info";
@@ -22,11 +23,13 @@ export default function AdminFeedbackToast({
     <div
       role={tone === "error" ? "alert" : "status"}
       className={cn(
-        "fixed right-5 bottom-5 z-40 rounded-lg border px-3 py-2 text-xs shadow",
+        "fixed right-5 bottom-5 z-40 rounded-lg border px-3 py-2 shadow",
         toneClassName,
       )}
     >
-      {message}
+      <Text as="p" variant="xs-regular">
+        {message}
+      </Text>
     </div>
   );
 }

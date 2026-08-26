@@ -1,7 +1,5 @@
 import { getApiErrorMessage } from "@/lib/api/getApiErrorMessage";
 
-export { default as AdminReviewFeedbackToast } from "@/components/admin/common/AdminFeedbackToast";
-
 interface AdminReviewLoadingStateProps {
   message?: string;
 }
