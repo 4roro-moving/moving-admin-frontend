@@ -3,12 +3,18 @@ import type { AdminRole } from "@/types/auth";
 
 export const SUPER_ADMIN_ONLY_ROUTES = [APP_ROUTES.CREATE_ADMIN] as const;
 
+export function isAdminRole(
+  adminRole: string | undefined,
+): adminRole is AdminRole {
+  return adminRole === "ADMIN" || adminRole === "SUPER_ADMIN";
+}
+
 export function hasValidAdminSession(
   isAuthenticated: boolean,
   role: string | undefined,
-  adminRole: AdminRole | undefined,
+  adminRole: string | undefined,
 ): adminRole is AdminRole {
-  return isAuthenticated && role === "ADMIN" && Boolean(adminRole);
+  return isAuthenticated && role === "ADMIN" && isAdminRole(adminRole);
 }
 
 export function isSuperAdmin(adminRole: AdminRole | undefined): boolean {
