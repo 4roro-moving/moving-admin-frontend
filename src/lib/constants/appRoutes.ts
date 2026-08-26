@@ -8,6 +8,7 @@ export const APP_ROUTES = {
   NOTICES: "/notices",
   FAQS: "/faqs",
   INQUIRIES: "/inquiries",
+  CREATE_ADMIN: "/create-admin",
   TERMS: "/terms",
   CONTENTS: {
     REVIEWS: "/contents/reviews",

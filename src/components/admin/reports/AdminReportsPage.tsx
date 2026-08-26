@@ -3,14 +3,15 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
+import AdminFeedbackToast from "@/components/admin/common/AdminFeedbackToast";
 import {
   AdminReviewEmptyState,
   AdminReviewErrorState,
-  AdminReviewFeedbackToast,
   AdminReviewLoadingState,
 } from "@/components/admin/contents/AdminReviewListStates";
 import AdminReviewPagination from "@/components/admin/contents/AdminReviewPagination";
 import AdminReviewSearchBar from "@/components/admin/contents/AdminReviewSearchBar";
+import { useAdminFeedbackToast } from "@/hooks/common/useAdminFeedbackToast";
 import { useAdminReportDetail, useAdminReportSummary } from "@/hooks/useAdminReportDetail";
 import { useAdminReportModeration } from "@/hooks/useAdminReportModeration";
 import { useAdminReports } from "@/hooks/useAdminReports";
@@ -55,7 +56,7 @@ export default function AdminReportsPage() {
   const [targetType, setTargetType] = useState<AdminReportTargetType | "ALL">("ALL");
   const [reason, setReason] = useState<AdminReportReason | "ALL">("ALL");
   const [sort, setSort] = useState<AdminReportSort>("LATEST");
-  const [feedback, setFeedback] = useState<ModerationFeedback | null>(null);
+  const [feedback, showFeedback] = useAdminFeedbackToast<ModerationFeedback>();
   const hasInitializedSelectionRef = useRef(false);
 
   const listQuery = useMemo(
@@ -78,20 +79,6 @@ export default function AdminReportsPage() {
 
   const items = useMemo(() => reportsQuery.data?.items ?? [], [reportsQuery.data?.items]);
   const pagination = reportsQuery.data?.pagination;
-
-  useEffect(() => {
-    if (!feedback) {
-      return;
-    }
-
-    const timer = window.setTimeout(() => {
-      setFeedback(null);
-    }, 3200);
-
-    return () => {
-      window.clearTimeout(timer);
-    };
-  }, [feedback]);
 
   useEffect(() => {
     if (!reportsQuery.data) {
@@ -158,7 +145,7 @@ export default function AdminReportsPage() {
     const trimmedHandlerNote = handlerNote.trim();
 
     if (!trimmedHandlerNote) {
-      setFeedback({
+      showFeedback({
         tone: "error",
         message: "처리 메모를 입력해 주세요.",
       });
@@ -170,12 +157,12 @@ export default function AdminReportsPage() {
         reportId,
         payload: { status: nextStatus, handlerNote: trimmedHandlerNote },
       });
-      setFeedback({
+      showFeedback({
         tone: "success",
         message: nextStatus === "RESOLVED" ? "신고를 처리 완료했습니다." : "신고를 반려 처리했습니다.",
       });
     } catch (exception) {
-      setFeedback({
+      showFeedback({
         tone: "error",
         message: getApiErrorMessage(exception, "신고 처리에 실패했습니다."),
       });
@@ -298,7 +285,7 @@ export default function AdminReportsPage() {
         />
       </div>
 
-      {feedback ? <AdminReviewFeedbackToast tone={feedback.tone} message={feedback.message} /> : null}
+      {feedback ? <AdminFeedbackToast tone={feedback.tone} message={feedback.message} /> : null}
     </section>
   );
 }

@@ -1,18 +1,19 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 
+import AdminFeedbackToast from "@/components/admin/common/AdminFeedbackToast";
 import AdminGiveawayCard from "@/components/admin/contents/AdminGiveawayCard";
 import AdminReviewHideReasonModal from "@/components/admin/contents/AdminReviewHideReasonModal";
 import {
   AdminReviewEmptyState,
   AdminReviewErrorState,
-  AdminReviewFeedbackToast,
   AdminReviewLoadingState,
 } from "@/components/admin/contents/AdminReviewListStates";
 import AdminReviewPagination from "@/components/admin/contents/AdminReviewPagination";
 import AdminReviewSearchBar from "@/components/admin/contents/AdminReviewSearchBar";
 import AdminReviewSortChips from "@/components/admin/contents/AdminReviewSortChips";
+import { useAdminFeedbackToast } from "@/hooks/common/useAdminFeedbackToast";
 import { useAdminGiveawayModeration } from "@/hooks/useAdminGiveawayModeration";
 import { useAdminGiveaways } from "@/hooks/useAdminGiveaways";
 import {
@@ -39,7 +40,7 @@ export default function AdminContentsGiveawaysPage() {
   const [sort, setSort] = useState<AdminGiveawaySort>("LATEST");
   const [reasonModal, setReasonModal] = useState<HideReasonModalState | null>(null);
   const [reasonInput, setReasonInput] = useState("");
-  const [feedback, setFeedback] = useState<ModerationFeedback | null>(null);
+  const [feedback, showFeedback] = useAdminFeedbackToast<ModerationFeedback>();
 
   const previouslyFocusedElementRef = useRef<HTMLElement | null>(null);
 
@@ -59,20 +60,6 @@ export default function AdminContentsGiveawaysPage() {
   const items = data?.items ?? [];
   const pagination = data?.pagination;
 
-  useEffect(() => {
-    if (!feedback) {
-      return;
-    }
-
-    const timer = window.setTimeout(() => {
-      setFeedback(null);
-    }, 3200);
-
-    return () => {
-      window.clearTimeout(timer);
-    };
-  }, [feedback]);
-
   const handleSubmitSearch = () => {
     setKeyword(keywordInput.trim());
     setPage(1);
@@ -86,7 +73,7 @@ export default function AdminContentsGiveawaysPage() {
   const openHideReasonModal = (giveaway: AdminGiveawayItem) => {
     previouslyFocusedElementRef.current =
       document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    setFeedback(null);
+    showFeedback(null);
     setReasonModal({ giveaway });
     setReasonInput("");
   };
@@ -116,7 +103,7 @@ export default function AdminContentsGiveawaysPage() {
       setReasonModal(null);
       setReasonInput("");
       restoreFocus();
-      setFeedback({ tone: "success", message: "나눔 게시물을 숨김 처리했습니다." });
+      showFeedback({ tone: "success", message: "나눔 게시물을 숨김 처리했습니다." });
     } catch {
       // 실패 시 모달이 열린 채로 hideMutation.error를 표시하므로 토스트는 중복하지 않는다.
     }
@@ -127,13 +114,13 @@ export default function AdminContentsGiveawaysPage() {
       return;
     }
 
-    setFeedback(null);
+    showFeedback(null);
 
     try {
       await unhideMutation.mutateAsync({ giveawayId: giveaway.id });
-      setFeedback({ tone: "success", message: "나눔 게시물을 복구했습니다." });
+      showFeedback({ tone: "success", message: "나눔 게시물을 복구했습니다." });
     } catch (unhideException) {
-      setFeedback({
+      showFeedback({
         tone: "error",
         message: getApiErrorMessage(unhideException, "복구 처리에 실패했습니다."),
       });
@@ -217,11 +204,11 @@ export default function AdminContentsGiveawaysPage() {
       ) : null}
 
       {feedback ? (
-        <AdminReviewFeedbackToast tone={feedback.tone} message={feedback.message} />
+        <AdminFeedbackToast tone={feedback.tone} message={feedback.message} />
       ) : null}
 
       {!feedback && isFetching && !isLoading ? (
-        <AdminReviewFeedbackToast tone="info" message="목록을 갱신 중입니다." />
+        <AdminFeedbackToast tone="info" message="목록을 갱신 중입니다." />
       ) : null}
     </section>
   );

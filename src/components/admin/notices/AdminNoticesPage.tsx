@@ -1,17 +1,18 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
+import AdminFeedbackToast from "@/components/admin/common/AdminFeedbackToast";
 import Search from "@/components/admin/common/Search";
 import {
   AdminReviewEmptyState,
   AdminReviewErrorState,
-  AdminReviewFeedbackToast,
   AdminReviewLoadingState,
 } from "@/components/admin/contents/AdminReviewListStates";
 import AdminReviewPagination from "@/components/admin/contents/AdminReviewPagination";
 import { FilterOption, TableFilter } from "@/components/admin/users/TableFilter";
+import { useAdminFeedbackToast } from "@/hooks/common/useAdminFeedbackToast";
 import { useAdminNoticeDetail } from "@/hooks/useAdminNoticeDetail";
 import { useAdminNotices } from "@/hooks/useAdminNotices";
 import {
@@ -103,7 +104,7 @@ export default function AdminNoticesPage() {
   const [editorMode, setEditorMode] = useState<"create" | "edit" | null>(null);
   const [editingNoticeId, setEditingNoticeId] = useState<number | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<AdminNotice | null>(null);
-  const [feedback, setFeedback] = useState<NoticeFeedback | null>(null);
+  const [feedback, showFeedback] = useAdminFeedbackToast<NoticeFeedback>();
   const keywordInput = keywordDraft.key === listStateKey ? keywordDraft.value : keyword;
 
   const listQuery = useMemo(
@@ -128,20 +129,6 @@ export default function AdminNoticesPage() {
 
   const items = noticesQuery.data?.items ?? [];
   const pagination = noticesQuery.data?.pagination;
-
-  useEffect(() => {
-    if (!feedback) {
-      return;
-    }
-
-    const timer = window.setTimeout(() => {
-      setFeedback(null);
-    }, 3200);
-
-    return () => {
-      window.clearTimeout(timer);
-    };
-  }, [feedback]);
 
   const closeEditor = () => {
     setEditorMode(null);
@@ -183,12 +170,12 @@ export default function AdminNoticesPage() {
     try {
       await createMutation.mutateAsync(payload);
       closeEditor();
-      setFeedback({
+      showFeedback({
         tone: "success",
         message: "공지사항을 등록했습니다.",
       });
     } catch (exception) {
-      setFeedback({
+      showFeedback({
         tone: "error",
         message: getApiErrorMessage(exception, "공지사항 등록에 실패했습니다."),
       });
@@ -202,12 +189,12 @@ export default function AdminNoticesPage() {
     try {
       await updateMutation.mutateAsync({ noticeId, payload });
       closeEditor();
-      setFeedback({
+      showFeedback({
         tone: "success",
         message: "공지사항을 수정했습니다.",
       });
     } catch (exception) {
-      setFeedback({
+      showFeedback({
         tone: "error",
         message: getApiErrorMessage(exception, "공지사항 수정에 실패했습니다."),
       });
@@ -223,12 +210,12 @@ export default function AdminNoticesPage() {
       await deleteMutation.mutateAsync(deleteTarget.id);
       setDeleteTarget(null);
       closeEditor();
-      setFeedback({
+      showFeedback({
         tone: "success",
         message: "공지사항을 삭제했습니다.",
       });
     } catch (exception) {
-      setFeedback({
+      showFeedback({
         tone: "error",
         message: getApiErrorMessage(exception, "공지사항 삭제에 실패했습니다."),
       });
@@ -441,7 +428,7 @@ export default function AdminNoticesPage() {
       ) : null}
 
       {feedback ? (
-        <AdminReviewFeedbackToast tone={feedback.tone} message={feedback.message} />
+        <AdminFeedbackToast tone={feedback.tone} message={feedback.message} />
       ) : null}
     </section>
   );

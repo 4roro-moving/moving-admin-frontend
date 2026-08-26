@@ -21,6 +21,9 @@ export const QUERY_KEYS = {
     SUMMARY: (period: AdminDashboardPeriod) =>
       ["admin", "dashboard", "summary", period] as const,
   },
+  ADMIN_ACCOUNTS: {
+    ALL: ["admin", "admins"] as const,
+  },
   REPORTS: {
     ALL: ["admin", "reports"] as const,
     SUMMARY: ["admin", "reports", "summary"] as const,

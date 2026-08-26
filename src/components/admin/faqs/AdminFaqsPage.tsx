@@ -1,16 +1,17 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
+import AdminFeedbackToast from "@/components/admin/common/AdminFeedbackToast";
 import Search from "@/components/admin/common/Search";
 import {
   AdminReviewEmptyState,
   AdminReviewErrorState,
-  AdminReviewFeedbackToast,
   AdminReviewLoadingState,
 } from "@/components/admin/contents/AdminReviewListStates";
 import AdminReviewPagination from "@/components/admin/contents/AdminReviewPagination";
+import { useAdminFeedbackToast } from "@/hooks/common/useAdminFeedbackToast";
 import { useAdminFaqDetail } from "@/hooks/useAdminFaqDetail";
 import { useAdminFaqs } from "@/hooks/useAdminFaqs";
 import {
@@ -85,7 +86,7 @@ export default function AdminFaqsPage() {
   const [editorMode, setEditorMode] = useState<"create" | "edit" | null>(null);
   const [editingFaqId, setEditingFaqId] = useState<number | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<AdminFaq | null>(null);
-  const [feedback, setFeedback] = useState<FaqFeedback | null>(null);
+  const [feedback, showFeedback] = useAdminFeedbackToast<FaqFeedback>();
   const keywordInput = keywordDraft.key === listStateKey ? keywordDraft.value : keyword;
 
   const listQuery = useMemo(
@@ -106,20 +107,6 @@ export default function AdminFaqsPage() {
 
   const items = faqsQuery.data?.items ?? [];
   const pagination = faqsQuery.data?.pagination;
-
-  useEffect(() => {
-    if (!feedback) {
-      return;
-    }
-
-    const timer = window.setTimeout(() => {
-      setFeedback(null);
-    }, 3200);
-
-    return () => {
-      window.clearTimeout(timer);
-    };
-  }, [feedback]);
 
   const closeEditor = () => {
     setEditorMode(null);
@@ -153,12 +140,12 @@ export default function AdminFaqsPage() {
     try {
       await createMutation.mutateAsync(payload);
       closeEditor();
-      setFeedback({
+      showFeedback({
         tone: "success",
         message: "FAQ를 등록했습니다.",
       });
     } catch (exception) {
-      setFeedback({
+      showFeedback({
         tone: "error",
         message: getApiErrorMessage(exception, "FAQ 등록에 실패했습니다."),
       });
@@ -169,12 +156,12 @@ export default function AdminFaqsPage() {
     try {
       await updateMutation.mutateAsync({ faqId, payload });
       closeEditor();
-      setFeedback({
+      showFeedback({
         tone: "success",
         message: "FAQ를 수정했습니다.",
       });
     } catch (exception) {
-      setFeedback({
+      showFeedback({
         tone: "error",
         message: getApiErrorMessage(exception, "FAQ 수정에 실패했습니다."),
       });
@@ -190,12 +177,12 @@ export default function AdminFaqsPage() {
       await deleteMutation.mutateAsync(deleteTarget.id);
       setDeleteTarget(null);
       closeEditor();
-      setFeedback({
+      showFeedback({
         tone: "success",
         message: "FAQ를 삭제했습니다.",
       });
     } catch (exception) {
-      setFeedback({
+      showFeedback({
         tone: "error",
         message: getApiErrorMessage(exception, "FAQ 삭제에 실패했습니다."),
       });
@@ -384,7 +371,7 @@ export default function AdminFaqsPage() {
       ) : null}
 
       {feedback ? (
-        <AdminReviewFeedbackToast tone={feedback.tone} message={feedback.message} />
+        <AdminFeedbackToast tone={feedback.tone} message={feedback.message} />
       ) : null}
     </section>
   );

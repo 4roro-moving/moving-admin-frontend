@@ -4,6 +4,7 @@ import type {
   AdminLoginInput,
   AdminLoginResponse,
   AdminRefreshResponse,
+  AdminRole,
   AdminSession,
   AdminUser,
 } from "@/types/auth";
@@ -32,6 +33,27 @@ function parseAccessTokenFromTokens(tokensValue: unknown): string {
   }
 
   return accessToken;
+}
+
+function parseAdminRole(value: Record<string, unknown>): AdminRole {
+  if (value.adminRole === "SUPER_ADMIN" || value.adminRole === "ADMIN") {
+    return value.adminRole;
+  }
+
+  const adminProfile = value.adminProfile;
+
+  if (
+    isPlainObject(adminProfile) &&
+    (adminProfile.adminRole === "SUPER_ADMIN" ||
+      adminProfile.adminRole === "ADMIN")
+  ) {
+    return adminProfile.adminRole;
+  }
+
+  throw new ApiClientError({
+    status: 403,
+    message: "관리자 역할 정보를 확인할 수 없습니다.",
+  });
 }
 
 function parseAdminUser(value: unknown): AdminUser {
@@ -74,6 +96,7 @@ function parseAdminUser(value: unknown): AdminUser {
     name,
     email,
     role: "ADMIN",
+    adminRole: parseAdminRole(value),
   };
 }
 
@@ -91,7 +114,9 @@ function parseAdminLoginResponse(data: unknown): AdminSession {
   };
 }
 
-export async function loginAdmin(input: AdminLoginInput): Promise<AdminSession> {
+export async function loginAdmin(
+  input: AdminLoginInput,
+): Promise<AdminSession> {
   const body = await fetchInstance.post<ApiResponse<AdminLoginResponse>>(
     API_ROUTES.AUTH.LOGIN,
     input,
@@ -116,11 +141,14 @@ export async function refreshAdminSession(): Promise<string> {
 }
 
 export async function getCurrentAdmin(accessToken: string): Promise<AdminUser> {
-  const body = await fetchInstance.get<ApiResponse<{ admin: AdminUser }>>(API_ROUTES.AUTH.ME, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
+  const body = await fetchInstance.get<ApiResponse<{ admin: AdminUser }>>(
+    API_ROUTES.AUTH.ME,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
     },
-  });
+  );
 
   if (!isPlainObject(body.data)) {
     throw new ApiClientError({

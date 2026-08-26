@@ -3,14 +3,15 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
+import AdminFeedbackToast from "@/components/admin/common/AdminFeedbackToast";
 import Search from "@/components/admin/common/Search";
 import {
   AdminReviewEmptyState,
   AdminReviewErrorState,
-  AdminReviewFeedbackToast,
   AdminReviewLoadingState,
 } from "@/components/admin/contents/AdminReviewListStates";
 import AdminReviewPagination from "@/components/admin/contents/AdminReviewPagination";
+import { useAdminFeedbackToast } from "@/hooks/common/useAdminFeedbackToast";
 import { useAdminInquiryDetail } from "@/hooks/useAdminInquiryDetail";
 import { useAdminInquiries } from "@/hooks/useAdminInquiries";
 import {
@@ -89,7 +90,7 @@ export default function AdminInquiriesPage() {
 
   const [isSheetLayout, setIsSheetLayout] = useState(false);
   const [keywordDraft, setKeywordDraft] = useState({ key: "", value: "" });
-  const [feedback, setFeedback] = useState<InquiryFeedback | null>(null);
+  const [feedback, showFeedback] = useAdminFeedbackToast<InquiryFeedback>();
   const hasInitializedSelectionRef = useRef(false);
   const keywordInput = keywordDraft.key === listStateKey ? keywordDraft.value : keyword;
 
@@ -142,20 +143,6 @@ export default function AdminInquiriesPage() {
       document.body.style.overflow = overflow;
     };
   }, [isSheetLayout, selectedInquiryId]);
-
-  useEffect(() => {
-    if (!feedback) {
-      return;
-    }
-
-    const timer = window.setTimeout(() => {
-      setFeedback(null);
-    }, 3200);
-
-    return () => {
-      window.clearTimeout(timer);
-    };
-  }, [feedback]);
 
   useEffect(() => {
     if (!inquiriesQuery.data) {
@@ -250,7 +237,7 @@ export default function AdminInquiriesPage() {
 
   const handleSubmitAnswer = async (content: string) => {
     if (selectedInquiryId === null) {
-      setFeedback({
+      showFeedback({
         tone: "error",
         message: "문의를 먼저 선택해 주세요.",
       });
@@ -260,7 +247,7 @@ export default function AdminInquiriesPage() {
     const trimmedContent = content.trim();
 
     if (!trimmedContent) {
-      setFeedback({
+      showFeedback({
         tone: "error",
         message: "답변 내용을 입력해 주세요.",
       });
@@ -272,12 +259,12 @@ export default function AdminInquiriesPage() {
         inquiryId: selectedInquiryId,
         payload: { content: trimmedContent },
       });
-      setFeedback({
+      showFeedback({
         tone: "success",
         message: "답변을 등록했습니다.",
       });
     } catch (exception) {
-      setFeedback({
+      showFeedback({
         tone: "error",
         message: getApiErrorMessage(exception, "답변 등록에 실패했습니다."),
       });
@@ -287,7 +274,7 @@ export default function AdminInquiriesPage() {
 
   const handleSubmitClose = async () => {
     if (selectedInquiryId === null) {
-      setFeedback({
+      showFeedback({
         tone: "error",
         message: "문의를 먼저 선택해 주세요.",
       });
@@ -296,12 +283,12 @@ export default function AdminInquiriesPage() {
 
     try {
       await closeMutation.mutateAsync(selectedInquiryId);
-      setFeedback({
+      showFeedback({
         tone: "success",
         message: "문의를 종료했습니다.",
       });
     } catch (exception) {
-      setFeedback({
+      showFeedback({
         tone: "error",
         message: getApiErrorMessage(exception, "문의 종료에 실패했습니다."),
       });
@@ -493,7 +480,7 @@ export default function AdminInquiriesPage() {
         </div>
       ) : null}
 
-      {feedback ? <AdminReviewFeedbackToast tone={feedback.tone} message={feedback.message} /> : null}
+      {feedback ? <AdminFeedbackToast tone={feedback.tone} message={feedback.message} /> : null}
     </section>
   );
 }

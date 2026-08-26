@@ -52,26 +52,3 @@ export function AdminReviewEmptyState({
     </div>
   );
 }
-
-interface AdminReviewFeedbackToastProps {
-  tone: "error" | "success" | "info";
-  message: string;
-}
-
-export function AdminReviewFeedbackToast({ tone, message }: AdminReviewFeedbackToastProps) {
-  const toneClassName =
-    tone === "error"
-      ? "border-red-200 bg-red-50 text-red-700"
-      : tone === "success"
-        ? "border-accent/30 bg-accent-muted text-accent"
-        : "border-border bg-surface text-muted";
-
-  return (
-    <div
-      role={tone === "error" ? "alert" : "status"}
-      className={`fixed right-5 bottom-5 z-40 rounded-lg border px-3 py-2 text-xs shadow ${toneClassName}`}
-    >
-      {message}
-    </div>
-  );
-}
