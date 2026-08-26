@@ -37,7 +37,7 @@ export default function AdminContentsReviewsPage() {
   const [sort, setSort] = useState<AdminReviewSort>("LATEST");
   const [reasonModal, setReasonModal] = useState<HideReasonModalState | null>(null);
   const [reasonInput, setReasonInput] = useState("");
-  const [feedback, setFeedback] = useAdminFeedbackToast<ModerationFeedback>();
+  const [feedback, showFeedback] = useAdminFeedbackToast<ModerationFeedback>();
 
   const previouslyFocusedElementRef = useRef<HTMLElement | null>(null);
 
@@ -70,7 +70,7 @@ export default function AdminContentsReviewsPage() {
   const openHideReasonModal = (review: AdminReviewItem) => {
     previouslyFocusedElementRef.current =
       document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    setFeedback(null);
+    showFeedback(null);
     setReasonModal({ review });
     setReasonInput("");
   };
@@ -100,7 +100,7 @@ export default function AdminContentsReviewsPage() {
       setReasonModal(null);
       setReasonInput("");
       restoreFocus();
-      setFeedback({ tone: "success", message: "리뷰를 숨김 처리했습니다." });
+      showFeedback({ tone: "success", message: "리뷰를 숨김 처리했습니다." });
     } catch {
       // 실패 시 모달이 열린 채로 hideMutation.error를 표시하므로 토스트는 중복하지 않는다.
     }
@@ -111,13 +111,13 @@ export default function AdminContentsReviewsPage() {
       return;
     }
 
-    setFeedback(null);
+    showFeedback(null);
 
     try {
       await unhideMutation.mutateAsync({ reviewId: review.id });
-      setFeedback({ tone: "success", message: "리뷰를 복구했습니다." });
+      showFeedback({ tone: "success", message: "리뷰를 복구했습니다." });
     } catch (unhideException) {
-      setFeedback({
+      showFeedback({
         tone: "error",
         message: getApiErrorMessage(unhideException, "복구 처리에 실패했습니다."),
       });

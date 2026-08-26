@@ -40,7 +40,7 @@ export default function AdminContentsGiveawaysPage() {
   const [sort, setSort] = useState<AdminGiveawaySort>("LATEST");
   const [reasonModal, setReasonModal] = useState<HideReasonModalState | null>(null);
   const [reasonInput, setReasonInput] = useState("");
-  const [feedback, setFeedback] = useAdminFeedbackToast<ModerationFeedback>();
+  const [feedback, showFeedback] = useAdminFeedbackToast<ModerationFeedback>();
 
   const previouslyFocusedElementRef = useRef<HTMLElement | null>(null);
 
@@ -73,7 +73,7 @@ export default function AdminContentsGiveawaysPage() {
   const openHideReasonModal = (giveaway: AdminGiveawayItem) => {
     previouslyFocusedElementRef.current =
       document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    setFeedback(null);
+    showFeedback(null);
     setReasonModal({ giveaway });
     setReasonInput("");
   };
@@ -103,7 +103,7 @@ export default function AdminContentsGiveawaysPage() {
       setReasonModal(null);
       setReasonInput("");
       restoreFocus();
-      setFeedback({ tone: "success", message: "나눔 게시물을 숨김 처리했습니다." });
+      showFeedback({ tone: "success", message: "나눔 게시물을 숨김 처리했습니다." });
     } catch {
       // 실패 시 모달이 열린 채로 hideMutation.error를 표시하므로 토스트는 중복하지 않는다.
     }
@@ -114,13 +114,13 @@ export default function AdminContentsGiveawaysPage() {
       return;
     }
 
-    setFeedback(null);
+    showFeedback(null);
 
     try {
       await unhideMutation.mutateAsync({ giveawayId: giveaway.id });
-      setFeedback({ tone: "success", message: "나눔 게시물을 복구했습니다." });
+      showFeedback({ tone: "success", message: "나눔 게시물을 복구했습니다." });
     } catch (unhideException) {
-      setFeedback({
+      showFeedback({
         tone: "error",
         message: getApiErrorMessage(unhideException, "복구 처리에 실패했습니다."),
       });

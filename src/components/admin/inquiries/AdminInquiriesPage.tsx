@@ -90,7 +90,7 @@ export default function AdminInquiriesPage() {
 
   const [isSheetLayout, setIsSheetLayout] = useState(false);
   const [keywordDraft, setKeywordDraft] = useState({ key: "", value: "" });
-  const [feedback, setFeedback] = useAdminFeedbackToast<InquiryFeedback>();
+  const [feedback, showFeedback] = useAdminFeedbackToast<InquiryFeedback>();
   const hasInitializedSelectionRef = useRef(false);
   const keywordInput = keywordDraft.key === listStateKey ? keywordDraft.value : keyword;
 
@@ -237,7 +237,7 @@ export default function AdminInquiriesPage() {
 
   const handleSubmitAnswer = async (content: string) => {
     if (selectedInquiryId === null) {
-      setFeedback({
+      showFeedback({
         tone: "error",
         message: "문의를 먼저 선택해 주세요.",
       });
@@ -247,7 +247,7 @@ export default function AdminInquiriesPage() {
     const trimmedContent = content.trim();
 
     if (!trimmedContent) {
-      setFeedback({
+      showFeedback({
         tone: "error",
         message: "답변 내용을 입력해 주세요.",
       });
@@ -259,12 +259,12 @@ export default function AdminInquiriesPage() {
         inquiryId: selectedInquiryId,
         payload: { content: trimmedContent },
       });
-      setFeedback({
+      showFeedback({
         tone: "success",
         message: "답변을 등록했습니다.",
       });
     } catch (exception) {
-      setFeedback({
+      showFeedback({
         tone: "error",
         message: getApiErrorMessage(exception, "답변 등록에 실패했습니다."),
       });
@@ -274,7 +274,7 @@ export default function AdminInquiriesPage() {
 
   const handleSubmitClose = async () => {
     if (selectedInquiryId === null) {
-      setFeedback({
+      showFeedback({
         tone: "error",
         message: "문의를 먼저 선택해 주세요.",
       });
@@ -283,12 +283,12 @@ export default function AdminInquiriesPage() {
 
     try {
       await closeMutation.mutateAsync(selectedInquiryId);
-      setFeedback({
+      showFeedback({
         tone: "success",
         message: "문의를 종료했습니다.",
       });
     } catch (exception) {
-      setFeedback({
+      showFeedback({
         tone: "error",
         message: getApiErrorMessage(exception, "문의 종료에 실패했습니다."),
       });

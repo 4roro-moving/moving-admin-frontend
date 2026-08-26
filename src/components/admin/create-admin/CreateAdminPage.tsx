@@ -7,7 +7,7 @@ import { useAdminFeedbackToast } from "@/hooks/common/useAdminFeedbackToast";
 import CreateAdminForm from "./CreateAdminForm";
 
 export default function CreateAdminPage() {
-  const [successMessage, setSuccessMessage] = useAdminFeedbackToast<string>();
+  const [successMessage, showFeedback] = useAdminFeedbackToast<string>();
 
   return (
     <>
@@ -23,7 +23,7 @@ export default function CreateAdminPage() {
 
         <CreateAdminForm
           onCreated={() => {
-            setSuccessMessage("관리자 계정을 생성했습니다.");
+            showFeedback("관리자 계정을 생성했습니다.");
           }}
         />
       </section>

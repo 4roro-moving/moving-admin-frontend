@@ -56,7 +56,7 @@ export default function AdminReportsPage() {
   const [targetType, setTargetType] = useState<AdminReportTargetType | "ALL">("ALL");
   const [reason, setReason] = useState<AdminReportReason | "ALL">("ALL");
   const [sort, setSort] = useState<AdminReportSort>("LATEST");
-  const [feedback, setFeedback] = useAdminFeedbackToast<ModerationFeedback>();
+  const [feedback, showFeedback] = useAdminFeedbackToast<ModerationFeedback>();
   const hasInitializedSelectionRef = useRef(false);
 
   const listQuery = useMemo(
@@ -145,7 +145,7 @@ export default function AdminReportsPage() {
     const trimmedHandlerNote = handlerNote.trim();
 
     if (!trimmedHandlerNote) {
-      setFeedback({
+      showFeedback({
         tone: "error",
         message: "처리 메모를 입력해 주세요.",
       });
@@ -157,12 +157,12 @@ export default function AdminReportsPage() {
         reportId,
         payload: { status: nextStatus, handlerNote: trimmedHandlerNote },
       });
-      setFeedback({
+      showFeedback({
         tone: "success",
         message: nextStatus === "RESOLVED" ? "신고를 처리 완료했습니다." : "신고를 반려 처리했습니다.",
       });
     } catch (exception) {
-      setFeedback({
+      showFeedback({
         tone: "error",
         message: getApiErrorMessage(exception, "신고 처리에 실패했습니다."),
       });
