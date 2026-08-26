@@ -1,4 +1,4 @@
-import { canAccessAdminAccountManagement } from "@/lib/auth/adminRole";
+import { isSuperAdmin } from "@/lib/auth/adminRole";
 import type { AdminRole } from "@/types/auth";
 
 import { APP_ROUTES } from "./appRoutes";
@@ -25,7 +25,9 @@ export interface AdminNavigationGroupItem extends AdminNavigationBaseItem {
   children: AdminNavigationChildItem[];
 }
 
-export type AdminNavigationItem = AdminNavigationLinkItem | AdminNavigationGroupItem;
+export type AdminNavigationItem =
+  | AdminNavigationLinkItem
+  | AdminNavigationGroupItem;
 
 export const ADMIN_CONTENTS_CHILDREN: AdminNavigationChildItem[] = [
   { label: "리뷰 관리", href: APP_ROUTES.CONTENTS.REVIEWS, enabled: true },
@@ -46,13 +48,13 @@ export const ADMIN_NAVIGATION_ITEMS: AdminNavigationItem[] = [
   { label: "공지사항 관리", href: APP_ROUTES.NOTICES, enabled: true },
   { label: "FAQ 관리", href: APP_ROUTES.FAQS, enabled: true },
   { label: "문의 관리", href: APP_ROUTES.INQUIRIES, enabled: true },
+  { label: "약관 관리", href: APP_ROUTES.TERMS, enabled: false },
   {
     label: "관리자 계정 생성",
     href: APP_ROUTES.CREATE_ADMIN,
     enabled: true,
     superAdminOnly: true,
   },
-  { label: "약관 관리", href: APP_ROUTES.TERMS, enabled: false },
 ];
 
 export function isAdminNavigationChildActive(
@@ -74,7 +76,7 @@ export function getVisibleAdminNavigationItems(
       return true;
     }
 
-    return canAccessAdminAccountManagement(adminRole);
+    return isSuperAdmin(adminRole);
   });
 }
 
@@ -89,15 +91,15 @@ export function isAdminNavigationActive(
   item: AdminNavigationItem,
 ): boolean {
   if (isAdminNavigationGroupItem(item)) {
-    return item.children.some((child) => isAdminNavigationChildActive(pathname, child));
+    return item.children.some((child) =>
+      isAdminNavigationChildActive(pathname, child),
+    );
   }
 
   return pathname === item.href || pathname.startsWith(`${item.href}/`);
 }
 
-export function getCurrentAdminNavigation(
-  pathname: string,
-): {
+export function getCurrentAdminNavigation(pathname: string): {
   parent: AdminNavigationItem;
   child?: AdminNavigationChildItem;
 } | null {
