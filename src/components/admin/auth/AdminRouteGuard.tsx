@@ -3,14 +3,9 @@
 import { usePathname, useRouter } from "next/navigation";
 import { type ReactNode, useEffect } from "react";
 
-import {
-  getAdminHomeRoute,
-  isSuperAdmin,
-  isSuperAdminOnlyPath,
-} from "@/lib/auth/adminRole";
+import { canAccessAdminPath, getAdminHomeRoute } from "@/lib/auth/adminRole";
 import { APP_ROUTES } from "@/lib/constants/appRoutes";
 import { useAdminAuthStore } from "@/stores/useAdminAuthStore";
-import type { AdminRole } from "@/types/auth";
 
 function AdminAuthLoading() {
   return (
@@ -25,19 +20,6 @@ function isLoggedInAdmin(
   role: string | undefined,
 ): boolean {
   return isAuthenticated && role === "ADMIN";
-}
-
-function canAccessAdminPath(
-  adminRole: AdminRole | undefined,
-  pathname: string,
-): boolean {
-  const isSuperAdminRoute = isSuperAdminOnlyPath(pathname);
-
-  if (isSuperAdmin(adminRole)) {
-    return isSuperAdminRoute;
-  }
-
-  return !isSuperAdminRoute;
 }
 
 export default function AdminRouteGuard({ children }: { children: ReactNode }) {
@@ -56,7 +38,7 @@ export default function AdminRouteGuard({ children }: { children: ReactNode }) {
       return;
     }
 
-    if (!loggedIn) {
+    if (!loggedIn || !adminRole) {
       router.replace(APP_ROUTES.LOGIN);
       return;
     }

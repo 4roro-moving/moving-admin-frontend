@@ -32,16 +32,16 @@ export default function AdminLoginPage() {
   const userRole = useAdminAuthStore((state) => state.user?.role);
   const adminRole = useAdminAuthStore((state) => state.user?.adminRole);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const hasValidAdminSession =
+    isAuthenticated && userRole === "ADMIN" && Boolean(adminRole);
 
   useEffect(() => {
-    if (isCheckingAuth) {
+    if (isCheckingAuth || !adminRole || !hasValidAdminSession) {
       return;
     }
 
-    if (isAuthenticated && userRole === "ADMIN") {
-      router.replace(getAdminHomeRoute(adminRole));
-    }
-  }, [adminRole, isAuthenticated, isCheckingAuth, router, userRole]);
+    router.replace(getAdminHomeRoute(adminRole));
+  }, [adminRole, hasValidAdminSession, isCheckingAuth, router]);
 
   const {
     register,
@@ -80,7 +80,7 @@ export default function AdminLoginPage() {
     );
   }
 
-  if (isAuthenticated && userRole === "ADMIN") {
+  if (hasValidAdminSession) {
     return (
       <section className={`${authCardClassName} text-muted`}>
         <div className="flex min-h-[260px] items-center justify-center">

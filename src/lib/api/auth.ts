@@ -35,7 +35,7 @@ function parseAccessTokenFromTokens(tokensValue: unknown): string {
   return accessToken;
 }
 
-function parseAdminRole(value: Record<string, unknown>): AdminRole | undefined {
+function parseAdminRole(value: Record<string, unknown>): AdminRole {
   if (value.adminRole === "SUPER_ADMIN" || value.adminRole === "ADMIN") {
     return value.adminRole;
   }
@@ -50,7 +50,10 @@ function parseAdminRole(value: Record<string, unknown>): AdminRole | undefined {
     return adminProfile.adminRole;
   }
 
-  return undefined;
+  throw new ApiClientError({
+    status: 403,
+    message: "관리자 역할 정보를 확인할 수 없습니다.",
+  });
 }
 
 function parseAdminUser(value: unknown): AdminUser {
@@ -88,14 +91,12 @@ function parseAdminUser(value: unknown): AdminUser {
     });
   }
 
-  const adminRole = parseAdminRole(value);
-
   return {
     id: String(id),
     name,
     email,
     role: "ADMIN",
-    ...(adminRole ? { adminRole } : {}),
+    adminRole: parseAdminRole(value),
   };
 }
 

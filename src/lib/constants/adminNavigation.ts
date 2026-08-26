@@ -1,4 +1,4 @@
-import { isSuperAdmin } from "@/lib/auth/adminRole";
+import { isSuperAdmin, isSuperAdminOnlyPath } from "@/lib/auth/adminRole";
 import type { AdminRole } from "@/types/auth";
 
 import { APP_ROUTES } from "./appRoutes";
@@ -12,7 +12,6 @@ export interface AdminNavigationChildItem {
 interface AdminNavigationBaseItem {
   label: string;
   enabled: boolean;
-  superAdminOnly?: boolean;
 }
 
 export interface AdminNavigationLinkItem extends AdminNavigationBaseItem {
@@ -53,7 +52,6 @@ export const ADMIN_NAVIGATION_ITEMS: AdminNavigationItem[] = [
     label: "관리자 계정 생성",
     href: APP_ROUTES.CREATE_ADMIN,
     enabled: true,
-    superAdminOnly: true,
   },
 ];
 
@@ -68,20 +66,32 @@ export function isAdminNavigationChildActive(
   return pathname === child.href || pathname.startsWith(`${child.href}/`);
 }
 
-export function getVisibleAdminNavigationItems(
-  adminRole: AdminRole | undefined,
-): AdminNavigationItem[] {
-  if (isSuperAdmin(adminRole)) {
-    return ADMIN_NAVIGATION_ITEMS.filter((item) => item.superAdminOnly);
-  }
-
-  return ADMIN_NAVIGATION_ITEMS.filter((item) => !item.superAdminOnly);
-}
-
 export function isAdminNavigationGroupItem(
   item: AdminNavigationItem,
 ): item is AdminNavigationGroupItem {
   return "children" in item && Array.isArray(item.children);
+}
+
+function isSuperAdminOnlyNavItem(item: AdminNavigationItem): boolean {
+  if (isAdminNavigationGroupItem(item)) {
+    return false;
+  }
+
+  return isSuperAdminOnlyPath(item.href);
+}
+
+export function getVisibleAdminNavigationItems(
+  adminRole: AdminRole | undefined,
+): AdminNavigationItem[] {
+  if (!adminRole) {
+    return [];
+  }
+
+  if (isSuperAdmin(adminRole)) {
+    return ADMIN_NAVIGATION_ITEMS.filter(isSuperAdminOnlyNavItem);
+  }
+
+  return ADMIN_NAVIGATION_ITEMS.filter((item) => !isSuperAdminOnlyNavItem(item));
 }
 
 export function isAdminNavigationActive(
