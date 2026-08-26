@@ -47,7 +47,7 @@ export const ADMIN_NAVIGATION_ITEMS: AdminNavigationItem[] = [
   { label: "공지사항 관리", href: APP_ROUTES.NOTICES, enabled: true },
   { label: "FAQ 관리", href: APP_ROUTES.FAQS, enabled: true },
   { label: "문의 관리", href: APP_ROUTES.INQUIRIES, enabled: true },
-  { label: "약관 관리", href: APP_ROUTES.TERMS, enabled: false },
+  { label: "약관 관리", href: APP_ROUTES.TERMS, enabled: true },
   {
     label: "관리자 계정 생성",
     href: APP_ROUTES.CREATE_ADMIN,
@@ -91,7 +91,9 @@ export function getVisibleAdminNavigationItems(
     return ADMIN_NAVIGATION_ITEMS.filter(isSuperAdminOnlyNavItem);
   }
 
-  return ADMIN_NAVIGATION_ITEMS.filter((item) => !isSuperAdminOnlyNavItem(item));
+  return ADMIN_NAVIGATION_ITEMS.filter(
+    (item) => !isSuperAdminOnlyNavItem(item),
+  );
 }
 
 export function isAdminNavigationActive(

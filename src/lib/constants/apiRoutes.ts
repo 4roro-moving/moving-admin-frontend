@@ -6,6 +6,7 @@ export const API_ROUTES = {
     ME: "/admin/auth/me",
   },
   ADMIN: {
+    DASHBOARD: "/admin/dashboard",
     MOVERS: {
       ROOT: "/admin/movers",
       DETAIL: (moverId: string) => `/admin/movers/${moverId}`,
@@ -54,6 +55,12 @@ export const API_ROUTES = {
     },
     ADMINS: {
       ROOT: "/admin/admins",
+    },
+    TERMS: {
+      ROOT: "/admin/terms",
+      DETAIL: (termsId: number) => `/admin/terms/${termsId}`,
+      // 초안을 게시본으로 승격. 같은 유형의 기존 게시본은 서버가 보관 처리한다.
+      PUBLISH: (termsId: number) => `/admin/terms/${termsId}/publish`,
     },
   },
 } as const;

@@ -4,9 +4,11 @@ import type {
   AdminReportStatus,
   AdminReportTargetType,
 } from "@/types/adminReport";
+import type { AdminDashboardPeriod } from "@/types/adminDashboard";
 import type { AdminGiveawaySort } from "@/types/adminGiveaway";
 import type { AdminInquiryStatus } from "@/types/adminInquiry";
 import type { AdminResidenceReviewSort } from "@/types/adminResidenceReview";
+import type { AdminTermsStatus, AdminTermsType } from "@/types/adminTerms";
 import type { AdminReviewSort } from "@/types/adminReview";
 
 export const QUERY_KEYS = {
@@ -14,7 +16,10 @@ export const QUERY_KEYS = {
     ADMIN_SESSION: ["auth", "admin-session"] as const,
   },
   DASHBOARD: {
-    SUMMARY: ["admin", "dashboard", "summary"] as const,
+    ALL: ["admin", "dashboard"] as const,
+    // 기간이 바뀌면 다른 응답이므로 키에 포함한다.
+    SUMMARY: (period: AdminDashboardPeriod) =>
+      ["admin", "dashboard", "summary", period] as const,
   },
   ADMIN_ACCOUNTS: {
     ALL: ["admin", "admins"] as const,
@@ -130,5 +135,16 @@ export const QUERY_KEYS = {
     }) => ["admin", "notices", "list", params] as const,
     DETAIL: (noticeId: number) =>
       ["admin", "notices", "detail", noticeId] as const,
+  },
+  TERMS: {
+    ALL: ["admin", "terms"] as const,
+    LIST: (params: {
+      page: number;
+      limit: number;
+      keyword: string;
+      type?: AdminTermsType;
+      status?: AdminTermsStatus;
+    }) => ["admin", "terms", "list", params] as const,
+    DETAIL: (termsId: number) => ["admin", "terms", "detail", termsId] as const,
   },
 } as const;
