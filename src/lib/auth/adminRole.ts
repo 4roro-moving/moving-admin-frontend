@@ -8,7 +8,7 @@ export function isSuperAdmin(adminRole: AdminRole | undefined): boolean {
 export function canAccessAdminAccountManagement(
   adminRole: AdminRole | undefined,
 ): boolean {
-  return adminRole !== "ADMIN";
+  return isSuperAdmin(adminRole);
 }
 
 export function getAdminHomeRoute(adminRole: AdminRole | undefined): string {

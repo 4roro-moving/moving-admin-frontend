@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 
 import SuperAdminRouteGuard from "@/components/admin/auth/SuperAdminRouteGuard";
-import { AdminReviewFeedbackToast } from "@/components/admin/contents/AdminReviewListStates";
+import AdminFeedbackToast from "@/components/admin/common/AdminFeedbackToast";
+import Text from "@/components/admin/common/Text";
 
 import CreateAdminForm from "./CreateAdminForm";
 
@@ -29,10 +30,12 @@ export default function CreateAdminPage() {
       <>
         <section className="flex flex-col gap-5">
           <header className="flex flex-col gap-2">
-            <h1 className="text-3xl font-semibold text-foreground">관리자 계정 생성</h1>
-            <p className="text-muted text-sm">
+            <Text as="h1" variant="pageTitle" className="text-text-primary">
+              관리자 계정 생성
+            </Text>
+            <Text as="p" variant="md-regular" className="text-muted">
               일반 관리자 계정을 생성합니다. 슈퍼 관리자만 사용할 수 있습니다.
-            </p>
+            </Text>
           </header>
 
           <CreateAdminForm
@@ -43,7 +46,7 @@ export default function CreateAdminPage() {
         </section>
 
         {successMessage ? (
-          <AdminReviewFeedbackToast tone="success" message={successMessage} />
+          <AdminFeedbackToast tone="success" message={successMessage} />
         ) : null}
       </>
     </SuperAdminRouteGuard>

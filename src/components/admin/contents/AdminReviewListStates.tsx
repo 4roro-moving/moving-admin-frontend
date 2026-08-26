@@ -1,5 +1,7 @@
 import { getApiErrorMessage } from "@/lib/api/getApiErrorMessage";
 
+export { default as AdminReviewFeedbackToast } from "@/components/admin/common/AdminFeedbackToast";
+
 interface AdminReviewLoadingStateProps {
   message?: string;
 }
@@ -49,29 +51,6 @@ export function AdminReviewEmptyState({
   return (
     <div className="border-border bg-surface rounded-2xl border px-5 py-10 text-center">
       <p className="text-muted text-sm">{message}</p>
-    </div>
-  );
-}
-
-interface AdminReviewFeedbackToastProps {
-  tone: "error" | "success" | "info";
-  message: string;
-}
-
-export function AdminReviewFeedbackToast({ tone, message }: AdminReviewFeedbackToastProps) {
-  const toneClassName =
-    tone === "error"
-      ? "border-red-200 bg-red-50 text-red-700"
-      : tone === "success"
-        ? "border-accent/30 bg-accent-muted text-accent"
-        : "border-border bg-surface text-muted";
-
-  return (
-    <div
-      role={tone === "error" ? "alert" : "status"}
-      className={`fixed right-5 bottom-5 z-40 rounded-lg border px-3 py-2 text-xs shadow ${toneClassName}`}
-    >
-      {message}
     </div>
   );
 }

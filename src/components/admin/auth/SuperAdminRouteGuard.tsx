@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { type ReactNode, useEffect } from "react";
 
+import Text from "@/components/admin/common/Text";
 import { canAccessAdminAccountManagement } from "@/lib/auth/adminRole";
 import { APP_ROUTES } from "@/lib/constants/appRoutes";
 import { useAdminAuthStore } from "@/stores/useAdminAuthStore";
@@ -10,7 +11,9 @@ import { useAdminAuthStore } from "@/stores/useAdminAuthStore";
 function SuperAdminAuthLoading({ message }: { message: string }) {
   return (
     <div className="border-border bg-surface rounded-2xl border px-5 py-6">
-      <p className="text-muted text-sm font-medium">{message}</p>
+      <Text as="p" variant="md-medium" className="text-muted">
+        {message}
+      </Text>
     </div>
   );
 }

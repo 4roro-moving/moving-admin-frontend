@@ -1,14 +1,23 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  forwardRef,
+  useId,
+  type ComponentPropsWithoutRef,
+} from "react";
 import { useForm } from "react-hook-form";
 
+import Button from "@/components/admin/common/Button";
+import FormField from "@/components/admin/common/FormField";
+import Text from "@/components/admin/common/Text";
 import { useCreateAdminAccount } from "@/hooks/useCreateAdminAccount";
 import { getApiErrorMessage } from "@/lib/api/getApiErrorMessage";
 import {
   createAdminFormSchema,
   type CreateAdminFormValues,
-} from "@/lib/sheme/adminCreateScheme";
+} from "@/lib/schema/adminCreateSchema";
+import { cn } from "@/lib/utils/cn";
 import type { CreateAdminAccountPayload } from "@/types/adminAccount";
 
 const DEFAULT_VALUES: CreateAdminFormValues = {
@@ -19,8 +28,68 @@ const DEFAULT_VALUES: CreateAdminFormValues = {
   confirmPassword: "",
 };
 
-const inputClassName =
-  "border-border bg-surface text-foreground placeholder:text-text-placeholder h-12 w-full rounded-xl border px-4 text-sm outline-none transition-[border-color,box-shadow] focus:border-border-brand focus:shadow-input disabled:cursor-not-allowed disabled:opacity-60";
+interface CreateAdminTextFieldProps extends ComponentPropsWithoutRef<"input"> {
+  label: string;
+  error?: string;
+  hint?: string;
+}
+
+const CreateAdminTextField = forwardRef<
+  HTMLInputElement,
+  CreateAdminTextFieldProps
+>(function CreateAdminTextField(
+  { id, label, error, hint, className, ...props },
+  ref,
+) {
+  const errorId = useId();
+  const hintId = useId();
+  const describedBy =
+    [error ? errorId : undefined, hint ? hintId : undefined]
+      .filter(Boolean)
+      .join(" ") || undefined;
+
+  return (
+    <FormField
+      label={label}
+      labelFor={id}
+      labelVariant="sm-semibold"
+      className="gap-2"
+    >
+      <input
+        {...props}
+        ref={ref}
+        id={id}
+        aria-invalid={!!error}
+        aria-describedby={describedBy}
+        className={cn(
+          "border-border bg-surface text-foreground placeholder:text-text-placeholder h-12 w-full rounded-xl border px-4 text-sm outline-none transition-[border-color,box-shadow] focus:border-border-brand focus:shadow-input disabled:cursor-not-allowed disabled:opacity-60",
+          error && "border-border-error",
+          className,
+        )}
+      />
+      {hint ? (
+        <Text
+          as="p"
+          id={hintId}
+          variant="xs-regular"
+          className="text-muted"
+        >
+          {hint}
+        </Text>
+      ) : null}
+      {error ? (
+        <Text
+          as="p"
+          id={errorId}
+          variant="xs-regular"
+          className="text-text-error"
+        >
+          {error}
+        </Text>
+      ) : null}
+    </FormField>
+  );
+});
 
 function toCreateAdminPayload(
   values: CreateAdminFormValues,
@@ -52,6 +121,8 @@ export default function CreateAdminForm({ onCreated }: CreateAdminFormProps) {
   const isPending = isSubmitting || createAdminMutation.isPending;
 
   const onSubmit = async (values: CreateAdminFormValues) => {
+    createAdminMutation.reset();
+
     try {
       await createAdminMutation.mutateAsync(toCreateAdminPayload(values));
       reset(DEFAULT_VALUES);
@@ -73,114 +144,85 @@ export default function CreateAdminForm({ onCreated }: CreateAdminFormProps) {
       className="border-border bg-surface w-full max-w-[560px] space-y-5 rounded-2xl border px-5 py-6 shadow-select sm:px-6"
       onSubmit={handleSubmit(onSubmit)}
       noValidate
+      aria-busy={isPending}
     >
-      <div className="space-y-2">
-        <label htmlFor="create-admin-email" className="text-[13px] font-semibold text-[#262524]">
-          이메일
-        </label>
-        <input
-          id="create-admin-email"
-          type="email"
-          autoComplete="off"
-          className={inputClassName}
-          placeholder="admin@moving.com"
-          disabled={isPending}
-          {...register("email")}
-        />
-        {errors.email ? <p className="text-sm text-red-600">{errors.email.message}</p> : null}
-      </div>
-
-      <div className="space-y-2">
-        <label htmlFor="create-admin-name" className="text-[13px] font-semibold text-[#262524]">
-          이름
-        </label>
-        <input
-          id="create-admin-name"
-          type="text"
-          autoComplete="off"
-          className={inputClassName}
-          placeholder="홍길동"
-          disabled={isPending}
-          {...register("name")}
-        />
-        {errors.name ? <p className="text-sm text-red-600">{errors.name.message}</p> : null}
-      </div>
-
-      <div className="space-y-2">
-        <label htmlFor="create-admin-phone" className="text-[13px] font-semibold text-[#262524]">
-          휴대전화 번호
-        </label>
-        <input
-          id="create-admin-phone"
-          type="tel"
-          autoComplete="off"
-          inputMode="tel"
-          className={inputClassName}
-          placeholder="010-1234-5678"
-          disabled={isPending}
-          {...register("phone")}
-        />
-        {errors.phone ? (
-          <p className="text-sm text-red-600">{errors.phone.message}</p>
-        ) : (
-          <p className="text-muted text-xs">하이픈 없이 입력해도 됩니다.</p>
-        )}
-      </div>
-
-      <div className="space-y-2">
-        <label
-          htmlFor="create-admin-password"
-          className="text-[13px] font-semibold text-[#262524]"
-        >
-          비밀번호
-        </label>
-        <input
-          id="create-admin-password"
-          type="password"
-          autoComplete="new-password"
-          className={inputClassName}
-          placeholder="8자 이상 입력해 주세요"
-          disabled={isPending}
-          {...register("password")}
-        />
-        {errors.password ? (
-          <p className="text-sm text-red-600">{errors.password.message}</p>
-        ) : null}
-      </div>
-
-      <div className="space-y-2">
-        <label
-          htmlFor="create-admin-confirm-password"
-          className="text-[13px] font-semibold text-[#262524]"
-        >
-          비밀번호 확인
-        </label>
-        <input
-          id="create-admin-confirm-password"
-          type="password"
-          autoComplete="new-password"
-          className={inputClassName}
-          placeholder="비밀번호를 한 번 더 입력해 주세요"
-          disabled={isPending}
-          {...register("confirmPassword")}
-        />
-        {errors.confirmPassword ? (
-          <p className="text-sm text-red-600">{errors.confirmPassword.message}</p>
-        ) : null}
-      </div>
-
-      <button
-        type="submit"
+      <CreateAdminTextField
+        {...register("email")}
+        id="create-admin-email"
+        label="이메일"
+        type="email"
+        autoComplete="off"
+        placeholder="admin@moving.com"
         disabled={isPending}
-        className="bg-accent h-12 w-full rounded-xl px-4 text-sm font-semibold text-white transition hover:brightness-95 disabled:opacity-60"
+        error={errors.email?.message}
+      />
+
+      <CreateAdminTextField
+        {...register("name")}
+        id="create-admin-name"
+        label="이름"
+        type="text"
+        autoComplete="off"
+        placeholder="홍길동"
+        disabled={isPending}
+        error={errors.name?.message}
+      />
+
+      <CreateAdminTextField
+        {...register("phone")}
+        id="create-admin-phone"
+        label="휴대전화 번호"
+        type="tel"
+        autoComplete="off"
+        inputMode="tel"
+        placeholder="010-1234-5678"
+        disabled={isPending}
+        hint="하이픈 없이 입력해도 됩니다."
+        error={errors.phone?.message}
+      />
+
+      <CreateAdminTextField
+        {...register("password")}
+        id="create-admin-password"
+        label="비밀번호"
+        type="password"
+        autoComplete="new-password"
+        placeholder="8자 이상 입력해 주세요"
+        disabled={isPending}
+        error={errors.password?.message}
+      />
+
+      <CreateAdminTextField
+        {...register("confirmPassword")}
+        id="create-admin-confirm-password"
+        label="비밀번호 확인"
+        type="password"
+        autoComplete="new-password"
+        placeholder="비밀번호를 한 번 더 입력해 주세요"
+        disabled={isPending}
+        error={errors.confirmPassword?.message}
+      />
+
+      <Button
+        type="submit"
+        variant="solid"
+        size="cta"
+        fullWidth
+        disabled={isPending}
+        aria-busy={isPending}
       >
         {isPending ? "생성 중" : "관리자 계정 생성"}
-      </button>
+      </Button>
 
       {errorMessage ? (
-        <p role="alert" className="rounded-xl bg-[#ffeef0] px-4 py-3 text-sm text-red-600">
+        <Text
+          as="p"
+          role="alert"
+          variant="md-medium"
+          className="bg-status-suspended-background text-text-error rounded-xl px-4 py-3"
+        >
           {errorMessage}
-        </p>
+        </Text>
       ) : null}
     </form>
   );
