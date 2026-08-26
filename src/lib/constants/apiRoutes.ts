@@ -52,5 +52,8 @@ export const API_ROUTES = {
       ROOT: "/admin/notices",
       DETAIL: (noticeId: number) => `/admin/notices/${noticeId}`,
     },
+    ADMINS: {
+      ROOT: "/admin/admins",
+    },
   },
 } as const;

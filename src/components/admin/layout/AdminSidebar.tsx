@@ -14,8 +14,8 @@ import { createPortal } from "react-dom";
 
 import { ChevronDownIcon } from "@/icons";
 import {
-  ADMIN_NAVIGATION_ITEMS,
   getCurrentAdminNavigation,
+  getVisibleAdminNavigationItems,
   isAdminNavigationActive,
   isAdminNavigationChildActive,
   type AdminNavigationGroupItem,
@@ -74,6 +74,7 @@ export default function AdminSidebar({
   const user = useAdminAuthStore((state) => state.user);
   const [shouldRenderMobileDrawer, setShouldRenderMobileDrawer] = useState(false);
   const currentNavigation = getCurrentAdminNavigation(pathname);
+  const navigationItems = getVisibleAdminNavigationItems(user?.adminRole);
   const isContentsGroupActive = currentNavigation?.parent.label === "콘텐츠 관리";
   const [isContentsGroupOpen, setIsContentsGroupOpen] = useState(isContentsGroupActive);
   const desktopContentsGroupId = useId();
@@ -119,7 +120,7 @@ export default function AdminSidebar({
 
   const renderNavigationList = (isMobileDrawer: boolean) => (
     <ul className="mt-1 space-y-1.5">
-      {ADMIN_NAVIGATION_ITEMS.map((item) => {
+      {navigationItems.map((item) => {
         if (isNavigationGroup(item)) {
           const isParentActive = isAdminNavigationActive(pathname, item);
           const isExpanded = isContentsGroupOpen;

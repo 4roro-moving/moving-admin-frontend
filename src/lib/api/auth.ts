@@ -4,6 +4,7 @@ import type {
   AdminLoginInput,
   AdminLoginResponse,
   AdminRefreshResponse,
+  AdminRole,
   AdminSession,
   AdminUser,
 } from "@/types/auth";
@@ -32,6 +33,23 @@ function parseAccessTokenFromTokens(tokensValue: unknown): string {
   }
 
   return accessToken;
+}
+
+function parseAdminRole(value: Record<string, unknown>): AdminRole | undefined {
+  if (value.adminRole === "SUPER_ADMIN" || value.adminRole === "ADMIN") {
+    return value.adminRole;
+  }
+
+  const adminProfile = value.adminProfile;
+
+  if (
+    isPlainObject(adminProfile) &&
+    (adminProfile.adminRole === "SUPER_ADMIN" || adminProfile.adminRole === "ADMIN")
+  ) {
+    return adminProfile.adminRole;
+  }
+
+  return undefined;
 }
 
 function parseAdminUser(value: unknown): AdminUser {
@@ -69,11 +87,14 @@ function parseAdminUser(value: unknown): AdminUser {
     });
   }
 
+  const adminRole = parseAdminRole(value);
+
   return {
     id: String(id),
     name,
     email,
     role: "ADMIN",
+    ...(adminRole ? { adminRole } : {}),
   };
 }
 

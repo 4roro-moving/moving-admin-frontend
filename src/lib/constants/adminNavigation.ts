@@ -1,3 +1,6 @@
+import { canAccessAdminAccountManagement } from "@/lib/auth/adminRole";
+import type { AdminRole } from "@/types/auth";
+
 import { APP_ROUTES } from "./appRoutes";
 
 export interface AdminNavigationChildItem {
@@ -9,6 +12,7 @@ export interface AdminNavigationChildItem {
 interface AdminNavigationBaseItem {
   label: string;
   enabled: boolean;
+  superAdminOnly?: boolean;
 }
 
 export interface AdminNavigationLinkItem extends AdminNavigationBaseItem {
@@ -42,6 +46,12 @@ export const ADMIN_NAVIGATION_ITEMS: AdminNavigationItem[] = [
   { label: "공지사항 관리", href: APP_ROUTES.NOTICES, enabled: true },
   { label: "FAQ 관리", href: APP_ROUTES.FAQS, enabled: true },
   { label: "문의 관리", href: APP_ROUTES.INQUIRIES, enabled: true },
+  {
+    label: "관리자 계정 생성",
+    href: APP_ROUTES.CREATE_ADMIN,
+    enabled: true,
+    superAdminOnly: true,
+  },
   { label: "약관 관리", href: APP_ROUTES.TERMS, enabled: false },
 ];
 
@@ -54,6 +64,18 @@ export function isAdminNavigationChildActive(
   }
 
   return pathname === child.href || pathname.startsWith(`${child.href}/`);
+}
+
+export function getVisibleAdminNavigationItems(
+  adminRole: AdminRole | undefined,
+): AdminNavigationItem[] {
+  return ADMIN_NAVIGATION_ITEMS.filter((item) => {
+    if (!item.superAdminOnly) {
+      return true;
+    }
+
+    return canAccessAdminAccountManagement(adminRole);
+  });
 }
 
 export function isAdminNavigationGroupItem(

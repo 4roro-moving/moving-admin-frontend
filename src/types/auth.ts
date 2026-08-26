@@ -1,8 +1,11 @@
+export type AdminRole = "ADMIN" | "SUPER_ADMIN";
+
 export interface AdminUser {
   id: string;
   name: string;
   email: string;
   role: "ADMIN";
+  adminRole?: AdminRole;
 }
 
 export interface AdminSession {
