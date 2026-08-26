@@ -8,7 +8,7 @@ import { z } from "zod";
 
 import { loginAdmin } from "@/lib/api/auth";
 import { getApiErrorMessage } from "@/lib/api/getApiErrorMessage";
-import { getAdminHomeRoute } from "@/lib/auth/adminRole";
+import { getAdminHomeRoute, hasValidAdminSession } from "@/lib/auth/adminRole";
 import { useAdminAuthStore } from "@/stores/useAdminAuthStore";
 
 const adminLoginSchema = z.object({
@@ -32,16 +32,19 @@ export default function AdminLoginPage() {
   const userRole = useAdminAuthStore((state) => state.user?.role);
   const adminRole = useAdminAuthStore((state) => state.user?.adminRole);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const hasValidAdminSession =
-    isAuthenticated && userRole === "ADMIN" && Boolean(adminRole);
+  const validAdminSession = hasValidAdminSession(
+    isAuthenticated,
+    userRole,
+    adminRole,
+  );
 
   useEffect(() => {
-    if (isCheckingAuth || !adminRole || !hasValidAdminSession) {
+    if (isCheckingAuth || !validAdminSession || !adminRole) {
       return;
     }
 
     router.replace(getAdminHomeRoute(adminRole));
-  }, [adminRole, hasValidAdminSession, isCheckingAuth, router]);
+  }, [adminRole, isCheckingAuth, router, validAdminSession]);
 
   const {
     register,
@@ -80,7 +83,7 @@ export default function AdminLoginPage() {
     );
   }
 
-  if (hasValidAdminSession) {
+  if (validAdminSession) {
     return (
       <section className={`${authCardClassName} text-muted`}>
         <div className="flex min-h-[260px] items-center justify-center">
