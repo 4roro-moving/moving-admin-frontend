@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 
 import AdminFeedbackToast from "@/components/admin/common/AdminFeedbackToast";
 import AdminReviewCard from "@/components/admin/contents/AdminReviewCard";
@@ -13,6 +13,7 @@ import {
 import AdminReviewPagination from "@/components/admin/contents/AdminReviewPagination";
 import AdminReviewSearchBar from "@/components/admin/contents/AdminReviewSearchBar";
 import AdminReviewSortChips from "@/components/admin/contents/AdminReviewSortChips";
+import { useAdminFeedbackToast } from "@/hooks/common/useAdminFeedbackToast";
 import { useAdminReviewModeration } from "@/hooks/useAdminReviewModeration";
 import { useAdminReviews } from "@/hooks/useAdminReviews";
 import { ADMIN_REVIEW_LIST_PAGE_LIMIT } from "@/lib/api/adminReviews";
@@ -36,7 +37,7 @@ export default function AdminContentsReviewsPage() {
   const [sort, setSort] = useState<AdminReviewSort>("LATEST");
   const [reasonModal, setReasonModal] = useState<HideReasonModalState | null>(null);
   const [reasonInput, setReasonInput] = useState("");
-  const [feedback, setFeedback] = useState<ModerationFeedback | null>(null);
+  const [feedback, setFeedback] = useAdminFeedbackToast<ModerationFeedback>();
 
   const previouslyFocusedElementRef = useRef<HTMLElement | null>(null);
 
@@ -55,20 +56,6 @@ export default function AdminContentsReviewsPage() {
 
   const items = data?.items ?? [];
   const pagination = data?.pagination;
-
-  useEffect(() => {
-    if (!feedback) {
-      return;
-    }
-
-    const timer = window.setTimeout(() => {
-      setFeedback(null);
-    }, 3200);
-
-    return () => {
-      window.clearTimeout(timer);
-    };
-  }, [feedback]);
 
   const handleSubmitSearch = () => {
     setKeyword(keywordInput.trim());

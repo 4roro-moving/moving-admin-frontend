@@ -1,28 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
 import AdminFeedbackToast from "@/components/admin/common/AdminFeedbackToast";
 import Text from "@/components/admin/common/Text";
+import { useAdminFeedbackToast } from "@/hooks/common/useAdminFeedbackToast";
 
 import CreateAdminForm from "./CreateAdminForm";
 
 export default function CreateAdminPage() {
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!successMessage) {
-      return;
-    }
-
-    const timer = window.setTimeout(() => {
-      setSuccessMessage(null);
-    }, 3200);
-
-    return () => {
-      window.clearTimeout(timer);
-    };
-  }, [successMessage]);
+  const [successMessage, setSuccessMessage] = useAdminFeedbackToast<string>();
 
   return (
     <>

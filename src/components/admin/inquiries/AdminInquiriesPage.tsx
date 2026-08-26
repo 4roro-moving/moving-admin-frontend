@@ -11,6 +11,7 @@ import {
   AdminReviewLoadingState,
 } from "@/components/admin/contents/AdminReviewListStates";
 import AdminReviewPagination from "@/components/admin/contents/AdminReviewPagination";
+import { useAdminFeedbackToast } from "@/hooks/common/useAdminFeedbackToast";
 import { useAdminInquiryDetail } from "@/hooks/useAdminInquiryDetail";
 import { useAdminInquiries } from "@/hooks/useAdminInquiries";
 import {
@@ -89,7 +90,7 @@ export default function AdminInquiriesPage() {
 
   const [isSheetLayout, setIsSheetLayout] = useState(false);
   const [keywordDraft, setKeywordDraft] = useState({ key: "", value: "" });
-  const [feedback, setFeedback] = useState<InquiryFeedback | null>(null);
+  const [feedback, setFeedback] = useAdminFeedbackToast<InquiryFeedback>();
   const hasInitializedSelectionRef = useRef(false);
   const keywordInput = keywordDraft.key === listStateKey ? keywordDraft.value : keyword;
 
@@ -142,20 +143,6 @@ export default function AdminInquiriesPage() {
       document.body.style.overflow = overflow;
     };
   }, [isSheetLayout, selectedInquiryId]);
-
-  useEffect(() => {
-    if (!feedback) {
-      return;
-    }
-
-    const timer = window.setTimeout(() => {
-      setFeedback(null);
-    }, 3200);
-
-    return () => {
-      window.clearTimeout(timer);
-    };
-  }, [feedback]);
 
   useEffect(() => {
     if (!inquiriesQuery.data) {

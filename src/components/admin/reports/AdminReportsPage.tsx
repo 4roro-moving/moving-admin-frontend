@@ -11,6 +11,7 @@ import {
 } from "@/components/admin/contents/AdminReviewListStates";
 import AdminReviewPagination from "@/components/admin/contents/AdminReviewPagination";
 import AdminReviewSearchBar from "@/components/admin/contents/AdminReviewSearchBar";
+import { useAdminFeedbackToast } from "@/hooks/common/useAdminFeedbackToast";
 import { useAdminReportDetail, useAdminReportSummary } from "@/hooks/useAdminReportDetail";
 import { useAdminReportModeration } from "@/hooks/useAdminReportModeration";
 import { useAdminReports } from "@/hooks/useAdminReports";
@@ -55,7 +56,7 @@ export default function AdminReportsPage() {
   const [targetType, setTargetType] = useState<AdminReportTargetType | "ALL">("ALL");
   const [reason, setReason] = useState<AdminReportReason | "ALL">("ALL");
   const [sort, setSort] = useState<AdminReportSort>("LATEST");
-  const [feedback, setFeedback] = useState<ModerationFeedback | null>(null);
+  const [feedback, setFeedback] = useAdminFeedbackToast<ModerationFeedback>();
   const hasInitializedSelectionRef = useRef(false);
 
   const listQuery = useMemo(
@@ -78,20 +79,6 @@ export default function AdminReportsPage() {
 
   const items = useMemo(() => reportsQuery.data?.items ?? [], [reportsQuery.data?.items]);
   const pagination = reportsQuery.data?.pagination;
-
-  useEffect(() => {
-    if (!feedback) {
-      return;
-    }
-
-    const timer = window.setTimeout(() => {
-      setFeedback(null);
-    }, 3200);
-
-    return () => {
-      window.clearTimeout(timer);
-    };
-  }, [feedback]);
 
   useEffect(() => {
     if (!reportsQuery.data) {

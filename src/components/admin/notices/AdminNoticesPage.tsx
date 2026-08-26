@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import AdminFeedbackToast from "@/components/admin/common/AdminFeedbackToast";
 import Search from "@/components/admin/common/Search";
@@ -12,6 +12,7 @@ import {
 } from "@/components/admin/contents/AdminReviewListStates";
 import AdminReviewPagination from "@/components/admin/contents/AdminReviewPagination";
 import { FilterOption, TableFilter } from "@/components/admin/users/TableFilter";
+import { useAdminFeedbackToast } from "@/hooks/common/useAdminFeedbackToast";
 import { useAdminNoticeDetail } from "@/hooks/useAdminNoticeDetail";
 import { useAdminNotices } from "@/hooks/useAdminNotices";
 import {
@@ -103,7 +104,7 @@ export default function AdminNoticesPage() {
   const [editorMode, setEditorMode] = useState<"create" | "edit" | null>(null);
   const [editingNoticeId, setEditingNoticeId] = useState<number | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<AdminNotice | null>(null);
-  const [feedback, setFeedback] = useState<NoticeFeedback | null>(null);
+  const [feedback, setFeedback] = useAdminFeedbackToast<NoticeFeedback>();
   const keywordInput = keywordDraft.key === listStateKey ? keywordDraft.value : keyword;
 
   const listQuery = useMemo(
@@ -128,20 +129,6 @@ export default function AdminNoticesPage() {
 
   const items = noticesQuery.data?.items ?? [];
   const pagination = noticesQuery.data?.pagination;
-
-  useEffect(() => {
-    if (!feedback) {
-      return;
-    }
-
-    const timer = window.setTimeout(() => {
-      setFeedback(null);
-    }, 3200);
-
-    return () => {
-      window.clearTimeout(timer);
-    };
-  }, [feedback]);
 
   const closeEditor = () => {
     setEditorMode(null);

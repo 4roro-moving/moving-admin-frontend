@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 
 import AdminFeedbackToast from "@/components/admin/common/AdminFeedbackToast";
 import AdminGiveawayCard from "@/components/admin/contents/AdminGiveawayCard";
@@ -13,6 +13,7 @@ import {
 import AdminReviewPagination from "@/components/admin/contents/AdminReviewPagination";
 import AdminReviewSearchBar from "@/components/admin/contents/AdminReviewSearchBar";
 import AdminReviewSortChips from "@/components/admin/contents/AdminReviewSortChips";
+import { useAdminFeedbackToast } from "@/hooks/common/useAdminFeedbackToast";
 import { useAdminGiveawayModeration } from "@/hooks/useAdminGiveawayModeration";
 import { useAdminGiveaways } from "@/hooks/useAdminGiveaways";
 import {
@@ -39,7 +40,7 @@ export default function AdminContentsGiveawaysPage() {
   const [sort, setSort] = useState<AdminGiveawaySort>("LATEST");
   const [reasonModal, setReasonModal] = useState<HideReasonModalState | null>(null);
   const [reasonInput, setReasonInput] = useState("");
-  const [feedback, setFeedback] = useState<ModerationFeedback | null>(null);
+  const [feedback, setFeedback] = useAdminFeedbackToast<ModerationFeedback>();
 
   const previouslyFocusedElementRef = useRef<HTMLElement | null>(null);
 
@@ -58,20 +59,6 @@ export default function AdminContentsGiveawaysPage() {
 
   const items = data?.items ?? [];
   const pagination = data?.pagination;
-
-  useEffect(() => {
-    if (!feedback) {
-      return;
-    }
-
-    const timer = window.setTimeout(() => {
-      setFeedback(null);
-    }, 3200);
-
-    return () => {
-      window.clearTimeout(timer);
-    };
-  }, [feedback]);
 
   const handleSubmitSearch = () => {
     setKeyword(keywordInput.trim());

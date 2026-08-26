@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import AdminFeedbackToast from "@/components/admin/common/AdminFeedbackToast";
 import Search from "@/components/admin/common/Search";
@@ -11,6 +11,7 @@ import {
   AdminReviewLoadingState,
 } from "@/components/admin/contents/AdminReviewListStates";
 import AdminReviewPagination from "@/components/admin/contents/AdminReviewPagination";
+import { useAdminFeedbackToast } from "@/hooks/common/useAdminFeedbackToast";
 import { useAdminFaqDetail } from "@/hooks/useAdminFaqDetail";
 import { useAdminFaqs } from "@/hooks/useAdminFaqs";
 import {
@@ -85,7 +86,7 @@ export default function AdminFaqsPage() {
   const [editorMode, setEditorMode] = useState<"create" | "edit" | null>(null);
   const [editingFaqId, setEditingFaqId] = useState<number | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<AdminFaq | null>(null);
-  const [feedback, setFeedback] = useState<FaqFeedback | null>(null);
+  const [feedback, setFeedback] = useAdminFeedbackToast<FaqFeedback>();
   const keywordInput = keywordDraft.key === listStateKey ? keywordDraft.value : keyword;
 
   const listQuery = useMemo(
@@ -106,20 +107,6 @@ export default function AdminFaqsPage() {
 
   const items = faqsQuery.data?.items ?? [];
   const pagination = faqsQuery.data?.pagination;
-
-  useEffect(() => {
-    if (!feedback) {
-      return;
-    }
-
-    const timer = window.setTimeout(() => {
-      setFeedback(null);
-    }, 3200);
-
-    return () => {
-      window.clearTimeout(timer);
-    };
-  }, [feedback]);
 
   const closeEditor = () => {
     setEditorMode(null);
