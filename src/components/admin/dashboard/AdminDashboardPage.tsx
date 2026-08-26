@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 
 import {
   AdminReviewErrorState,
@@ -13,8 +14,14 @@ import type {
   AdminDashboardActivityItem,
   AdminDashboardContentSummaryItem,
   AdminDashboardMetric,
+  AdminDashboardPeriod,
   AdminDashboardRecentItem,
   AdminDashboardServiceStage,
+} from "@/types/adminDashboard";
+import {
+  ADMIN_DASHBOARD_PERIODS,
+  ADMIN_DASHBOARD_PERIOD_LABELS,
+  DEFAULT_ADMIN_DASHBOARD_PERIOD,
 } from "@/types/adminDashboard";
 
 function DashboardMetricCard({ item }: { item: AdminDashboardMetric }) {
@@ -151,8 +158,53 @@ function RecentActivityRow({ item }: { item: AdminDashboardActivityItem }) {
   );
 }
 
+/**
+ * 집계 기간 선택.
+ *
+ * 서버는 기간 한정 지표(서비스 운영 현황·신규 가입)에만 이 값을 적용합니다.
+ * 전체 회원 수나 처리 대기 건수는 "현재 상태"라 기간과 무관합니다.
+ */
+function PeriodSelector({
+  value,
+  onChange,
+  disabled,
+}: {
+  value: AdminDashboardPeriod;
+  onChange: (next: AdminDashboardPeriod) => void;
+  disabled: boolean;
+}) {
+  return (
+    <div
+      role="group"
+      aria-label="집계 기간"
+      className="border-border bg-surface flex items-center gap-1 rounded-full border p-1"
+    >
+      {ADMIN_DASHBOARD_PERIODS.map((period) => (
+        <button
+          key={period}
+          type="button"
+          onClick={() => onChange(period)}
+          disabled={disabled}
+          aria-pressed={value === period}
+          className={cn(
+            "rounded-full px-3 py-1.5 text-xs transition disabled:opacity-50",
+            value === period
+              ? "bg-accent-muted text-accent font-semibold"
+              : "text-muted hover:text-foreground",
+          )}
+        >
+          {ADMIN_DASHBOARD_PERIOD_LABELS[period]}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export default function AdminDashboardPage() {
-  const dashboardQuery = useAdminDashboard();
+  const [period, setPeriod] = useState<AdminDashboardPeriod>(
+    DEFAULT_ADMIN_DASHBOARD_PERIOD,
+  );
+  const dashboardQuery = useAdminDashboard(period);
 
   if (dashboardQuery.isLoading) {
     return <AdminReviewLoadingState message="대시보드를 불러오는 중입니다." />;
@@ -177,9 +229,17 @@ export default function AdminDashboardPage() {
 
   return (
     <section className="mx-auto flex w-full max-w-[1120px] flex-col gap-5">
-      <header className="flex flex-col gap-1">
-        <h1 className="text-3xl font-semibold text-foreground">{dashboard.pageTitle}</h1>
-        <p className="text-muted text-sm font-normal">{dashboard.pageDescription}</p>
+      <header className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+        <div className="flex flex-col gap-1">
+          <h1 className="text-3xl font-semibold text-foreground">{dashboard.pageTitle}</h1>
+          <p className="text-muted text-sm font-normal">{dashboard.pageDescription}</p>
+        </div>
+
+        <PeriodSelector
+          value={period}
+          onChange={setPeriod}
+          disabled={dashboardQuery.isFetching}
+        />
       </header>
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -199,6 +259,8 @@ export default function AdminDashboardPage() {
         <RecentOperationsCard
           title={dashboard.recentInquiries.title}
           description={dashboard.recentInquiries.description}
+          actionLabel={dashboard.recentInquiries.actionLabel}
+          actionHref={APP_ROUTES.INQUIRIES}
           items={dashboard.recentInquiries.items}
         />
       </section>
