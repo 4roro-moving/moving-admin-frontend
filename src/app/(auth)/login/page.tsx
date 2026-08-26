@@ -8,7 +8,7 @@ import { z } from "zod";
 
 import { loginAdmin } from "@/lib/api/auth";
 import { getApiErrorMessage } from "@/lib/api/getApiErrorMessage";
-import { getAdminHomeRoute } from "@/lib/auth/adminRole";
+import { APP_ROUTES } from "@/lib/constants/appRoutes";
 import { useAdminAuthStore } from "@/stores/useAdminAuthStore";
 
 const adminLoginSchema = z.object({
@@ -30,9 +30,7 @@ export default function AdminLoginPage() {
   const isCheckingAuth = useAdminAuthStore((state) => state.isCheckingAuth);
   const isAuthenticated = useAdminAuthStore((state) => state.isAuthenticated);
   const userRole = useAdminAuthStore((state) => state.user?.role);
-  const adminRole = useAdminAuthStore((state) => state.user?.adminRole);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const homeRoute = getAdminHomeRoute(adminRole);
 
   useEffect(() => {
     if (isCheckingAuth) {
@@ -40,9 +38,9 @@ export default function AdminLoginPage() {
     }
 
     if (isAuthenticated && userRole === "ADMIN") {
-      router.replace(homeRoute);
+      router.replace(APP_ROUTES.DASHBOARD);
     }
-  }, [homeRoute, isAuthenticated, isCheckingAuth, router, userRole]);
+  }, [isAuthenticated, isCheckingAuth, router, userRole]);
 
   const {
     register,
@@ -65,7 +63,7 @@ export default function AdminLoginPage() {
         user: session.user,
         accessToken: session.accessToken,
       });
-      router.replace(getAdminHomeRoute(session.user.adminRole));
+      router.replace(APP_ROUTES.DASHBOARD);
     } catch (error) {
       setErrorMessage(getApiErrorMessage(error, "로그인에 실패했습니다."));
     }

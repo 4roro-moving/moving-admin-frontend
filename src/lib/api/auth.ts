@@ -44,7 +44,8 @@ function parseAdminRole(value: Record<string, unknown>): AdminRole | undefined {
 
   if (
     isPlainObject(adminProfile) &&
-    (adminProfile.adminRole === "SUPER_ADMIN" || adminProfile.adminRole === "ADMIN")
+    (adminProfile.adminRole === "SUPER_ADMIN" ||
+      adminProfile.adminRole === "ADMIN")
   ) {
     return adminProfile.adminRole;
   }
@@ -112,7 +113,9 @@ function parseAdminLoginResponse(data: unknown): AdminSession {
   };
 }
 
-export async function loginAdmin(input: AdminLoginInput): Promise<AdminSession> {
+export async function loginAdmin(
+  input: AdminLoginInput,
+): Promise<AdminSession> {
   const body = await fetchInstance.post<ApiResponse<AdminLoginResponse>>(
     API_ROUTES.AUTH.LOGIN,
     input,
@@ -137,11 +140,14 @@ export async function refreshAdminSession(): Promise<string> {
 }
 
 export async function getCurrentAdmin(accessToken: string): Promise<AdminUser> {
-  const body = await fetchInstance.get<ApiResponse<{ admin: AdminUser }>>(API_ROUTES.AUTH.ME, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
+  const body = await fetchInstance.get<ApiResponse<{ admin: AdminUser }>>(
+    API_ROUTES.AUTH.ME,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
     },
-  });
+  );
 
   if (!isPlainObject(body.data)) {
     throw new ApiClientError({

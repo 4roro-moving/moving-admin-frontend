@@ -5,6 +5,7 @@ export interface AdminUser {
   name: string;
   email: string;
   role: "ADMIN";
+  /** AdminProfile.adminRole에서 추출. User.role(ADMIN)과 구분한다. */
   adminRole?: AdminRole;
 }
 
