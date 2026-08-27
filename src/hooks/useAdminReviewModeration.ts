@@ -21,6 +21,9 @@ export function useAdminReviewModeration() {
 
   const invalidateReviews = () => {
     void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.REVIEWS.ALL });
+    // REVIEW 숨김/복원은 MoverProfile 공개 통계와 대시보드 콘텐츠 집계를 즉시 갱신한다.
+    void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.MOVERS.ALL });
+    void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.DASHBOARD.ALL });
   };
 
   const hideMutation = useMutation({

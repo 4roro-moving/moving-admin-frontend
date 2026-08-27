@@ -10,6 +10,7 @@ import type {
 import { UserHistoryEmpty } from "./UserHistoryCard";
 
 const reportTargetLabel = {
+  CUSTOMER: "고객",
   REVIEW: "이사 리뷰",
   MOVER: "기사",
   RESIDENCE_REVIEW: "거주 후기",

@@ -3,11 +3,11 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
+import AdminFeedbackToast from "@/components/admin/common/AdminFeedbackToast";
 import Search from "@/components/admin/common/Search";
 import {
   AdminReviewEmptyState,
   AdminReviewErrorState,
-  AdminReviewFeedbackToast,
   AdminReviewLoadingState,
 } from "@/components/admin/contents/AdminReviewListStates";
 import AdminReviewPagination from "@/components/admin/contents/AdminReviewPagination";
@@ -470,7 +470,7 @@ export default function AdminTermsPage() {
       ) : null}
 
       {feedback ? (
-        <AdminReviewFeedbackToast tone={feedback.tone} message={feedback.message} />
+        <AdminFeedbackToast tone={feedback.tone} message={feedback.message} />
       ) : null}
     </section>
   );

@@ -1,9 +1,13 @@
+import { API_ROUTES } from "@/lib/constants/apiRoutes";
+import { APP_ROUTES } from "@/lib/constants/appRoutes";
 import type { ApiErrorResponse } from "@/types/api";
 import type { PaginatedApiSuccessResponse, Pagination } from "@/types/pagination";
 import { useAdminAuthStore } from "@/stores/useAdminAuthStore";
 
 interface RequestOptions extends Omit<RequestInit, "body"> {
   body?: BodyInit | object | null;
+  /** true면 401이어도 refresh/retry 하지 않음 (login/refresh/logout) */
+  skipRefresh?: boolean;
 }
 
 export class ApiClientError extends Error {
@@ -19,6 +23,14 @@ export class ApiClientError extends Error {
     this.data = params.data;
   }
 }
+
+const NO_REFRESH_PATHS: readonly string[] = [
+  API_ROUTES.AUTH.LOGIN,
+  API_ROUTES.AUTH.REFRESH,
+  API_ROUTES.AUTH.LOGOUT,
+];
+
+let refreshPromise: Promise<string> | null = null;
 
 function buildUrl(path: string): string {
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
@@ -88,8 +100,73 @@ async function parseResponse(response: Response): Promise<unknown> {
   return response.text();
 }
 
-async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
-  const { body, headers, ...restOptions } = options;
+function clearSessionAndRedirectToLogin(): void {
+  useAdminAuthStore.getState().clearSession();
+
+  if (typeof window !== "undefined" && window.location.pathname !== APP_ROUTES.LOGIN) {
+    window.location.assign(APP_ROUTES.LOGIN);
+  }
+}
+
+/**
+ * refresh는 cookie 기반이므로 Authorization 없이 호출한다.
+ * fetchInstance.request 와 순환/재귀를 피하기 위해 raw fetch 를 사용한다.
+ * 동시 401은 하나의 refreshPromise 를 공유한다.
+ */
+async function refreshAccessTokenOnce(): Promise<string> {
+  if (!refreshPromise) {
+    refreshPromise = (async () => {
+      const response = await fetch(buildUrl(API_ROUTES.AUTH.REFRESH), {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      const parsed = await parseResponse(response);
+
+      if (!response.ok) {
+        throw new ApiClientError({
+          status: response.status,
+          message: isApiErrorResponse(parsed)
+            ? parsed.message
+            : "세션 갱신에 실패했습니다.",
+          errorCode: isApiErrorResponse(parsed) ? parsed.errorCode : undefined,
+          data: isApiErrorResponse(parsed) ? parsed.data : undefined,
+        });
+      }
+
+      if (!isPlainObject(parsed) || !isPlainObject(parsed.data)) {
+        throw new ApiClientError({
+          status: 500,
+          message: "세션 복구 응답 형식이 올바르지 않습니다.",
+        });
+      }
+
+      const tokens = parsed.data.tokens;
+
+      if (!isPlainObject(tokens) || typeof tokens.accessToken !== "string" || !tokens.accessToken) {
+        throw new ApiClientError({
+          status: 500,
+          message: "응답에 accessToken이 없습니다.",
+        });
+      }
+
+      useAdminAuthStore.getState().setAccessToken(tokens.accessToken);
+      return tokens.accessToken;
+    })().finally(() => {
+      refreshPromise = null;
+    });
+  }
+
+  return refreshPromise;
+}
+
+async function request<T>(
+  path: string,
+  options: RequestOptions = {},
+  retried = false,
+): Promise<T> {
+  const { body, headers, skipRefresh, ...restOptions } = options;
   const isFormData = typeof FormData !== "undefined" && body instanceof FormData;
 
   const response = await fetch(buildUrl(path), {
@@ -105,6 +182,26 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
   const parsed = await parseResponse(response);
 
   if (!response.ok) {
+    const shouldRefresh =
+      !retried &&
+      !skipRefresh &&
+      response.status === 401 &&
+      !NO_REFRESH_PATHS.includes(path);
+
+    if (shouldRefresh) {
+      try {
+        await refreshAccessTokenOnce();
+        // 호출부가 만료된 Authorization 을 넘긴 경우 새 토큰이 붙도록 제거한다.
+        const retryHeaders = toHeaderRecord(headers);
+        delete retryHeaders.Authorization;
+        delete retryHeaders.authorization;
+        return request<T>(path, { ...options, headers: retryHeaders }, true);
+      } catch (refreshError) {
+        clearSessionAndRedirectToLogin();
+        throw refreshError;
+      }
+    }
+
     const errorBody = isApiErrorResponse(parsed) ? parsed : undefined;
 
     throw new ApiClientError({

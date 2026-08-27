@@ -79,6 +79,10 @@ export function getAdminReportListTargetText(report: AdminReportListItem): strin
     return `나눔 #${report.targetId}`;
   }
 
+  if (report.targetType === "CUSTOMER") {
+    return `고객 #${report.targetId}`;
+  }
+
   return getAdminReportTargetLabel(report.targetType);
 }
 
@@ -92,6 +96,8 @@ export function getAdminReportDetailTargetTitle(report: AdminReportDetail): stri
       return `리뷰 #${report.target.id}`;
     case "MOVER":
       return report.target.nickname ? `${report.target.nickname} 기사님` : report.target.name;
+    case "CUSTOMER":
+      return report.target.name;
     case "RESIDENCE_REVIEW":
       return report.target.title;
     case "GIVEAWAY":
@@ -114,6 +120,12 @@ export function getAdminReportDetailTargetContent(target: AdminReportTarget | nu
         `닉네임: ${target.nickname ?? "없음"}`,
         `활성 상태: ${target.isActive ? "활성" : "비활성"}`,
       ].join("\n");
+    case "CUSTOMER":
+      return [
+        `이름: ${target.name}`,
+        `이메일: ${target.email}`,
+        `활성 상태: ${target.isActive ? "활성" : "비활성"}`,
+      ].join("\n");
     case "RESIDENCE_REVIEW":
       return target.content;
     case "GIVEAWAY":
@@ -131,6 +143,8 @@ export function getAdminReportDetailMeta(target: AdminReportTarget | null): stri
       return `작성자 ${target.author.name} · 평점 ${target.rating}점`;
     case "MOVER":
       return `기사 ID ${target.id}`;
+    case "CUSTOMER":
+      return `고객 ID ${target.id}`;
     case "RESIDENCE_REVIEW":
       return `작성자 ${target.author.name} · 지역 ${target.region.name} · 평점 ${target.rating}점`;
     case "GIVEAWAY":
