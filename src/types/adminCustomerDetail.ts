@@ -14,7 +14,7 @@ export interface AdminCustomerDetail {
     id: string;
     email: string;
     name: string;
-    phone: string;
+    phone: string | null;
     authProvider: AdminAuthProvider;
     status: AdminAccountStatus;
     isProfileCompleted: boolean;
@@ -70,10 +70,10 @@ interface AdminCustomerEstimateRequests {
       mover: {
         id: string;
         name: string;
-        nickname: string;
+        nickname: string | null;
       };
       price: number;
-      confirmedAt: string;
+      confirmedAt: string | null;
       cancelable: boolean;
     } | null;
   }>;

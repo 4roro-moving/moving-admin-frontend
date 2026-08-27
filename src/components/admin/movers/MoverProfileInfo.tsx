@@ -60,7 +60,7 @@ export default function MoverProfileInfo({
         )}
         <div className="min-w-0">
           <Text as="p" variant="lg-semibold" className="text-foreground">
-            {profile.nickname}
+            {profile.nickname ?? account.name}
           </Text>
           <Text as="p" variant="sm-medium" className="mt-1 text-muted">
             {account.name} · 경력 {profile.career}년
@@ -90,7 +90,11 @@ export default function MoverProfileInfo({
           </Text>
         </div>
         <div className="px-3 py-3 text-center">
-          <Text as="p" variant="xs-regular" className="text-status-suspended-foreground">
+          <Text
+            as="p"
+            variant="xs-regular"
+            className="text-status-suspended-foreground"
+          >
             숨김 리뷰
           </Text>
           <Text
@@ -111,12 +115,14 @@ export default function MoverProfileInfo({
         </div>
       </div>
       <dl>
-        <Item label="한줄 소개" value={profile.shortIntro} />
-        <Item label="상세 소개" value={profile.description} />
+        <Item label="한줄 소개" value={profile.shortIntro ?? "-"} />
+        <Item label="상세 소개" value={profile.description ?? "-"} />
         <Item label="서비스 지역" value={profile.serviceAreas.join(", ")} />
         <Item
           label="이사 유형"
-          value={profile.serviceTypes.map((type) => moveTypeLabel[type]).join(", ")}
+          value={profile.serviceTypes
+            .map((type) => moveTypeLabel[type])
+            .join(", ")}
         />
       </dl>
     </section>
