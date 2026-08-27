@@ -18,6 +18,7 @@ interface ItemProps {
 interface MoverProfileInfoProps {
   account: AdminMoverDetail["account"];
   profile: AdminMoverDetail["profile"];
+  reviewStatistics: AdminMoverDetail["reviewStatistics"];
 }
 
 function Item({ label, value }: ItemProps) {
@@ -36,6 +37,7 @@ function Item({ label, value }: ItemProps) {
 export default function MoverProfileInfo({
   account,
   profile,
+  reviewStatistics,
 }: MoverProfileInfoProps) {
   return (
     <section className="rounded-20 border border-border bg-surface p-5 shadow-select">
@@ -65,7 +67,7 @@ export default function MoverProfileInfo({
           </Text>
         </div>
       </div>
-      <div className="mb-5 grid grid-cols-3 divide-x divide-border rounded-16 border border-border bg-background-muted">
+      <div className="mb-5 grid grid-cols-2 divide-x divide-y divide-border rounded-16 border border-border bg-background-muted sm:grid-cols-4 sm:divide-y-0">
         <div className="px-3 py-3 text-center">
           <Text as="p" variant="xs-regular" className="text-text-subtle">
             평균 평점
@@ -76,15 +78,27 @@ export default function MoverProfileInfo({
             className="mt-1 inline-flex items-center text-foreground"
           >
             <StarIcon className="mr-1 size-[1.1em] text-rating-fill" />
-            {profile.averageRating.toFixed(1)}
+            {reviewStatistics.visibleAverageRating.toFixed(1)}
           </Text>
         </div>
         <div className="px-3 py-3 text-center">
           <Text as="p" variant="xs-regular" className="text-text-subtle">
-            리뷰
+            공개 리뷰
           </Text>
           <Text as="p" variant="md-semibold" className="mt-1 text-foreground">
-            {profile.reviewCount}건
+            {reviewStatistics.visibleCount}건
+          </Text>
+        </div>
+        <div className="px-3 py-3 text-center">
+          <Text as="p" variant="xs-regular" className="text-status-suspended-foreground">
+            숨김 리뷰
+          </Text>
+          <Text
+            as="p"
+            variant="md-semibold"
+            className="mt-1 text-status-suspended-foreground"
+          >
+            {reviewStatistics.hiddenCount}건
           </Text>
         </div>
         <div className="px-3 py-3 text-center">

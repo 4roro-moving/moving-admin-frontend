@@ -73,8 +73,15 @@ export default function AdminMoverDetailPage({
     );
   }
 
-  const { account, profile, estimateActivity, reviewHistory, reportHistory, suspensionHistory } =
-    mover;
+  const {
+    account,
+    profile,
+    reviewStatistics,
+    estimateActivity,
+    reviewHistory,
+    reportHistory,
+    suspensionHistory,
+  } = mover;
 
   const handleRestrictionSubmit = async (
     payload: AdminAccountStatusUpdatePayload,
@@ -147,7 +154,11 @@ export default function AdminMoverDetailPage({
       ) : null}
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(20rem,1.15fr)]">
         <AdminAccountInfo account={account} />
-        <MoverProfileInfo account={account} profile={profile} />
+        <MoverProfileInfo
+          account={account}
+          profile={profile}
+          reviewStatistics={reviewStatistics}
+        />
       </div>
       <MoverEstimateActivity
         activity={estimateActivity}
