@@ -76,7 +76,10 @@ export async function fetchAdminReportDetail(reportId: number): Promise<AdminRep
     `${API_ROUTES.ADMIN.REPORTS}/${String(reportId)}`,
   );
 
-  return body.data;
+  return {
+    ...body.data,
+    images: body.data.images ?? [],
+  };
 }
 
 export async function moderateAdminReport(
