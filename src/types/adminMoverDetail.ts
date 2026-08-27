@@ -13,7 +13,7 @@ export interface AdminMoverDetail {
     id: string;
     email: string;
     name: string;
-    phone: string;
+    phone: string | null;
     authProvider: AdminAuthProvider;
     status: AdminAccountStatus;
     isProfileCompleted: boolean;
@@ -21,11 +21,11 @@ export interface AdminMoverDetail {
     updatedAt: string;
   };
   profile: {
-    nickname: string;
+    nickname: string | null;
     imageUrl: string | null;
     career: number;
     shortIntro: string;
-    description: string;
+    description: string | null;
     confirmedCount: number;
     serviceAreas: string[];
     serviceTypes: AdminMoveType[];

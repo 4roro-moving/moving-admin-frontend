@@ -12,6 +12,7 @@ const categoryLabel: Record<string, string> = {
 
 const statusLabel: Record<string, string> = {
   OPEN: "답변 대기",
+  ANSWERED: "답변 완료",
   CLOSED: "처리 완료",
 };
 
@@ -65,10 +66,18 @@ export default function UserInquiryHistory({
                   key={item.id}
                   className="grid grid-cols-[10rem_minmax(14rem,1.5fr)_8rem_10rem_10rem_9rem] items-center gap-4 px-5 py-4"
                 >
-                  <Text as="p" variant="sm-medium" className="text-text-secondary">
+                  <Text
+                    as="p"
+                    variant="sm-medium"
+                    className="text-text-secondary"
+                  >
                     {getCategoryLabel(item.category)}
                   </Text>
-                  <Text as="p" variant="md-medium" className="truncate text-foreground">
+                  <Text
+                    as="p"
+                    variant="md-medium"
+                    className="truncate text-foreground"
+                  >
                     {item.title}
                   </Text>
                   <Text
@@ -78,15 +87,25 @@ export default function UserInquiryHistory({
                       "w-fit rounded-full px-2.5 py-1",
                       item.status === "OPEN"
                         ? "bg-status-progress-background text-status-progress-foreground"
-                        : "bg-status-active-background text-status-active-foreground",
+                        : item.status === "ANSWERED"
+                          ? "bg-status-confirmed-background text-status-confirmed-foreground"
+                          : "bg-status-active-background text-status-active-foreground",
                     )}
                   >
                     {getStatusLabel(item.status)}
                   </Text>
-                  <Text as="p" variant="sm-medium" className="text-text-secondary">
+                  <Text
+                    as="p"
+                    variant="sm-medium"
+                    className="text-text-secondary"
+                  >
                     {formatKoreanDateTime(item.lastMessageAt)}
                   </Text>
-                  <Text as="p" variant="sm-medium" className="text-text-secondary">
+                  <Text
+                    as="p"
+                    variant="sm-medium"
+                    className="text-text-secondary"
+                  >
                     {formatKoreanDateTime(item.createdAt)}
                   </Text>
                   <Text as="p" variant="md-medium" className="text-foreground">

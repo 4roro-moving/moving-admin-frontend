@@ -4,7 +4,7 @@ import { formatJoinedDate } from "@/lib/utils/user/date";
 interface AdminAccount {
   name: string;
   email: string;
-  phone: string;
+  phone: string | null;
   authProvider: string;
   isProfileCompleted: boolean;
   createdAt: string;
@@ -42,7 +42,7 @@ export default function AdminAccountInfo({ account }: AdminAccountInfoProps) {
       <dl className="mt-4">
         <Item label="이름" value={account.name} />
         <Item label="이메일" value={account.email} />
-        <Item label="연락처" value={account.phone} />
+        <Item label="연락처" value={account.phone ?? "-"} />{" "}
         <Item label="가입 방식" value={account.authProvider} />
         <Item
           label="프로필 등록 여부"
