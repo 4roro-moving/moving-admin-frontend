@@ -8,6 +8,7 @@ interface AdminAuthState {
   isAuthenticated: boolean;
   isCheckingAuth: boolean;
   establishSession: (payload: { user: AdminUser; accessToken: string }) => void;
+  setAccessToken: (accessToken: string) => void;
   clearSession: () => void;
   setCheckingAuth: (value: boolean) => void;
 }
@@ -16,7 +17,8 @@ export const useAdminAuthStore = create<AdminAuthState>((set) => ({
   user: null,
   accessToken: null,
   isAuthenticated: false,
-  isCheckingAuth: false,
+  // 앱 최초 로드 시 세션 복구가 시작되기 전 Guard redirect를 막습니다.
+  isCheckingAuth: true,
   establishSession: ({ user, accessToken }) =>
     set({
       user,
@@ -24,6 +26,7 @@ export const useAdminAuthStore = create<AdminAuthState>((set) => ({
       isAuthenticated: true,
       isCheckingAuth: false,
     }),
+  setAccessToken: (accessToken) => set({ accessToken }),
   clearSession: () =>
     set({
       user: null,

@@ -1,19 +1,50 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { loginAdmin } from "@/lib/api/auth";
+import { getApiErrorMessage } from "@/lib/api/getApiErrorMessage";
+import { getAdminHomeRoute, hasValidAdminSession } from "@/lib/auth/adminRole";
+import { useAdminAuthStore } from "@/stores/useAdminAuthStore";
+
 const adminLoginSchema = z.object({
   email: z.string().email("이메일 형식이 올바르지 않습니다."),
-  password: z.string().min(8, "비밀번호는 8자 이상이어야 합니다."),
+  password: z.string().min(1, "비밀번호를 입력해 주세요."),
 });
 
 type AdminLoginFormValues = z.infer<typeof adminLoginSchema>;
 
+const authCardClassName =
+  "border-border bg-surface w-full rounded-2xl border px-5 py-7 shadow-sm sm:px-8 sm:py-8";
+
+const authInputClassName =
+  "border-border bg-surface text-foreground placeholder:text-text-placeholder h-12 w-full rounded-xl border px-4 text-sm outline-none transition-[border-color,box-shadow] focus:border-border-brand focus:shadow-input";
+
 export default function AdminLoginPage() {
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const router = useRouter();
+  const establishSession = useAdminAuthStore((state) => state.establishSession);
+  const isCheckingAuth = useAdminAuthStore((state) => state.isCheckingAuth);
+  const isAuthenticated = useAdminAuthStore((state) => state.isAuthenticated);
+  const userRole = useAdminAuthStore((state) => state.user?.role);
+  const adminRole = useAdminAuthStore((state) => state.user?.adminRole);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const validAdminSession = hasValidAdminSession(
+    isAuthenticated,
+    userRole,
+    adminRole,
+  );
+
+  useEffect(() => {
+    if (isCheckingAuth || !validAdminSession || !adminRole) {
+      return;
+    }
+
+    router.replace(getAdminHomeRoute(adminRole));
+  }, [adminRole, isCheckingAuth, router, validAdminSession]);
 
   const {
     register,
@@ -27,45 +58,79 @@ export default function AdminLoginPage() {
     },
   });
 
-  const onSubmit = async () => {
-    setIsSubmitted(true);
+  const onSubmit = async (values: AdminLoginFormValues) => {
+    setErrorMessage(null);
+
+    try {
+      const session = await loginAdmin(values);
+      establishSession({
+        user: session.user,
+        accessToken: session.accessToken,
+      });
+      router.replace(getAdminHomeRoute(session.user.adminRole));
+    } catch (error) {
+      setErrorMessage(getApiErrorMessage(error, "로그인에 실패했습니다."));
+    }
   };
 
+  if (isCheckingAuth) {
+    return (
+      <section className={`${authCardClassName} text-muted`}>
+        <div className="flex min-h-[260px] items-center justify-center">
+          <p className="text-sm font-medium">관리자 세션을 확인하는 중입니다...</p>
+        </div>
+      </section>
+    );
+  }
+
+  if (validAdminSession) {
+    return (
+      <section className={`${authCardClassName} text-muted`}>
+        <div className="flex min-h-[260px] items-center justify-center">
+          <p className="text-sm font-medium">관리자 페이지로 이동하는 중입니다...</p>
+        </div>
+      </section>
+    );
+  }
+
   return (
-    <section className="bg-surface border-border rounded-3xl border p-8 shadow-sm">
-      <div className="mb-8 space-y-2">
-        <p className="text-muted text-sm font-medium">ADMIN AUTH</p>
-        <h1 className="text-2xl font-semibold">MOVING 관리자 로그인</h1>
+    <section className={authCardClassName}>
+      <div className="space-y-2">
+        <h1 className="text-[28px] leading-[1.2] font-semibold text-[#262524] sm:text-[32px]">
+          관리자 로그인
+        </h1>
         <p className="text-muted text-sm">
-          로그인 API 연결과 세션 복구는 이번 작업 범위에서 제외되어 있습니다.
+          관리자 계정으로 로그인해주세요.
         </p>
       </div>
 
-      <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
+      <form className="mt-8 space-y-5 sm:mt-9" onSubmit={handleSubmit(onSubmit)}>
         <div className="space-y-2">
-          <label htmlFor="email" className="text-sm font-medium">
+          <label htmlFor="email" className="text-[13px] font-semibold text-[#262524]">
             이메일
           </label>
           <input
             id="email"
             type="email"
             autoComplete="email"
-            className="border-border bg-background focus:border-brand focus:ring-brand/15 w-full rounded-xl border px-4 py-3 outline-none focus:ring-4"
+            className={authInputClassName}
             placeholder="admin@moving.com"
             {...register("email")}
           />
-          {errors.email ? <p className="text-sm text-red-600">{errors.email.message}</p> : null}
+          {errors.email ? (
+            <p className="text-sm text-red-600">{errors.email.message}</p>
+          ) : null}
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="password" className="text-sm font-medium">
+          <label htmlFor="password" className="text-[13px] font-semibold text-[#262524]">
             비밀번호
           </label>
           <input
             id="password"
             type="password"
             autoComplete="current-password"
-            className="border-border bg-background focus:border-brand focus:ring-brand/15 w-full rounded-xl border px-4 py-3 outline-none focus:ring-4"
+            className={authInputClassName}
             placeholder="비밀번호를 입력해 주세요"
             {...register("password")}
           />
@@ -77,17 +142,22 @@ export default function AdminLoginPage() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="bg-brand text-brand-foreground w-full rounded-xl px-4 py-3 text-sm font-semibold disabled:opacity-60"
+          className="bg-accent text-brand-foreground h-12 w-full rounded-xl px-4 text-sm font-semibold transition-opacity disabled:opacity-60"
         >
-          로그인 준비 중
+          {isSubmitting ? "로그인 중" : "로그인"}
         </button>
       </form>
 
-      {isSubmitted ? (
-        <p className="bg-background text-muted mt-6 rounded-xl px-4 py-3 text-sm">
-          관리자 로그인 API와 세션 복구 로직은 후속 작업에서 연결합니다.
+      {errorMessage ? (
+        <p
+          role="alert"
+          className="mt-5 rounded-xl bg-[#ffeef0] px-4 py-3 text-sm text-red-600"
+        >
+          {errorMessage}
         </p>
       ) : null}
+
+      <p className="mt-6 text-xs text-[#8c8c8c]">MOVING 관리자 전용 페이지</p>
     </section>
   );
 }
