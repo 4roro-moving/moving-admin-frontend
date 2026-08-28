@@ -3,6 +3,7 @@ import type { Pagination } from "@/types/pagination";
 export type AdminReportStatus = "PENDING" | "RESOLVED" | "REJECTED";
 
 export type AdminReportTargetType =
+  | "CUSTOMER"
   | "REVIEW"
   | "MOVER"
   | "RESIDENCE_REVIEW"
@@ -74,6 +75,15 @@ export interface AdminMoverReportTarget {
   isActive: boolean;
 }
 
+export interface AdminCustomerReportTarget {
+  type: "CUSTOMER";
+  id: string;
+  name: string;
+  email: string;
+  imageUrl: string | null;
+  isActive: boolean;
+}
+
 export interface AdminResidenceReviewReportTarget {
   type: "RESIDENCE_REVIEW";
   id: number;
@@ -120,6 +130,7 @@ export interface AdminGiveawayReportTarget {
 export type AdminReportTarget =
   | AdminReviewReportTarget
   | AdminMoverReportTarget
+  | AdminCustomerReportTarget
   | AdminResidenceReviewReportTarget
   | AdminGiveawayReportTarget;
 
