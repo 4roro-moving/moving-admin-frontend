@@ -1,4 +1,9 @@
 import Text from "@/components/admin/common/Text";
+import {
+  ADMIN_REPORT_REASON_LABELS,
+  ADMIN_REPORT_STATUS_LABELS,
+  ADMIN_REPORT_TARGET_LABELS,
+} from "@/lib/constants/adminReports";
 import { formatKoreanDate } from "@/lib/utils/date";
 import { cn } from "@/lib/utils/cn";
 import type {
@@ -8,29 +13,6 @@ import type {
 } from "@/types/adminReport";
 
 import { UserHistoryEmpty } from "./UserHistoryCard";
-
-const reportTargetLabel = {
-  CUSTOMER: "고객",
-  REVIEW: "이사 리뷰",
-  MOVER: "기사",
-  RESIDENCE_REVIEW: "거주 후기",
-  GIVEAWAY: "나눔 글",
-} as const;
-
-const reportReasonLabel = {
-  SPAM: "스팸·광고",
-  ABUSE: "욕설·비방",
-  FALSE_INFO: "허위 정보",
-  INAPPROPRIATE: "부적절한 내용",
-  PRIVACY: "개인정보 노출",
-  OTHER: "기타",
-} as const;
-
-const reportStatusLabel = {
-  PENDING: "처리 대기",
-  RESOLVED: "처리 완료",
-  REJECTED: "처리 반려",
-} as const;
 
 const reportStatusClass = {
   PENDING: "bg-report-pending-background text-report-pending-foreground",
@@ -85,11 +67,11 @@ export default function ReportHistoryTable<T extends ReportHistoryItem>({
             >
               {showTarget ? (
                 <Text as="p" variant="md-medium" className="text-foreground">
-                  {item.targetType ? reportTargetLabel[item.targetType] : "-"}
+                  {item.targetType ? ADMIN_REPORT_TARGET_LABELS[item.targetType] : "-"}
                 </Text>
               ) : null}
               <Text as="p" variant="md-medium" className="text-foreground">
-                {reportReasonLabel[item.reason]}
+                {ADMIN_REPORT_REASON_LABELS[item.reason]}
               </Text>
               <span
                 className={cn(
@@ -97,7 +79,7 @@ export default function ReportHistoryTable<T extends ReportHistoryItem>({
                   reportStatusClass[item.status],
                 )}
               >
-                {reportStatusLabel[item.status]}
+                {ADMIN_REPORT_STATUS_LABELS[item.status]}
               </span>
               <Text as="p" variant="sm-medium" className="text-text-secondary">
                 {formatKoreanDate(item.createdAt)}

@@ -193,8 +193,11 @@ async function request<T>(
         await refreshAccessTokenOnce();
         // 호출부가 만료된 Authorization 을 넘긴 경우 새 토큰이 붙도록 제거한다.
         const retryHeaders = toHeaderRecord(headers);
-        delete retryHeaders.Authorization;
-        delete retryHeaders.authorization;
+        for (const key of Object.keys(retryHeaders)) {
+          if (key.toLowerCase() === "authorization") {
+            delete retryHeaders[key];
+          }
+        }
         return request<T>(path, { ...options, headers: retryHeaders }, true);
       } catch (refreshError) {
         clearSessionAndRedirectToLogin();
