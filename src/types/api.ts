@@ -4,9 +4,15 @@ export interface ApiResponse<T> {
   message?: string;
 }
 
+/** Backend ErrorResponse: `{ success: false, error: { code, message, data? }, ... }` */
 export interface ApiErrorResponse {
-  success?: false;
-  errorCode?: string;
-  message: string;
-  data?: unknown;
+  success: false;
+  error: {
+    code: string;
+    message: string;
+    data?: unknown;
+  };
+  path?: string;
+  method?: string;
+  timestamp?: string;
 }

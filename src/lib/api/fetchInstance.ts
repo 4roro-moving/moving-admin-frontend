@@ -42,7 +42,11 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
 }
 
 function isApiErrorResponse(value: unknown): value is ApiErrorResponse {
-  return isPlainObject(value) && typeof value.message === "string";
+  if (!isPlainObject(value) || value.success !== false || !isPlainObject(value.error)) {
+    return false;
+  }
+
+  return typeof value.error.message === "string" && typeof value.error.code === "string";
 }
 
 function toHeaderRecord(headers?: HeadersInit): Record<string, string> {
@@ -128,10 +132,10 @@ async function refreshAccessTokenOnce(): Promise<string> {
         throw new ApiClientError({
           status: response.status,
           message: isApiErrorResponse(parsed)
-            ? parsed.message
+            ? parsed.error.message
             : "세션 갱신에 실패했습니다.",
-          errorCode: isApiErrorResponse(parsed) ? parsed.errorCode : undefined,
-          data: isApiErrorResponse(parsed) ? parsed.data : undefined,
+          errorCode: isApiErrorResponse(parsed) ? parsed.error.code : undefined,
+          data: isApiErrorResponse(parsed) ? parsed.error.data : undefined,
         });
       }
 
@@ -210,12 +214,12 @@ async function request<T>(
     throw new ApiClientError({
       status: response.status,
       message:
-        errorBody?.message ??
+        errorBody?.error.message ??
         (typeof parsed === "string" && parsed.length > 0
           ? parsed
           : "요청 처리 중 오류가 발생했습니다."),
-      errorCode: errorBody?.errorCode,
-      data: errorBody?.data,
+      errorCode: errorBody?.error.code,
+      data: errorBody?.error.data,
     });
   }
 

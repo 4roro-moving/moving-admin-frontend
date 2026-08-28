@@ -17,17 +17,17 @@ export const ADMIN_REPORT_STATUS_OPTIONS: Array<{
   { value: "REJECTED", label: "반려" },
 ];
 
-export const ADMIN_REPORT_TARGET_OPTIONS: Array<{
-  value: AdminReportTargetType | "ALL";
-  label: string;
-}> = [
+export const ADMIN_REPORT_TARGET_OPTIONS = [
   { value: "ALL", label: "대상 전체" },
   { value: "CUSTOMER", label: "고객" },
   { value: "REVIEW", label: "리뷰" },
   { value: "MOVER", label: "기사" },
   { value: "RESIDENCE_REVIEW", label: "거주후기" },
   { value: "GIVEAWAY", label: "나눔" },
-];
+] as const satisfies ReadonlyArray<{
+  value: AdminReportTargetType | "ALL";
+  label: string;
+}>;
 
 export const ADMIN_REPORT_REASON_OPTIONS: Array<{
   value: AdminReportReason | "ALL";
@@ -65,10 +65,10 @@ export const ADMIN_REPORT_REASON_LABELS: Record<AdminReportReason, string> = {
   OTHER: "기타",
 } as const;
 
-export const ADMIN_REPORT_TARGET_LABELS: Record<AdminReportTargetType, string> = {
+export const ADMIN_REPORT_TARGET_LABELS = {
   CUSTOMER: "고객",
   REVIEW: "리뷰",
   MOVER: "기사",
   RESIDENCE_REVIEW: "거주후기",
   GIVEAWAY: "나눔",
-};
+} as const satisfies Record<AdminReportTargetType, string>;
